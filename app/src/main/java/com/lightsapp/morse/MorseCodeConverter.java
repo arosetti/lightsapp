@@ -88,20 +88,30 @@ public class MorseCodeConverter {
     public String getString(String str) {
         long[] l = pattern(str);
         String tmpStr = new String();
-        for (int i = 0; i<l.length ; i++) {
-            if (i % 2 != 0)
-                switch ((int)l[i]) {
-                    case (int)DOT:
+        for (int i = 0; i < l.length; i++) {
+            if (i % 2 != 0) {
+                switch ((int) l[i]) {
+                    case (int) DOT:
                         tmpStr = tmpStr.concat(".");
-                    break;
-                    case (int)DASH:
+                        break;
+                    case (int) DASH:
                         tmpStr = tmpStr.concat("-");
-                    break;
-                    case (int)WORD_GAP:
-                        tmpStr = tmpStr.concat(" ");
-                    break;
+                        break;
                     default:
                 }
+            } else {
+                switch ((int) l[i]) {
+                    case (int) GAP:
+                        break;
+                    case (int) LETTER_GAP:
+                        tmpStr = tmpStr.concat(" ");
+                        break;
+                    case (int) WORD_GAP:
+                        tmpStr = tmpStr.concat("   ");
+                        break;
+                    default:
+                }
+            }
         }
         return tmpStr;
     }
