@@ -3,39 +3,46 @@ package com.lightsapp.lightsapp;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 
 public class Main extends Activity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
     SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     ViewPager mViewPager;
+    private Camera mCamera;
 
+    public void MySleep(int t)
+    {
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void flash(int tOn, int tOff) {
+        Camera.Parameters p = mCamera.getParameters();
+        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        mCamera.setParameters(p);
+        mCamera.startPreview();
+        MySleep(tOn);
+        p = mCamera.getParameters();
+        p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        mCamera.setParameters(p);
+        mCamera.stopPreview();
+        MySleep(tOff);
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +58,30 @@ public class Main extends Activity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mCamera = Camera.open();
+
+        Thread thread = new Thread()
+        {
+            @Override
+            public void run() {
+                while(true) {
+                    flash(500,2000);
+                    flash(1000,2000);
+                }
+            }
+        };
+
+        thread.start();
     }
 
+    protected void onStop(){
+        super.onStop();
+
+        if (mCamera != null)
+        {
+            mCamera.release();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
