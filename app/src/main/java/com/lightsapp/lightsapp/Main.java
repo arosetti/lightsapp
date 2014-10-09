@@ -1,7 +1,5 @@
 package com.lightsapp.lightsapp;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,6 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import com.lightsapp.morse.*;
+
+import java.util.Locale;
 
 
 public class Main extends Activity {
@@ -64,9 +65,16 @@ public class Main extends Activity {
         {
             @Override
             public void run() {
+                MorseCodeConverter mMorse = new MorseCodeConverter();
+
+                long[] pattern;
+                pattern = mMorse.pattern("SOS");
+
                 while(true) {
-                    flash(500,2000);
-                    flash(1000,2000);
+                    for (int i=0; i<pattern.length; i++) {
+                        flash((int) pattern[1],1000);
+                    }
+
                 }
             }
         };
