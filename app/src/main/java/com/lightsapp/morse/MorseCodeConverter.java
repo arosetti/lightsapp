@@ -17,7 +17,7 @@
 package com.lightsapp.morse;
 
 public class MorseCodeConverter {
-    private static final long SPEED_BASE = 100;
+    private static final long SPEED_BASE = 250;
     static final long DOT = SPEED_BASE;
     static final long DASH = SPEED_BASE * 3;
     static final long GAP = SPEED_BASE;
@@ -83,6 +83,27 @@ public class MorseCodeConverter {
         else {
             return ERROR_GAP;
         }
+    }
+
+    public String getString(String str) {
+        long[] l = pattern(str);
+        String tmpStr = new String();
+        for (int i = 0; i<l.length ; i++) {
+            if (i % 2 != 0)
+                switch ((int)l[i]) {
+                    case (int)DOT:
+                        tmpStr = tmpStr.concat(".");
+                    break;
+                    case (int)DASH:
+                        tmpStr = tmpStr.concat("-");
+                    break;
+                    case (int)WORD_GAP:
+                        tmpStr = tmpStr.concat(" ");
+                    break;
+                    default:
+                }
+        }
+        return tmpStr;
     }
 
     public long[] pattern(String str) {

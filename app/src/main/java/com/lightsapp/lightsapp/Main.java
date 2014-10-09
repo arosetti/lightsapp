@@ -12,7 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import com.lightsapp.morse.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.lightsapp.morse.MorseCodeConverter;
 
 import java.util.Locale;
 
@@ -22,7 +26,7 @@ public class Main extends Activity {
     ViewPager mViewPager;
     private Camera mCamera;
 
-    public void MySleep(int t)
+    public void mySleep(int t)
     {
         try {
             Thread.sleep(t);
@@ -31,17 +35,16 @@ public class Main extends Activity {
         }
     }
 
-    private void flash(int tOn, int tOff) {
+    private void flash(int tOn) {
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
         mCamera.startPreview();
-        MySleep(tOn);
+        mySleep(tOn);
         p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(p);
         mCamera.stopPreview();
-        MySleep(tOff);
     }
     
     @Override
@@ -49,13 +52,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -72,7 +69,11 @@ public class Main extends Activity {
 
                 while(true) {
                     for (int i=0; i<pattern.length; i++) {
-                        flash((int) pattern[1],1000);
+                        if (i % 2 != 0) {
+                            flash((int) pattern[i]);
+                        }
+                        else
+                            mySleep((int) pattern[i]);
                     }
 
                 }
@@ -80,6 +81,24 @@ public class Main extends Activity {
         };
 
         thread.start();
+
+        setContentView(R.layout.fragment_main);
+
+        Button mButton = (Button)findViewById(R.id.button);
+        mButton.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        EditText mEdit = (EditText) findViewById(R.id.editText);
+                        String text = mEdit.getText().toString();
+
+                        MorseCodeConverter mMorse = new MorseCodeConverter();
+
+                        TextView mTextView = (TextView) findViewById(R.id.section_label);
+                        mTextView.setText(mMorse.getString(text));
+                    }
+                });
     }
 
     protected void onStop(){
