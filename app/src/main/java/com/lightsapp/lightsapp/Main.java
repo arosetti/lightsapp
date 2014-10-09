@@ -24,29 +24,9 @@ import java.util.Locale;
 public class Main extends Activity {
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
-    private Camera mCamera;
+    LightRunnable mLight;
 
-    public void mySleep(int t)
-    {
-        try {
-            Thread.sleep(t);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void flash(int tOn) {
-        Camera.Parameters p = mCamera.getParameters();
-        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-        mCamera.setParameters(p);
-        mCamera.startPreview();
-        mySleep(tOn);
-        p = mCamera.getParameters();
-        p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-        mCamera.setParameters(p);
-        mCamera.stopPreview();
-    }
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,32 +35,6 @@ public class Main extends Activity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        mCamera = Camera.open();
-
-        Thread thread = new Thread()
-        {
-            @Override
-            public void run() {
-                MorseCodeConverter mMorse = new MorseCodeConverter();
-
-                long[] pattern;
-                pattern = mMorse.pattern("SOS");
-
-                while(true) {
-                    for (int i=0; i<pattern.length; i++) {
-                        if (i % 2 != 0) {
-                            flash((int) pattern[i]);
-                        }
-                        else
-                            mySleep((int) pattern[i]);
-                    }
-
-                }
-            }
-        };
-
-        thread.start();
 
         setContentView(R.layout.fragment_main);
 
@@ -97,22 +51,21 @@ public class Main extends Activity {
 
                         TextView mTextView = (TextView) findViewById(R.id.section_label);
                         mTextView.setText(mMorse.getString(text));
+                        mLight.setString(text);
+                        mLight.start(); // troiaio
                     }
                 });
+
+        mLight = new LightRunnable("sos");
     }
 
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
-
-        if (mCamera != null)
-        {
-            mCamera.release();
-        }
+        mLight.stop();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -129,12 +82,6 @@ public class Main extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -143,14 +90,11 @@ public class Main extends Activity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return 3;
         }
 
@@ -169,20 +113,10 @@ public class Main extends Activity {
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
+
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
