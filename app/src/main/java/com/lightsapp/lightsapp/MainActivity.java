@@ -3,6 +3,7 @@ package com.lightsapp.lightsapp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -10,24 +11,27 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.lightsapp.camera.CameraPreview;
 import com.lightsapp.morse.MorseCodeConverter;
 
 import java.util.Locale;
 
 
-public class Main extends Activity {
+public class MainActivity extends Activity {
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     LightRunnable mLight;
 
+    private Camera mCamera;
+    private CameraPreview mPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,30 +44,42 @@ public class Main extends Activity {
 
         setContentView(R.layout.fragment_main);
 
-        Button mButton = (Button)findViewById(R.id.button);
+        mLight = new LightRunnable(mCamera, "sos");
+        mLight.start();
+
+        TextView mTextView = (TextView) findViewById(R.id.txt_status);
+        mTextView.setText("idle");
+
+        Button mButton = (Button)findViewById(R.id.button_tx);
         mButton.setOnClickListener(
                 new View.OnClickListener()
                 {
                     public void onClick(View view)
                     {
-                        EditText mEdit = (EditText) findViewById(R.id.editText);
+                        EditText mEdit = (EditText) findViewById(R.id.edit_tx);
                         String text = mEdit.getText().toString();
 
                         MorseCodeConverter mMorse = new MorseCodeConverter();
 
-                        TextView mTextView = (TextView) findViewById(R.id.section_label);
+                        TextView mTextView = (TextView) findViewById(R.id.txt_tx);
                         mTextView.setText(mMorse.getString(text));
                         mLight.setString(text);
-                        mLight.start();
+                        //mLight.activate();
                     }
                 });
 
-        mLight = new LightRunnable("sos");
+        mCamera = Camera.open();
+
+        mPreview = new CameraPreview(this, mCamera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
     }
 
     protected void onStop() {
         super.onStop();
         mLight.stop();
+        if (mCamera != null)
+            mCamera.release();
     }
 
     @Override

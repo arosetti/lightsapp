@@ -22,17 +22,15 @@ public class LightRunnable implements Runnable {
 
     MorseCodeConverter mMorse;
 
-    public LightRunnable(String data) {
+    public LightRunnable(Camera cam, String data) {
         lock = new ReentrantLock(true);
         started = lock.newCondition();
         stopped = lock.newCondition();
 
         this.data = data;
-        mCamera = Camera.open(); // TODO throw error.
+        mCamera = cam;
         mMorse = new MorseCodeConverter(); // TODO pass reference of upper object in constructor
 
-        tid = new Thread(this);
-        tid.start();
     }
 
     private void flash(int tOn) {
@@ -56,6 +54,11 @@ public class LightRunnable implements Runnable {
     }
 
     public void start() {
+        tid = new Thread(this);
+        tid.start();
+    }
+
+    public void activate() {
         try {
             lock.lock();
             while(status)
@@ -117,7 +120,5 @@ public class LightRunnable implements Runnable {
     public void stop()
     {
         tid.interrupt();
-        if (mCamera != null)
-            mCamera.release();
-     }
+    }
 }
