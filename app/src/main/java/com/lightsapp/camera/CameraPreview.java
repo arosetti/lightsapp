@@ -17,6 +17,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         super(context);
         mCamera = camera;
 
+        mCamera.setDisplayOrientation(90);
+        Camera.Parameters params = mCamera.getParameters();
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        mCamera.setParameters(params);
+
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         mHolder = getHolder();
@@ -55,9 +60,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             // ignore: tried to stop a non-existent preview
         }
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
@@ -68,13 +70,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+    private boolean hasCamera(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
+    private boolean hasFlash(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 }

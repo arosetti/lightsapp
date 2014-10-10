@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.fragment_main);
 
+        mCamera = Camera.open();
+
         mLight = new LightRunnable(mCamera, "sos");
         mLight.start();
 
@@ -64,11 +66,9 @@ public class MainActivity extends Activity {
                         TextView mTextView = (TextView) findViewById(R.id.txt_tx);
                         mTextView.setText(mMorse.getString(text));
                         mLight.setString(text);
-                        //mLight.activate();
+                        mLight.activate();
                     }
                 });
-
-        mCamera = Camera.open();
 
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);

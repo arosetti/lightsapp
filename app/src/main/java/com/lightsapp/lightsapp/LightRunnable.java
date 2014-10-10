@@ -22,13 +22,13 @@ public class LightRunnable implements Runnable {
 
     MorseCodeConverter mMorse;
 
-    public LightRunnable(Camera cam, String data) {
+    public LightRunnable(Camera camera, String data) {
         lock = new ReentrantLock(true);
         started = lock.newCondition();
         stopped = lock.newCondition();
 
         this.data = data;
-        mCamera = cam;
+        mCamera = camera;
         mMorse = new MorseCodeConverter(); // TODO pass reference of upper object in constructor
 
     }
@@ -37,14 +37,14 @@ public class LightRunnable implements Runnable {
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
-        mCamera.startPreview();
+        //mCamera.startPreview();
         try {
             Thread.sleep(tOn);
         } catch (InterruptedException e) {}
         p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(p);
-        mCamera.stopPreview();
+        //mCamera.stopPreview();
     }
 
     public void setString(String str)
