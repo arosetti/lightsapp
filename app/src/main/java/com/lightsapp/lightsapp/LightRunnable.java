@@ -4,9 +4,17 @@ import android.hardware.Camera;
 
 import com.lightsapp.morse.MorseCodeConverter;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class LightRunnable implements Runnable {
-    private Thread tid;
+    private final Lock lock;
+    private final Condition started;
+    private final Condition stopped;
     private boolean status = false;
+
+    private Thread tid;
     private Camera mCamera;
 
     private volatile String data;
@@ -15,9 +23,16 @@ public class LightRunnable implements Runnable {
     MorseCodeConverter mMorse;
 
     public LightRunnable(String data) {
+        lock = new ReentrantLock(true);
+        started = lock.newCondition();
+        stopped = lock.newCondition();
+
         this.data = data;
         mCamera = Camera.open(); // TODO throw error.
         mMorse = new MorseCodeConverter(); // TODO pass reference of upper object in constructor
+
+        tid = new Thread(this);
+        tid.start();
     }
 
     private void flash(int tOn) {
@@ -41,11 +56,19 @@ public class LightRunnable implements Runnable {
     }
 
     public void start() {
-        if (status)
-            return;
-        tid = new Thread(this);
-        tid.start();
-        status = true;
+        try {
+            lock.lock();
+            while(status)
+                stopped.await();
+            status = true;
+            started.signal();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     public void run() {
@@ -54,21 +77,22 @@ public class LightRunnable implements Runnable {
         while(true) {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
-                    // TODO stop to a semaphore
-                    if (status)
-                        for (int i=0; i < pattern.length; i++) {
-                            if (!status)
-                                break;
-                            if (i % 2 != 0) {
-                                flash((int) pattern[i]);
-                            }
-                            else
-                                Thread.sleep(pattern[i]);
+                    lock.lock();
+                    while(!status)
+                        started.await();
+                    for (int i=0; i < pattern.length; i++) {
+                        if (!status)
+                            break;
+                        if (i % 2 != 0) {
+                            flash((int) pattern[i]);
                         }
-                        // TODO attendere una nuova parola prima di un nuovo giro?
-                    else {
-                        Thread.sleep(3000);
+                        else
+                            Thread.sleep(pattern[i]);
                     }
+                    status = false;
+                    stopped.signal();
+                    lock.unlock();
+                    // TODO attendere una nuova parola prima di un nuovo giro?
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -76,9 +100,18 @@ public class LightRunnable implements Runnable {
         }
     }
 
-    public void pause()
+    public void pause() // TODO 100% not working :D
     {
-        status = false;
+        try {
+            lock.lock();
+            while(!status)
+                started.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     public void stop()
