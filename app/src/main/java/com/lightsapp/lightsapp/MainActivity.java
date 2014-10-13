@@ -6,6 +6,8 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -26,13 +28,27 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity {
-    SectionsPagerAdapter mSectionsPagerAdapter;
-    ViewPager mViewPager;
-    LightRunnable mLight;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+    private TextView mTextViewMessage;
+
+    private LightRunnable mLight;
     //FrameAnalyzerRunnable mFrame;
 
     private Camera mCamera;
     private CameraPreview mPreview;
+
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            if (mTextViewMessage != null) {
+                mTextViewMessage = (TextView) findViewById(R.id.txt_status);
+                mTextViewMessage.setText((String) msg.getData().get("message")); // yep that's a String
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +66,8 @@ public class MainActivity extends Activity {
         mLight = new LightRunnable(mCamera, "sos");
         mLight.start();
 
-        TextView mTextView = (TextView) findViewById(R.id.txt_status);
-        mTextView.setText("idle");
+        mTextViewMessage = (TextView) findViewById(R.id.txt_status);
+        mTextViewMessage.setText("idle");
 
         Button mButton = (Button)findViewById(R.id.button_tx);
         mButton.setOnClickListener(
@@ -71,7 +87,7 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        mPreview = new CameraPreview(this, mCamera);
+        mPreview = new CameraPreview(this, mCamera, mHandler);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
 
@@ -89,6 +105,7 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         mLight.stop();
+        // mPreview. TODO kil prev class
         if (mCamera != null)
             mCamera.release();
     }
