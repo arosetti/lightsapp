@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.camera;
 
 import android.hardware.Camera;
 

@@ -14,6 +14,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.io.ByteArrayOutputStream;
@@ -26,7 +28,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private int PreviewSizeWidth;
     private int PreviewSizeHeight;
     private long timestamp;
-    //private List<Frames> frames; // list of frames:= {timestamp, Y sum }
+    private List<LFrame> lframes;
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
@@ -35,6 +37,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        timestamp = System.currentTimeMillis();
+        lframes = new ArrayList<LFrame>();
     }
 
     @Override
@@ -42,12 +46,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters p = camera.getParameters();
         int width = p.getPreviewSize().width;
         int height = p.getPreviewSize().height;
+        long luminance = 0;
+        long delta;
 
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
 
-        totalLuminance(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        luminance = totalLuminance(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        delta = (System.currentTimeMillis() - timestamp);
+        LFrame lf = new LFrame(delta, luminance);
+        lframes.add(lf);
+
+        timestamp = System.currentTimeMillis();
+        Log.v("CameraTest", "Frame collected -> Lum = " + luminance + " | Delta = " + delta );
+        Log.v("CameraTest", "Frames collected -> " + lframes.size() );
 
         /*
         FileOutputStream out;
@@ -60,15 +73,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             return;
         }
         */
-
-        Log.v("CameraTest", "Frame Collected -> Time Gap = " + (System.currentTimeMillis() - timestamp));
-        timestamp = System.currentTimeMillis();
+        saveLFrames();
     }
 
-    public void totalLuminance(byte[] data, int width, int height)
+    private void saveLFrames(){
+        try {
+            String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+            FileWriter writer = new FileWriter(baseDir + File.separator + "data.txt");
+            writer.write(lframes.toString());
+            writer.close();
+
+        } catch (Exception e) {
+            Log.e("CameraTest", "Error saving frames");
+            return;
+        }
+    }
+
+    private long totalLuminance(byte[] data, int width, int height)
     {
         final int frameSize = width * height;
-        long ysum = 0;
+        long luminance = 0;
 
         for (int j = 0, yp = 0; j < height; j++) {
             int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
@@ -81,11 +105,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     u = (0xff & data[uvp++]) - 128;
                 }
 
-                ysum += (long) y;
+                luminance += (long) y;
             }
         }
 
-        Log.v("CameraTest", "Frame Ysum = " + ysum);
+        return luminance;
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
