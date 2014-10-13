@@ -12,6 +12,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import java.util.List;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -88,7 +89,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         mCamera.setDisplayOrientation(90);
         Camera.Parameters params = mCamera.getParameters();
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        List<String> focusModes = params.getSupportedFocusModes();
+        if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
+        {
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        }
         params.setPreviewFrameRate(30);
         params.setPreviewFpsRange(15000,30000);
         //params.setPreviewSize(PreviewSizeWidth, PreviewSizeHeight);
