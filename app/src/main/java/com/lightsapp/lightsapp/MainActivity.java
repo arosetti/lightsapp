@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +33,10 @@ public class MainActivity extends Activity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
+    private TextView mTextViewMorse;
+
+    private MorseConverter mMorse;
+    private String mStrMorse;
 
     private LightController mLight;
     FrameAnalyzer mFrame;
@@ -44,9 +49,16 @@ public class MainActivity extends Activity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            if (mTextViewMessage != null) {
+            if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                 mTextViewMessage = (TextView) findViewById(R.id.txt_status);
                 mTextViewMessage.setText((String) msg.getData().get("message")); // yep that's a String
+            }
+
+            if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
+                String str1 = (String) msg.getData().get("progress");
+                String str2 = mMorse.getString(mStrMorse);
+                String text = "<font color='red'>" + str1 + "</font> <font color='black'>" + str2 + "</font>.";
+                mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
             }
         }
     };
@@ -77,13 +89,13 @@ public class MainActivity extends Activity {
                     public void onClick(View view)
                     {
                         EditText mEdit = (EditText) findViewById(R.id.edit_tx);
-                        String text = mEdit.getText().toString();
+                        mStrMorse = mEdit.getText().toString();
 
-                        MorseConverter mMorse = new MorseConverter();
+                        mMorse = new MorseConverter();
 
-                        TextView mTextView = (TextView) findViewById(R.id.txt_tx);
-                        mTextView.setText(mMorse.getString(text));
-                        mLight.setString(text);
+                        mTextViewMorse = (TextView) findViewById(R.id.txt_tx);
+                        mTextViewMorse.setText(mMorse.getString(mStrMorse));
+                        mLight.setString(mStrMorse);
                         mLight.activate();
                     }
                 });

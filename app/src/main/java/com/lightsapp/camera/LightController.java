@@ -27,11 +27,11 @@ public class LightController implements Runnable {
     MorseConverter mMorse;
 
     // TODO derive from class implementing this and handler class.
-    private void signalUI(String str) {
-        if (!str.equals(null) && !str.equals("")) {
+    private void signalUI(String key, String str) {
+        if (str != null && key != null && !key.equals("")) {
             Message msg = mHandler.obtainMessage();
             Bundle b = new Bundle();
-            b.putString("message", str);
+            b.putString(key, str);
             msg.setData(b);
             mHandler.sendMessage(msg);
         }
@@ -98,7 +98,7 @@ public class LightController implements Runnable {
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
                     while(!status) {
-                        signalUI("idle");
+                        signalUI("message", "idle");
                         started.await();
                     }
                     for (int i=0; i < pattern.length; i++) {
@@ -106,15 +106,16 @@ public class LightController implements Runnable {
                             break;
                         if (i % 2 != 0) {
                             if (pattern[i] > mMorse.DOT)
-                                signalUI("DASH");
+                                signalUI("message", "DASH");
                             else
-                                signalUI("DOT");
+                                signalUI("message", "DOT");
                             flash((int) pattern[i]);
                         }
                         else {
-                            signalUI("...");
+                            signalUI("message", "...");
                             Thread.sleep(pattern[i]);
                         }
+                        signalUI("progress", (100 * (i+1)) / pattern.length + "%");
                     }
 
                     status = false;

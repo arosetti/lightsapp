@@ -107,9 +107,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             sum += lframes.get(i).luminance;
         }
 
-        if (min_lum == 0)
-            signalUI("lum is zero");
-
         Log.v("CameraTest", "Luminance -> max " + max_lum + " | min = " + min_lum + " | avg " + sum / lframes.size());
     }
 
