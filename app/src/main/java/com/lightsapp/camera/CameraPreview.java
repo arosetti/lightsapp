@@ -8,10 +8,13 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.File;
 import java.util.List;
 
 import java.io.ByteArrayOutputStream;
@@ -47,7 +50,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         FileOutputStream out;
         try {
-            out = new FileOutputStream("/sdcard/data.png");
+            String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+            out = new FileOutputStream(baseDir + File.separator + "data.png");
             yuvimage.compressToJpeg(rect, 90, out);
         } catch (Exception e) {
             Log.e("CameraTest", "Error saving image");
@@ -70,10 +74,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mCamera.setPreviewCallback(null);
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
+        //mCamera.setPreviewCallback(null);
+        //mCamera.stopPreview();
+        //mCamera.release();
+        //mCamera = null;
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
