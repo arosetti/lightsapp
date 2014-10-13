@@ -5,10 +5,14 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +26,9 @@ import android.widget.TextView;
 import com.lightsapp.camera.CameraPreview;
 import com.lightsapp.morse.MorseCodeConverter;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Locale;
 
 
@@ -29,6 +36,7 @@ public class MainActivity extends Activity {
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     LightRunnable mLight;
+    //FrameAnalyzerRunnable mFrame;
 
     private Camera mCamera;
     private CameraPreview mPreview;
@@ -73,6 +81,16 @@ public class MainActivity extends Activity {
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
+
+        //mFrame = new FrameAnalyzerRunnable(preview);
+        //mFrame.start();
+        //mFrame.activate();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (this.mCamera == null)
+            this.mCamera = mCamera.open();
     }
 
     protected void onStop() {
