@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Environment;
-import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -18,16 +17,16 @@ import java.io.File;
 import java.util.List;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    int PreviewSizeWidth;
-    int PreviewSizeHeight;
+    private int PreviewSizeWidth;
+    private int PreviewSizeHeight;
     private long timestamp;
+    //private List<Frames> frames; // list of frames:= {timestamp, Y sum }
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
@@ -48,6 +47,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
 
+        totalLuminance(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+
+        /*
         FileOutputStream out;
         try {
             String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -57,18 +59,43 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.e("CameraTest", "Error saving image");
             return;
         }
+        */
+
         Log.v("CameraTest", "Frame Collected -> Time Gap = " + (System.currentTimeMillis() - timestamp));
         timestamp = System.currentTimeMillis();
     }
 
+    public void totalLuminance(byte[] data, int width, int height)
+    {
+        final int frameSize = width * height;
+        long ysum = 0;
+
+        for (int j = 0, yp = 0; j < height; j++) {
+            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
+            for (int i = 0; i < width; i++, yp++) {
+                int y = (0xff & ((int) data[yp])) - 16;
+                if (y < 0)
+                    y = 0;
+                if ((i & 1) == 0) {
+                    v = (0xff & data[uvp++]) - 128;
+                    u = (0xff & data[uvp++]) - 128;
+                }
+
+                ysum += (long) y;
+            }
+        }
+
+        Log.v("CameraTest", "Frame Ysum = " + ysum);
+    }
+
     public void surfaceCreated(SurfaceHolder holder) {
         try {
-            mCamera.setPreviewCallback(this);
+            //mCamera.setPreviewCallback(this);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
-            mCamera.release();
-            mCamera = null;
+            //mCamera.release();
+            //mCamera = null;
             Log.d("CameraPreview", "Error setting camera preview: " + e.getMessage());
         }
     }
