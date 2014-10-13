@@ -1,14 +1,17 @@
 package com.lightsapp.camera;
 
 import android.hardware.Camera;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
-import com.lightsapp.morse.MorseCodeConverter;
+import com.lightsapp.morse.MorseConverter;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LightRunnable implements Runnable {
+public class LightController implements Runnable {
     private final Lock lock;
     private final Condition started;
     private final Condition stopped;
@@ -16,20 +19,33 @@ public class LightRunnable implements Runnable {
 
     private Thread tid;
     private Camera mCamera;
+    private Handler mHandler;
 
     private volatile String data;
     private long[] pattern;
 
-    MorseCodeConverter mMorse;
+    MorseConverter mMorse;
 
-    public LightRunnable(Camera camera, String data) {
+    // TODO derive from class implementing this and handler class.
+    private void signalUI(String str) {
+        if (!str.equals(null) && !str.equals("")) {
+            Message msg = mHandler.obtainMessage();
+            Bundle b = new Bundle();
+            b.putString("message", str);
+            msg.setData(b);
+            mHandler.sendMessage(msg);
+        }
+    }
+
+    public LightController(Camera camera, Handler handler) {
         lock = new ReentrantLock(true);
         started = lock.newCondition();
         stopped = lock.newCondition();
 
-        this.data = data;
+        data = "";
         mCamera = camera;
-        mMorse = new MorseCodeConverter(); // TODO pass reference of upper object in constructor
+        mHandler = handler;
+        mMorse = new MorseConverter(); // TODO pass reference of upper object in constructor
 
     }
 
@@ -81,17 +97,26 @@ public class LightRunnable implements Runnable {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
-                    while(!status)
+                    while(!status) {
+                        signalUI("idle");
                         started.await();
+                    }
                     for (int i=0; i < pattern.length; i++) {
                         if (!status)
                             break;
                         if (i % 2 != 0) {
+                            if (pattern[i] > mMorse.DOT)
+                                signalUI("DASH");
+                            else
+                                signalUI("DOT");
                             flash((int) pattern[i]);
                         }
-                        else
+                        else {
+                            signalUI("...");
                             Thread.sleep(pattern[i]);
+                        }
                     }
+
                     status = false;
                     stopped.signal();
                     lock.unlock();

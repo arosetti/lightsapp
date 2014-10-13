@@ -22,7 +22,7 @@ import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
+public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private Handler mHandler;
@@ -33,7 +33,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private long timestamp;
     private List<Frame> lframes;
 
-    public CameraPreview(Context context, Camera camera, Handler handler) {
+    public CameraController(Context context, Camera camera, Handler handler) {
         super(context);
         mCamera = camera;
         mHandler = handler;

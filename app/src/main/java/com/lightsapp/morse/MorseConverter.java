@@ -16,13 +16,13 @@
 
 package com.lightsapp.morse;
 
-public class MorseCodeConverter {
-    private static final long SPEED_BASE = 250;
-    static final long DOT = SPEED_BASE;
-    static final long DASH = SPEED_BASE * 3;
-    static final long GAP = SPEED_BASE;
-    static final long LETTER_GAP = SPEED_BASE * 3;
-    static final long WORD_GAP = SPEED_BASE * 7;
+public class MorseConverter {
+    public static final long SPEED_BASE = 250;
+    public static final long DOT = SPEED_BASE;
+    public static final long DASH = SPEED_BASE * 3;
+    public static final long GAP = SPEED_BASE;
+    public static final long LETTER_GAP = SPEED_BASE * 3;
+    public static final long WORD_GAP = SPEED_BASE * 7;
 
     /** The characters from 'A' to 'Z' */
     private static final long[][] LETTERS = new long[][] {

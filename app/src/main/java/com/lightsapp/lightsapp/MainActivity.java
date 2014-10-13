@@ -20,9 +20,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.lightsapp.camera.CameraPreview;
-import com.lightsapp.camera.LightRunnable;
-import com.lightsapp.morse.MorseCodeConverter;
+import com.lightsapp.camera.CameraController;
+import com.lightsapp.camera.FrameAnalyzer;
+import com.lightsapp.camera.LightController;
+import com.lightsapp.morse.MorseConverter;
 
 import java.util.Locale;
 
@@ -32,11 +33,11 @@ public class MainActivity extends Activity {
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
 
-    private LightRunnable mLight;
-    //FrameAnalyzerRunnable mFrame;
+    private LightController mLight;
+    FrameAnalyzer mFrame;
 
     private Camera mCamera;
-    private CameraPreview mPreview;
+    private CameraController mPreview;
 
 
     private Handler mHandler = new Handler() {
@@ -63,7 +64,7 @@ public class MainActivity extends Activity {
 
         mCamera = Camera.open();
 
-        mLight = new LightRunnable(mCamera, "sos");
+        mLight = new LightController(mCamera, mHandler);
         mLight.start();
 
         mTextViewMessage = (TextView) findViewById(R.id.txt_status);
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
                         EditText mEdit = (EditText) findViewById(R.id.edit_tx);
                         String text = mEdit.getText().toString();
 
-                        MorseCodeConverter mMorse = new MorseCodeConverter();
+                        MorseConverter mMorse = new MorseConverter();
 
                         TextView mTextView = (TextView) findViewById(R.id.txt_tx);
                         mTextView.setText(mMorse.getString(text));
@@ -87,13 +88,13 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        mPreview = new CameraPreview(this, mCamera, mHandler);
+        mPreview = new CameraController(this, mCamera, mHandler);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
 
-        //mFrame = new FrameAnalyzerRunnable(preview);
-        //mFrame.start();
-        //mFrame.activate();
+        mFrame = new FrameAnalyzer(preview);
+        mFrame.start();
+        mFrame.activate();
     }
 
     protected void onResume() {
