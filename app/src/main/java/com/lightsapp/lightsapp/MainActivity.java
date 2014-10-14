@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -34,6 +37,9 @@ public class MainActivity extends Activity {
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
     private TextView mTextViewMorse;
+    private EditText mEdit;
+
+    private SharedPreferences mPrefs;
 
     private MorseConverter mMorse;
     private String mStrMorse;
@@ -54,18 +60,21 @@ public class MainActivity extends Activity {
             }
 
             if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
-                int p = (Integer) msg.getData().get("progress");
-                int cut = (p * mMorse.getString(mStrMorse).length() ) / 100;
-                int len = mMorse.getString(mStrMorse).length();
-                String mstr = mMorse.getString(mStrMorse);
-                String str = cut + "/" + len + "", str1 = "", str2 = "";
+                String str, str1, str2, mstr = mMorse.getString(mStrMorse);
+                int len, cut = (Integer) msg.getData().get("progress");
+
+                len = mstr.length();
+                str = String.format("%03d%% |", 100 * cut / len);
+                str1 = "";
+                str2 = "";
+
                 try {
                     str1 = mstr.substring(0, cut);
-                } catch (IndexOutOfBoundsException e) {}
+                } catch (IndexOutOfBoundsException e) { }
                 try {
                     str2 = mstr.substring(cut);
-                } catch (IndexOutOfBoundsException e) {}
-                String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>.";
+                } catch (IndexOutOfBoundsException e) { }
+                String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>";
                 mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
             }
         }
@@ -76,6 +85,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -84,23 +95,24 @@ public class MainActivity extends Activity {
 
         mCamera = Camera.open();
 
-        mLight = new LightController(mCamera, mHandler);
+        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
+
+        mLight = new LightController(mMorse, mCamera, mHandler);
         mLight.start();
 
         mTextViewMessage = (TextView) findViewById(R.id.txt_status);
         mTextViewMessage.setText("idle");
 
-        Button mButton = (Button)findViewById(R.id.button_tx);
+        mEdit = (EditText) findViewById(R.id.edit_tx);
+        mEdit.setText(mPrefs.getString("default_text", "sos"));
+
+        Button mButton = (Button)findViewById(R.id.button_tx); // TODO on change listener. realtime morse text output
         mButton.setOnClickListener(
                 new View.OnClickListener()
                 {
                     public void onClick(View view)
                     {
-                        EditText mEdit = (EditText) findViewById(R.id.edit_tx);
                         mStrMorse = mEdit.getText().toString();
-
-                        mMorse = new MorseConverter();
-
                         mTextViewMorse = (TextView) findViewById(R.id.txt_tx);
                         mTextViewMorse.setText(mMorse.getString(mStrMorse));
                         mLight.setString(mStrMorse);
@@ -115,16 +127,23 @@ public class MainActivity extends Activity {
 
     protected void onResume() {
         super.onResume();
-        if (this.mCamera == null)
+        if (this.mCamera == null) {
             this.mCamera = mCamera.open();
+            mLight.setCamera(mCamera);
+            mPreview = new CameraController(this, mCamera, mHandler);
+            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            preview.addView(mPreview);
+        }
     }
 
     protected void onStop() {
         super.onStop();
         mLight.stop();
         // mPreview. TODO kil prev class
-        if (mCamera != null)
+        if (mCamera != null) {
             mCamera.release();
+            mCamera = null;
+        }
     }
 
     @Override
@@ -197,5 +216,4 @@ public class MainActivity extends Activity {
             return rootView;
         }
     }
-
 }

@@ -17,10 +17,10 @@
         android:maxLines="1" />
 
     <ListPreference
-        android:key="frequency"
-        android:title="@string/pref_title_frequency"
-        android:entries="@array/pref_frequency_titles"
-        android:entryValues="@array/pref_frequency_values"
+        android:key="speed"
+        android:title="@string/pref_title_speed"
+        android:entries="@array/pref_speed_titles"
+        android:entryValues="@array/pref_speed_values"
         android:defaultValue="300"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />

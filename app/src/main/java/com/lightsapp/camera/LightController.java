@@ -12,15 +12,16 @@ public class LightController extends MyRunnable {
     private MyHandler myHandler;
     private volatile String data;
     private long[] pattern;
+    private int progress;
 
     MorseConverter mMorse;
 
-    public LightController(Camera camera, Handler handler) {
+    public LightController(MorseConverter morse, Camera camera, Handler handler) {
         super(false);
         myHandler = new MyHandler(handler);
         data = "";
         mCamera = camera;
-        mMorse = new MorseConverter(); // TODO pass reference of upper object in constructor
+        mMorse = morse;
     }
 
     private void flash(int tOn) {
@@ -43,30 +44,41 @@ public class LightController extends MyRunnable {
         pattern = mMorse.pattern(data);
     }
 
+    public void setCamera(Camera camera) {
+        mCamera = camera;
+    }
+
     @Override
     public void setup() {
-        pattern = mMorse.pattern(data);
+
     }
 
     @Override
     public void main() {
-        for (int i=0; i < pattern.length; i++) {
-            //if (!status)
-            //    break;
+        pattern = mMorse.pattern(data);
+        progress = 0;
+        for (int i = 0; i < pattern.length; i++) {
+            if (!getStatus())
+                break;
             if (i % 2 != 0) {
-                if (pattern[i] > mMorse.DOT)
+                if (pattern[i] > mMorse.get("DOT"))
                     myHandler.signalStr("message", "DASH");
                 else
                     myHandler.signalStr("message", "DOT");
                 flash((int) pattern[i]);
+                progress++;
             }
             else {
                 myHandler.signalStr("message", "...");
                 try {
                     Thread.sleep(pattern[i]);
                 } catch (InterruptedException e) {}
+                if (pattern[i] == mMorse.get("LETTER_GAP") )
+                    progress++;
+                else if (pattern[i] == mMorse.get("WORD_GAP"))
+                    progress += 3;
             }
-            myHandler.signalInt("progress", (100 * (i+1)) / pattern.length);
+            myHandler.signalInt("progress", progress);
         }
     }
 }

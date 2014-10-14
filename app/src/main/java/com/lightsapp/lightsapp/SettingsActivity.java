@@ -44,7 +44,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 
         bindPreferenceSummaryToValue(findPreference("default_text"));
-        bindPreferenceSummaryToValue(findPreference("frequency"));
+        bindPreferenceSummaryToValue(findPreference("speed"));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class SettingsActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
 
             bindPreferenceSummaryToValue(findPreference("default_text"));
-            bindPreferenceSummaryToValue(findPreference("frequency"));
+            bindPreferenceSummaryToValue(findPreference("speed"));
         }
     }
 }

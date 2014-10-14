@@ -9,23 +9,23 @@
     <string name="pref_title_chkbox">checkbox</string>
     <string name="pref_description_chkbox">example checkbox</string>
 
-    <string name="pref_title_default_text">Default text</string>
-    <string name="pref_default_default_text">SOS</string>
+    <string name="pref_title_default_text">Default morse text</string>
+    <string name="pref_default_default_text">sos</string>
 
-    <string name="pref_title_frequency">Frequency</string>
-    <string-array name="pref_frequency_titles">
-        <item>1000</item>
-        <item>900</item>
-        <item>800</item>
-        <item>700</item>
-        <item>600</item>
-        <item>500</item>
-        <item>400</item>
-        <item>300</item>
-        <item>200</item>
-        <item>100</item>
+    <string name="pref_title_speed">Base Speed</string>
+    <string-array name="pref_speed_titles">
+        <item>1s</item>
+        <item>900ms</item>
+        <item>800ms</item>
+        <item>700ms</item>
+        <item>600ms</item>
+        <item>500ms</item>
+        <item>400ms</item>
+        <item>300ms</item>
+        <item>200ms</item>
+        <item>100ms</item>
     </string-array>
-    <string-array name="pref_frequency_values">
+    <string-array name="pref_speed_values">
         <item>1000</item>
         <item>900</item>
         <item>800</item>

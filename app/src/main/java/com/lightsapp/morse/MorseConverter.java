@@ -17,60 +17,91 @@
 package com.lightsapp.morse;
 
 public class MorseConverter {
-    public static final long SPEED_BASE = 250;
-    public static final long DOT = SPEED_BASE;
-    public static final long DASH = SPEED_BASE * 3;
-    public static final long GAP = SPEED_BASE;
-    public static final long LETTER_GAP = SPEED_BASE * 3;
-    public static final long WORD_GAP = SPEED_BASE * 7;
+    private long SPEED_BASE;
+    private long DOT;
+    private long DASH;
+    private long GAP;
+    private long LETTER_GAP;
+    private long WORD_GAP;
 
-    /** The characters from 'A' to 'Z' */
-    private static final long[][] LETTERS = new long[][] {
-        /* A */ new long[] { DOT, GAP, DASH },
-        /* B */ new long[] { DASH, GAP, DOT, GAP, DOT, GAP, DOT },
-        /* C */ new long[] { DASH, GAP, DOT, GAP, DASH, GAP, DOT },
-        /* D */ new long[] { DASH, GAP, DOT, GAP, DOT },
-        /* E */ new long[] { DOT },
-        /* F */ new long[] { DOT, GAP, DOT, GAP, DASH, GAP, DOT },
-        /* G */ new long[] { DASH, GAP, DASH, GAP, DOT },
-        /* H */ new long[] { DOT, GAP, DOT, GAP, DOT, GAP, DOT },
-        /* I */ new long[] { DOT, GAP, DOT },
-        /* J */ new long[] { DOT, GAP, DASH, GAP, DASH, GAP, DASH },
-        /* K */ new long[] { DASH, GAP, DOT, GAP, DASH },
-        /* L */ new long[] { DOT, GAP, DASH, GAP, DOT, GAP, DOT },
-        /* M */ new long[] { DASH, GAP, DASH },
-        /* N */ new long[] { DASH, GAP, DOT },
-        /* O */ new long[] { DASH, GAP, DASH, GAP, DASH },
-        /* P */ new long[] { DOT, GAP, DASH, GAP, DASH, GAP, DOT },
-        /* Q */ new long[] { DASH, GAP, DASH, GAP, DOT, GAP, DASH },
-        /* R */ new long[] { DOT, GAP, DASH, GAP, DOT },
-        /* S */ new long[] { DOT, GAP, DOT, GAP, DOT },
-        /* T */ new long[] { DASH },
-        /* U */ new long[] { DOT, GAP, DOT, GAP, DASH },
-        /* V */ new long[] { DOT, GAP, DOT, GAP, DOT, GAP, DASH },
-        /* W */ new long[] { DOT, GAP, DASH, GAP, DASH },
-        /* X */ new long[] { DASH, GAP, DOT, GAP, DOT, GAP, DASH },
-        /* Y */ new long[] { DASH, GAP, DOT, GAP, DASH, GAP, DASH },
-        /* Z */ new long[] { DASH, GAP, DASH, GAP, DOT, GAP, DOT },
-    };
+    private long[][] LETTERS;
+    private long[][] NUMBERS;
+    private long[] ERROR_GAP;
 
-    /** The characters from '0' to '9' */
-    private static final long[][] NUMBERS = new long[][] {
-        /* 0 */ new long[] { DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH },
-        /* 1 */ new long[] { DOT, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH },
-        /* 2 */ new long[] { DOT, GAP, DOT, GAP, DASH, GAP, DASH, GAP, DASH },
-        /* 3 */ new long[] { DOT, GAP, DOT, GAP, DOT, GAP, DASH, GAP, DASH },
-        /* 4 */ new long[] { DOT, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DASH },
-        /* 5 */ new long[] { DOT, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DOT },
-        /* 6 */ new long[] { DASH, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DOT },
-        /* 7 */ new long[] { DASH, GAP, DASH, GAP, DOT, GAP, DOT, GAP, DOT },
-        /* 8 */ new long[] { DASH, GAP, DASH, GAP, DASH, GAP, DOT, GAP, DOT },
-        /* 9 */ new long[] { DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DOT },
-    };
+    public void updateValues(long speed) {
+        DOT = SPEED_BASE = speed;
+        DASH = SPEED_BASE * 3;
+        GAP = SPEED_BASE;
+        LETTER_GAP = SPEED_BASE * 3;
+        WORD_GAP = SPEED_BASE * 7;
 
-    private static final long[] ERROR_GAP = new long[] { GAP };
+        /** The characters from 'A' to 'Z' */
+        LETTERS = new long[][]{
+        /* A */ new long[]{DOT, GAP, DASH},
+        /* B */ new long[]{DASH, GAP, DOT, GAP, DOT, GAP, DOT},
+        /* C */ new long[]{DASH, GAP, DOT, GAP, DASH, GAP, DOT},
+        /* D */ new long[]{DASH, GAP, DOT, GAP, DOT},
+        /* E */ new long[]{DOT},
+        /* F */ new long[]{DOT, GAP, DOT, GAP, DASH, GAP, DOT},
+        /* G */ new long[]{DASH, GAP, DASH, GAP, DOT},
+        /* H */ new long[]{DOT, GAP, DOT, GAP, DOT, GAP, DOT},
+        /* I */ new long[]{DOT, GAP, DOT},
+        /* J */ new long[]{DOT, GAP, DASH, GAP, DASH, GAP, DASH},
+        /* K */ new long[]{DASH, GAP, DOT, GAP, DASH},
+        /* L */ new long[]{DOT, GAP, DASH, GAP, DOT, GAP, DOT},
+        /* M */ new long[]{DASH, GAP, DASH},
+        /* N */ new long[]{DASH, GAP, DOT},
+        /* O */ new long[]{DASH, GAP, DASH, GAP, DASH},
+        /* P */ new long[]{DOT, GAP, DASH, GAP, DASH, GAP, DOT},
+        /* Q */ new long[]{DASH, GAP, DASH, GAP, DOT, GAP, DASH},
+        /* R */ new long[]{DOT, GAP, DASH, GAP, DOT},
+        /* S */ new long[]{DOT, GAP, DOT, GAP, DOT},
+        /* T */ new long[]{DASH},
+        /* U */ new long[]{DOT, GAP, DOT, GAP, DASH},
+        /* V */ new long[]{DOT, GAP, DOT, GAP, DOT, GAP, DASH},
+        /* W */ new long[]{DOT, GAP, DASH, GAP, DASH},
+        /* X */ new long[]{DASH, GAP, DOT, GAP, DOT, GAP, DASH},
+        /* Y */ new long[]{DASH, GAP, DOT, GAP, DASH, GAP, DASH},
+        /* Z */ new long[]{DASH, GAP, DASH, GAP, DOT, GAP, DOT},
+        };
 
-    static long[] pattern(char c) {
+        /** The characters from '0' to '9' */
+        NUMBERS = new long[][]{
+        /* 0 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH},
+        /* 1 */ new long[]{DOT, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH},
+        /* 2 */ new long[]{DOT, GAP, DOT, GAP, DASH, GAP, DASH, GAP, DASH},
+        /* 3 */ new long[]{DOT, GAP, DOT, GAP, DOT, GAP, DASH, GAP, DASH},
+        /* 4 */ new long[]{DOT, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DASH},
+        /* 5 */ new long[]{DOT, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DOT},
+        /* 6 */ new long[]{DASH, GAP, DOT, GAP, DOT, GAP, DOT, GAP, DOT},
+        /* 7 */ new long[]{DASH, GAP, DASH, GAP, DOT, GAP, DOT, GAP, DOT},
+        /* 8 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DOT, GAP, DOT},
+        /* 9 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DOT},
+        };
+
+        ERROR_GAP = new long[] { GAP };
+    }
+
+    public MorseConverter(int speed) {
+        updateValues(speed);
+    }
+
+    public long get(String val) {
+        if (val.equals("GAP"))
+            return GAP;
+        else if (val.equals("DASH"))
+            return DASH;
+        else if (val.equals("DOT"))
+            return DOT;
+        else if (val.equals("LETTER_GAP"))
+            return LETTER_GAP;
+        else if (val.equals("WORD_GAP"))
+            return WORD_GAP;
+        else
+            return GAP;
+    }
+
+    long[] pattern(char c) {
         if (c >= 'A' && c <= 'Z') {
             return LETTERS[c - 'A'];
         }
@@ -90,26 +121,18 @@ public class MorseConverter {
         String tmpStr = new String();
         for (int i = 0; i < l.length; i++) {
             if (i % 2 != 0) {
-                switch ((int) l[i]) {
-                    case (int) DOT:
-                        tmpStr = tmpStr.concat(".");
-                        break;
-                    case (int) DASH:
+                if (l[i] == DOT) {
+                    tmpStr = tmpStr.concat(".");
+                }
+                else if (l[i] == DASH) {
                         tmpStr = tmpStr.concat("-");
-                        break;
-                    default:
                 }
             } else {
-                switch ((int) l[i]) {
-                    case (int) GAP:
-                        break;
-                    case (int) LETTER_GAP:
-                        tmpStr = tmpStr.concat(" ");
-                        break;
-                    case (int) WORD_GAP:
-                        tmpStr = tmpStr.concat("   ");
-                        break;
-                    default:
+                if (l[i] == LETTER_GAP) {
+                    tmpStr = tmpStr.concat(" ");
+                }
+                else if (l[i] ==  WORD_GAP) {
+                    tmpStr = tmpStr.concat("   ");
                 }
             }
         }
