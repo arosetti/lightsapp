@@ -39,7 +39,6 @@ public class MainActivity extends Activity {
     private String mStrMorse;
 
     private LightController mLight;
-    FrameAnalyzer mFrame;
 
     private Camera mCamera;
     private CameraController mPreview;
@@ -103,10 +102,6 @@ public class MainActivity extends Activity {
         mPreview = new CameraController(this, mCamera, mHandler);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
-
-        mFrame = new FrameAnalyzer();
-        mFrame.start();
-        mFrame.activate();
     }
 
     protected void onResume() {
