@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
 
-        mFrame = new FrameAnalyzer(preview);
+        mFrame = new FrameAnalyzer();
         mFrame.start();
         mFrame.activate();
     }
