@@ -66,7 +66,7 @@ public class LightController extends MyRunnable {
                     Thread.sleep(pattern[i]);
                 } catch (InterruptedException e) {}
             }
-            myHandler.signalStr("progress", (100 * (i+1)) / pattern.length + "%");
+            myHandler.signalInt("progress", (100 * (i+1)) / pattern.length);
         }
     }
 }

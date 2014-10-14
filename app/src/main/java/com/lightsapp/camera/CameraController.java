@@ -72,8 +72,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (mCamera != null) {
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
+            //mCamera.setPreviewCallback(null);
+            //mCamera.stopPreview();
             //mCamera.release();
             //mCamera = null;
         }

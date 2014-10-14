@@ -10,7 +10,6 @@
     <string name="btn_rx">rx</string>
     <string name="btn_tx">tx</string>
     <string name="idle">...</string>
-    <string name="title_activity_main_activity2">MainActivity2</string>
     <string name="hello_world">Hello world!</string>
 
 </resources>

@@ -54,9 +54,18 @@ public class MainActivity extends Activity {
             }
 
             if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
-                String str1 = (String) msg.getData().get("progress");
-                String str2 = mMorse.getString(mStrMorse);
-                String text = "<font color='red'>" + str1 + "</font> <font color='black'>" + str2 + "</font>.";
+                int p = (Integer) msg.getData().get("progress");
+                int cut = (p * mMorse.getString(mStrMorse).length() ) / 100;
+                int len = mMorse.getString(mStrMorse).length();
+                String mstr = mMorse.getString(mStrMorse);
+                String str = cut + "/" + len + "", str1 = "", str2 = "";
+                try {
+                    str1 = mstr.substring(0, cut);
+                } catch (IndexOutOfBoundsException e) {}
+                try {
+                    str2 = mstr.substring(cut);
+                } catch (IndexOutOfBoundsException e) {}
+                String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>.";
                 mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
             }
         }
