@@ -3,8 +3,8 @@ package com.lightsapp.camera;
 import android.hardware.Camera;
 import android.os.Handler;
 
-import com.lightsapp.lightsapp.MyHandler;
-import com.lightsapp.lightsapp.MyRunnable;
+import com.lightsapp.core.MyHandler;
+import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
 
 public class LightController extends MyRunnable {

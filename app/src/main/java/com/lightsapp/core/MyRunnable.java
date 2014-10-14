@@ -1,4 +1,6 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.core;
+
+import android.util.Log;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -71,12 +73,13 @@ public abstract class MyRunnable implements Runnable {
                         status = false;
                         stopped.signal();
                     }
+                    lock.unlock();
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            finally {
-                lock.unlock();
+            catch (Exception e) {
+                Log.d("MyRunnable", e.getMessage());
             }
         }
     }

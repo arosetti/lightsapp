@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.core;
 
 import android.os.Bundle;
 import android.os.Handler;

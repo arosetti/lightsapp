@@ -6,19 +6,13 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.lightsapp.lightsapp.MyHandler;
+import com.lightsapp.core.MyHandler;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import java.io.ByteArrayOutputStream;
@@ -61,7 +55,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-        mFrameA.add(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -77,10 +71,12 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-        //mCamera.setPreviewCallback(null);
-        //mCamera.stopPreview();
-        //mCamera.release();
-        //mCamera = null;
+        if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            //mCamera.release();
+            //mCamera = null;
+        }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {

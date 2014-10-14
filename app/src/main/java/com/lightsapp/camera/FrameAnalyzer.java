@@ -1,27 +1,18 @@
 package com.lightsapp.camera;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
 
-import com.lightsapp.lightsapp.MyHandler;
-import com.lightsapp.lightsapp.MyRunnable;
+import com.lightsapp.core.MyHandler;
+import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class FrameAnalyzer extends MyRunnable {
     private Camera mCamera;
@@ -40,13 +31,13 @@ public class FrameAnalyzer extends MyRunnable {
     public void main() {
         try {
             Thread.sleep(100);
-            Log.v("TAG", "prova prova");
+            getFrameStats();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    private long totalLuminance(byte[] data, int width, int height)
+    private long getFrameLuminance(byte[] data, int width, int height)
     {
         final int frameSize = width * height;
         long luminance = 0;
@@ -69,11 +60,14 @@ public class FrameAnalyzer extends MyRunnable {
         return luminance;
     }
 
-    private void frameStats() {
+    private void getFrameStats() {
         /* calc max,min,avg */
         long max_lum = Long.MIN_VALUE;
         long min_lum = Long.MAX_VALUE;
         long sum = 0;
+
+        if (lframes.isEmpty())
+            return;
 
         for(int i = 0; i < lframes.size(); i++) {
             if (lframes.get(i).luminance > max_lum)
@@ -101,11 +95,11 @@ public class FrameAnalyzer extends MyRunnable {
         }
     }
 
-    public void add(byte[] data, int width, int height) {
+    public void addFrame(byte[] data, int width, int height) {
         long luminance = 0;
         long delta;
 
-        luminance = totalLuminance(data, width, height);
+        luminance = getFrameLuminance(data, width, height);
 
         if (timestamp != 0)
             delta = (System.currentTimeMillis() - timestamp);
@@ -118,7 +112,6 @@ public class FrameAnalyzer extends MyRunnable {
         timestamp = System.currentTimeMillis();
         Log.v("CameraTest", "Frame collected -> Lum = " + luminance + " | TimeDelta = " + delta );
         Log.v("CameraTest", "Frames collected -> " + lframes.size() );
-        frameStats();
         logFrame();
     }
 }
