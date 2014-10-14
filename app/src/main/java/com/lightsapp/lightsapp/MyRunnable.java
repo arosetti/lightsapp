@@ -27,6 +27,10 @@ public abstract class MyRunnable implements Runnable {
         return loop;
     }
 
+    public final boolean getStatus() {
+        return status;
+    }
+
     public final void start() {
         tid = new Thread(this);
         tid.start();
@@ -49,9 +53,11 @@ public abstract class MyRunnable implements Runnable {
         }
     }
 
+    public void setup() {}
     public void main() {}
 
     public final void run() {
+        setup();
         while (true) {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
