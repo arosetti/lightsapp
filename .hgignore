@@ -1,0 +1,7 @@
+syntax: glob
+.gradle/
+.idea/
+app/
+build/
+syntax: regexp
+lightsapp.iml
