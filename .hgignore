@@ -5,3 +5,5 @@ app/
 build/
 syntax: regexp
 lightsapp.iml
+R.java
+local.properties
