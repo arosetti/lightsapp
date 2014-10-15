@@ -2,7 +2,9 @@ package com.lightsapp.camera;
 
 import android.hardware.Camera;
 import android.os.Handler;
+import android.util.Log;
 
+import com.lightsapp.core.Beep;
 import com.lightsapp.core.MyHandler;
 import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
@@ -14,23 +16,45 @@ public class LightController extends MyRunnable {
     private volatile String data;
     private long[] pattern;
     private int progress;
+    private boolean sound;
 
-    MorseConverter mMorse;
+    private MorseConverter mMorse;
+    private Beep mBeep;
 
-    public LightController(MorseConverter morse, Camera camera, Handler handler) {
+    public LightController(MorseConverter morse, Camera camera, Handler handler, boolean sound) {
         super(false);
         myHandler = new MyHandler(handler);
         data = "";
         mCamera = camera;
         mMorse = morse;
+        mBeep = new Beep();
+        this.sound = sound;
+    }
+
+    private long sound(int t) {
+        int vol = 75;
+        long delta, timestamp;
+        //AudioManager mAudio = (AudioManager) Context.getSystemService(Context.AUDIO_SERVICE);
+        //vol = 100 * mAudio.getStreamVolume(AudioManager.STREAM_MUSIC) /
+        //        mAudio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        timestamp = System.currentTimeMillis();
+        mBeep.genTone(t/1000f, 800);
+        mBeep.playSound();
+        delta = (System.currentTimeMillis() - timestamp);
+        Log.v(TAG, ">>>>>>>>>>>>>> t: " + t);
+        Log.v(TAG, ">>>>>>>>>>>>>> delta: " + delta);
+        return delta;
     }
 
     private void flash(int tOn) {
+        long ret = 0;
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
+        if (sound)
+            ret = sound(tOn);
         try {
-            Thread.sleep(tOn);
+            Thread.sleep(tOn - ret); //TODO check > 0 O.o
         } catch (InterruptedException e) {}
         p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
@@ -48,8 +72,9 @@ public class LightController extends MyRunnable {
     }
 
     @Override
-    public void setup() {
-
+    public void afterloop() {
+        myHandler.signalInt("progress", 0);
+        myHandler.signalStr("message", "");
     }
 
     @Override

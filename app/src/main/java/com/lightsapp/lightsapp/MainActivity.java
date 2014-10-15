@@ -145,7 +145,7 @@ public class MainActivity extends Activity {
 
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
 
-        mLight = new LightController(mMorse, mCamera, mHandler);
+        mLight = new LightController(mMorse, mCamera, mHandler, mPrefs.getBoolean("enable_sound", true));
         mLight.start();
 
         mTextViewMessage = (TextView) findViewById(R.id.txt_status);
@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
         mEdit = (EditText) findViewById(R.id.edit_tx);
         mEdit.setText(mPrefs.getString("default_text", "sos"));
 
-        Button mButton = (Button)findViewById(R.id.button_start); // TODO on change listener. realtime morse text output
+        Button mButton = (Button)findViewById(R.id.button_start);
         mButton.setOnClickListener(
                 new View.OnClickListener()
                 {
@@ -165,6 +165,16 @@ public class MainActivity extends Activity {
                         mTextViewMorse.setText(mMorse.getString(mStrMorse));
                         mLight.setString(mStrMorse);
                         mLight.activate();
+                    }
+                });
+
+        mButton = (Button)findViewById(R.id.button_stop);
+        mButton.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        mLight.setStatus(false);
                     }
                 });
 
@@ -179,7 +189,8 @@ public class MainActivity extends Activity {
         Log.v(TAG, "RESUME");
         if (mCamera == null) {
             openCamera();
-            mLight = new LightController(mMorse, mCamera, mHandler);
+            mLight = new LightController(mMorse, mCamera, mHandler, mPrefs.getBoolean("enable_sound", true));
+            mLight.start();
             mPreview = new CameraController(this, mCamera, mHandler);
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
             preview.removeAllViews();
@@ -191,7 +202,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE");
-        //mLight.stop();
+        mLight.stop();
         mPreview.stopPreviewAndFreeCamera();
         mCamera = null;
         mThreadCamera = null;
@@ -218,6 +229,10 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
+        }
+        else if (id == R.id.action_exit) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
         }
         return super.onOptionsItemSelected(item);
     }

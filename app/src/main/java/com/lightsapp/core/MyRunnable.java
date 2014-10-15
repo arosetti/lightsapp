@@ -34,6 +34,8 @@ public abstract class MyRunnable implements Runnable {
         return status;
     }
 
+    public final void setStatus(boolean s) { status = s; }
+
     public final void start() {
         tid = new Thread(this);
         tid.start();
@@ -65,40 +67,25 @@ public abstract class MyRunnable implements Runnable {
         setup();
         while (true) {
             try {
-                beforeloop();
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
                     while (!status)
                         started.await();
-
+                    beforeloop();
                     loop();
-
+                    afterloop();
                     if (!loop) {
                         status = false;
                         stopped.signal();
                     }
                     lock.unlock();
                 }
-                afterloop();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
             catch (Exception e) {
                 Log.d(TAG, e.getMessage());
             }
-        }
-    }
-
-    public final void pause() // TODO 100% not working :D
-    {
-        try {
-            lock.lock();
-            while (!status)
-                started.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
         }
     }
 
