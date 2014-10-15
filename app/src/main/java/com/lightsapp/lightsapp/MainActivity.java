@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,53 +33,7 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity {
-    private final String TAG = "MainActivity";
-    private void openCamera()
-    {
-        if (mThreadCamera == null) {
-            mThreadCamera = new CameraRunnable();
-        }
-
-        synchronized (mThreadCamera) {
-            mThreadCamera.openCameraRunnable();
-        }
-    }
-
-    private CameraRunnable mThreadCamera = null;
-    private class CameraRunnable extends HandlerThread {
-        Handler mHandler = null;
-
-        CameraRunnable() {
-            super("CameraRunnable");
-            start();
-            mHandler = new Handler(getLooper());
-        }
-
-        synchronized void notifyCameraOpened() {
-            notify();
-        }
-
-        void openCameraRunnable() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mCamera = Camera.open();
-                    }
-                    catch (RuntimeException e) {
-                        //Log.e(LOG_TAG, "failed to open front camera");
-                    }
-                    notifyCameraOpened();
-                }
-            });
-            try {
-                wait();
-            }
-            catch (InterruptedException e) {
-            }
-        }
-    }
-
+    private final String TAG = MainActivity.class.getSimpleName();
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
@@ -95,6 +50,52 @@ public class MainActivity extends Activity {
     private Camera mCamera;
     private CameraController mPreview;
 
+    private CameraHandler mThreadCamera = null;
+
+    private void openCamera()
+    {
+        if (mThreadCamera == null) {
+            mThreadCamera = new CameraHandler();
+        }
+
+        synchronized (mThreadCamera) {
+            mThreadCamera.openCameraHandler();
+        }
+    }
+
+    private class CameraHandler extends HandlerThread {
+        Handler mHandler = null;
+
+        CameraHandler() {
+            super("CameraHandler");
+            start();
+            mHandler = new Handler(getLooper());
+        }
+
+        synchronized void notifyCameraOpened() {
+            notify();
+        }
+
+        void openCameraHandler() {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mCamera = Camera.open();
+                    }
+                    catch (RuntimeException e) {
+                        Log.e(TAG, "failed to open front camera");
+                    }
+                    notifyCameraOpened();
+                }
+            });
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+            }
+        }
+    }
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -139,7 +140,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.fragment_main);
 
-        mCamera = Camera.open();
+        openCamera();
 
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
 
