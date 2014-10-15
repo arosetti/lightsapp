@@ -28,7 +28,7 @@ public class FrameAnalyzer extends MyRunnable {
      }
 
     @Override
-    public void main() {
+    public void loop() {
         try {
             Thread.sleep(100);
             getFrameStats();

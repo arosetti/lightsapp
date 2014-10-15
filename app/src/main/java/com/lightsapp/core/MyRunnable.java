@@ -56,18 +56,21 @@ public abstract class MyRunnable implements Runnable {
     }
 
     public void setup() {}
-    public void main() {}
+    public void beforeloop() {}
+    public void loop() {}
+    public void afterloop() {}
 
     public final void run() {
         setup();
         while (true) {
             try {
+                beforeloop();
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
                     while (!status)
                         started.await();
 
-                    main();
+                    loop();
 
                     if (!loop) {
                         status = false;
@@ -75,6 +78,7 @@ public abstract class MyRunnable implements Runnable {
                     }
                     lock.unlock();
                 }
+                afterloop();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

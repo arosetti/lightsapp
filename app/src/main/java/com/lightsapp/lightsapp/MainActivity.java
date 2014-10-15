@@ -8,12 +8,14 @@ import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,53 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity {
+
+    private void openCamera()
+    {
+        if (mThreadCamera == null) {
+            mThreadCamera = new CameraRunnable();
+        }
+
+        synchronized (mThreadCamera) {
+            mThreadCamera.openCameraRunnable();
+        }
+    }
+
+    private CameraRunnable mThreadCamera = null;
+    private class CameraRunnable extends HandlerThread {
+        Handler mHandler = null;
+
+        CameraRunnable() {
+            super("CameraRunnable");
+            start();
+            mHandler = new Handler(getLooper());
+        }
+
+        synchronized void notifyCameraOpened() {
+            notify();
+        }
+
+        void openCameraRunnable() {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mCamera = Camera.open();
+                    }
+                    catch (RuntimeException e) {
+                        //Log.e(LOG_TAG, "failed to open front camera");
+                    }
+                    notifyCameraOpened();
+                }
+            });
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+            }
+        }
+    }
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
@@ -49,11 +98,9 @@ public class MainActivity extends Activity {
     private Camera mCamera;
     private CameraController mPreview;
 
-
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-
             if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                 mTextViewMessage = (TextView) findViewById(R.id.txt_status);
                 mTextViewMessage.setText((String) msg.getData().get("message")); // yep that's a String
@@ -93,7 +140,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.fragment_main);
 
-        mCamera = Camera.open();
+        openCamera();
 
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
 
@@ -134,6 +181,10 @@ public class MainActivity extends Activity {
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
             preview.addView(mPreview);
         }
+    }
+
+    protected void onPause() {
+        // TOD0
     }
 
     protected void onStop() {

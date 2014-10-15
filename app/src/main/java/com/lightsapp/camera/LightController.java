@@ -54,7 +54,7 @@ public class LightController extends MyRunnable {
     }
 
     @Override
-    public void main() {
+    public void loop() {
         pattern = mMorse.pattern(data);
         progress = 0;
         for (int i = 0; i < pattern.length; i++) {
