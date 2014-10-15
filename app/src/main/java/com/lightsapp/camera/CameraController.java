@@ -56,7 +56,16 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-        mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        //mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+    }
+
+    public void stopPreviewAndFreeCamera() {
+        if (mCamera != null) {
+            mCamera.setPreviewCallback(this);
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -74,10 +83,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (mCamera != null) {
-            //mCamera.setPreviewCallback(null);
-            //mCamera.stopPreview();
-            //mCamera.release();
-            //mCamera = null;
+            mCamera.stopPreview();
         }
     }
 
@@ -88,7 +94,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
         try {
             mCamera.stopPreview();
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -112,7 +118,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }

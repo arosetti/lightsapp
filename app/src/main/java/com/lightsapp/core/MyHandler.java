@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 
 public class MyHandler implements MyHandlerInterface {
-    private final String TAG = "MyHandler";
+    private final String TAG = MyHandler.class.getSimpleName();
     Handler mHandler = null;
 
     public MyHandler(Handler handler) {

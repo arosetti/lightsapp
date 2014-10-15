@@ -130,6 +130,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(TAG, "CREATE");
         setContentView(R.layout.activity_main);
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -172,25 +173,36 @@ public class MainActivity extends Activity {
         preview.addView(mPreview);
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
-        if (this.mCamera == null) {
-            this.mCamera = mCamera.open();
-            mLight.setCamera(mCamera);
+        Log.v(TAG, "RESUME");
+        if (mCamera == null) {
+            openCamera();
+            mLight = new LightController(mMorse, mCamera, mHandler);
             mPreview = new CameraController(this, mCamera, mHandler);
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            preview.removeAllViews();
             preview.addView(mPreview);
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(TAG, "PAUSE");
+        //mLight.stop();
+        mPreview.stopPreviewAndFreeCamera();
+        mCamera = null;
+        mThreadCamera = null;
+        mPreview = null;
+        mLight = null;
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
-        mLight.stop();
-        // mPreview. TODO kil prev class
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
+        Log.v(TAG, "STOP");
     }
 
     @Override

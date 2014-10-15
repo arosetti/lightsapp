@@ -8,7 +8,7 @@ import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
 
 public class LightController extends MyRunnable {
-    private final String TAG = "LightController";
+    private final String TAG = LightController.class.getSimpleName();
     private Camera mCamera;
     private MyHandler myHandler;
     private volatile String data;
@@ -29,14 +29,12 @@ public class LightController extends MyRunnable {
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
-        //mCamera.startPreview();
         try {
             Thread.sleep(tOn);
         } catch (InterruptedException e) {}
         p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(p);
-        //mCamera.stopPreview();
     }
 
     public void setString(String str)
