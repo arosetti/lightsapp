@@ -3,5 +3,6 @@ syntax: glob
 .idea/
 app/
 build/
-syntax: regexp
+local.properties
 lightsapp.iml
+syntax: regexp
