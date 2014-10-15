@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
         mEdit = (EditText) findViewById(R.id.edit_tx);
         mEdit.setText(mPrefs.getString("default_text", "sos"));
 
-        Button mButton = (Button)findViewById(R.id.button_tx); // TODO on change listener. realtime morse text output
+        Button mButton = (Button)findViewById(R.id.button_start); // TODO on change listener. realtime morse text output
         mButton.setOnClickListener(
                 new View.OnClickListener()
                 {

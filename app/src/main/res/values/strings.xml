@@ -7,9 +7,8 @@
     <string name="title_section3">Section 3</string>
     <string name="action_settings">Settings</string>
     <string name="sos">sos</string>
-    <string name="btn_rx">rx</string>
-    <string name="btn_tx">tx</string>
     <string name="idle">...</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="btn_start">start</string>
+    <string name="btn_stop">stop</string>
 
 </resources>
