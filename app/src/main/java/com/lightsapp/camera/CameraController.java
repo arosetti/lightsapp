@@ -13,12 +13,12 @@ import android.view.SurfaceView;
 
 import com.lightsapp.core.MyHandler;
 
-import java.util.List;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
+    private final String TAG = "CameraController";
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private MyHandler myHandler;
@@ -52,6 +52,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         int width = p.getPreviewSize().width;
         int height = p.getPreviewSize().height;
 
+        //TODO ckeck image format
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
@@ -64,10 +65,10 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
-            Log.d("CameraPreview", "Error setting camera preview: " + e.getMessage());
+            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d("CameraPreview", "Error setting camera preview: " + e.getMessage());
+            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
@@ -103,7 +104,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             //params.setPreviewSize(PreviewSizeWidth, PreviewSizeHeight);
             mCamera.setParameters(params);
         } catch (Exception e){
-            Log.d("CameraPreview", "Error starting camera parameters: " + e.getMessage());
+            Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
         }
 
         try {
@@ -112,7 +113,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.startPreview();
 
         } catch (Exception e){
-            Log.d("CameraPreview", "Error starting camera preview: " + e.getMessage());
+            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 

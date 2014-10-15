@@ -8,6 +8,7 @@ import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
 
 public class LightController extends MyRunnable {
+    private final String TAG = "LightController";
     private Camera mCamera;
     private MyHandler myHandler;
     private volatile String data;

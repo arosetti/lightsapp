@@ -17,6 +17,7 @@
 package com.lightsapp.morse;
 
 public class MorseConverter {
+    private final String TAG = "MorseConverter";
     private long SPEED_BASE;
     private long DOT;
     private long DASH;

@@ -1,6 +1,7 @@
 package com.lightsapp.camera;
 
 public class Frame {
+    private final String TAG = "Frame";
     public long delta;
     public long luminance;
 

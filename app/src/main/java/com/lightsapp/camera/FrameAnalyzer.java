@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FrameAnalyzer extends MyRunnable {
+    private final String TAG = "FrameAnalyzer";
     private Camera mCamera;
     private MorseConverter mMorse;
     private List<Frame> lframes;
@@ -77,7 +78,7 @@ public class FrameAnalyzer extends MyRunnable {
             sum += lframes.get(i).luminance;
         }
 
-        Log.v("CameraTest", "Luminance -> max " + max_lum + " | min = " + min_lum + " | avg " + sum / lframes.size());
+        Log.v(TAG, "Luminance -> max " + max_lum + " | min = " + min_lum + " | avg " + sum / lframes.size());
     }
 
     private void logFrame() {
@@ -90,7 +91,7 @@ public class FrameAnalyzer extends MyRunnable {
             writer.close();
 
         } catch (Exception e) {
-            Log.e("CameraTest", "Error saving frames");
+            Log.e(TAG, "Error saving frames");
             return;
         }
     }
@@ -110,8 +111,8 @@ public class FrameAnalyzer extends MyRunnable {
         lframes.add(frame);
 
         timestamp = System.currentTimeMillis();
-        Log.v("CameraTest", "Frame collected -> Lum = " + luminance + " | TimeDelta = " + delta );
-        Log.v("CameraTest", "Frames collected -> " + lframes.size() );
+        Log.v(TAG, "Frame collected -> Lum = " + luminance + " | TimeDelta = " + delta );
+        Log.v(TAG, "Frames collected -> " + lframes.size() );
         logFrame();
     }
 }

@@ -6,8 +6,8 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_chkbox">checkbox</string>
-    <string name="pref_description_chkbox">example checkbox</string>
+    <string name="pref_title_enable_sound">enable sound</string>
+    <string name="pref_description_enable_sound">enable morse beep output</string>
 
     <string name="pref_title_default_text">Default morse text</string>
     <string name="pref_default_default_text">sos</string>

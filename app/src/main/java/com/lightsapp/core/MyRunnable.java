@@ -7,6 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class MyRunnable implements Runnable {
+    private final String TAG = "MyRunnable";
     private final Lock lock;
     private final Condition started;
     private final Condition stopped;
@@ -83,7 +84,7 @@ public abstract class MyRunnable implements Runnable {
                 Thread.currentThread().interrupt();
             }
             catch (Exception e) {
-                Log.d("MyRunnable", e.getMessage());
+                Log.d(TAG, e.getMessage());
             }
         }
     }

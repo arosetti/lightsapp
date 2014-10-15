@@ -10,12 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +25,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.lightsapp.camera.CameraController;
-import com.lightsapp.camera.FrameAnalyzer;
 import com.lightsapp.camera.LightController;
 import com.lightsapp.morse.MorseConverter;
 
@@ -35,7 +32,7 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity {
-
+    private final String TAG = "MainActivity";
     private void openCamera()
     {
         if (mThreadCamera == null) {
@@ -98,9 +95,11 @@ public class MainActivity extends Activity {
     private Camera mCamera;
     private CameraController mPreview;
 
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
             if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                 mTextViewMessage = (TextView) findViewById(R.id.txt_status);
                 mTextViewMessage.setText((String) msg.getData().get("message")); // yep that's a String
@@ -140,7 +139,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.fragment_main);
 
-        openCamera();
+        mCamera = Camera.open();
 
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
 
@@ -181,10 +180,6 @@ public class MainActivity extends Activity {
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
             preview.addView(mPreview);
         }
-    }
-
-    protected void onPause() {
-        // TOD0
     }
 
     protected void onStop() {
