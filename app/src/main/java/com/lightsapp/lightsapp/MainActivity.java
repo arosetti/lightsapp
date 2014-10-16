@@ -3,6 +3,7 @@ package com.lightsapp.lightsapp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
@@ -34,76 +35,80 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
     private final String TAG = MainActivity.class.getSimpleName();
+
+    private Context context;
+
+    private SharedPreferences mPrefs;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TextView mTextViewMessage;
     private TextView mTextViewMorse;
     private EditText mEdit;
-
-    private SharedPreferences mPrefs;
+    FrameLayout mPreview;
 
     private MorseConverter mMorse;
     private String mStrMorse;
 
-    private LightController mLight;
-
     private Camera mCamera;
-    private CameraController mPreview;
+    private LightController mLight;
+    private CameraController mCameraController;
 
-    private CameraHandler mThreadCamera = null;
+    private SetupHandler mThreadSetup = null;
 
-    private void openCamera()
+    private void setup()
     {
-        if (mThreadCamera == null) {
-            mThreadCamera = new CameraHandler();
+        if (mThreadSetup == null) {
+            mThreadSetup = new SetupHandler();
         }
 
-        synchronized (mThreadCamera) {
-            mThreadCamera.openCameraHandler();
+        synchronized (mThreadSetup) {
+            mThreadSetup.setupHandler();
         }
     }
 
-    private class CameraHandler extends HandlerThread {
-        Handler mHandler = null;
+    private class SetupHandler extends HandlerThread {
+        Handler mHandlerSetup = null;
 
-        CameraHandler() {
+        SetupHandler() {
             super("CameraHandler");
             start();
-            mHandler = new Handler(getLooper());
+            mHandlerSetup = new Handler(getLooper());
         }
 
-        synchronized void notifyCameraOpened() {
-            notify();
-        }
-
-        void openCameraHandler() {
-            mHandler.post(new Runnable() {
+        void setupHandler() {
+            mHandlerSetup.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         mCamera = Camera.open();
+                        mLight = new LightController(mMorse, mCamera, mHandler,
+                                                     mPrefs.getBoolean("enable_sound", true));
+                        mLight.start();
+
+                        Message msg = mHandler.obtainMessage();
+                        Bundle b = new Bundle();
+                        b.putString("setup_done", "");
+                        msg.setData(b);
+
+                        mHandler.sendMessage(msg);
+                        Log.v(TAG, "setup done");
                     }
                     catch (RuntimeException e) {
-                        Log.e(TAG, "failed to open front camera");
+                        Log.e(TAG, "failed to setup");
                     }
-                    notifyCameraOpened();
                 }
             });
-            try {
-                wait();
-            }
-            catch (InterruptedException e) {
-            }
         }
     }
 
-    private Handler mHandler = new Handler() {
+    public final Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
             if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                 mTextViewMessage = (TextView) findViewById(R.id.txt_status);
-                mTextViewMessage.setText((String) msg.getData().get("message")); // yep that's a String
+                mTextViewMessage.setText((String) msg.getData().get("message"));
             }
 
             if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
@@ -124,6 +129,13 @@ public class MainActivity extends Activity {
                 String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>";
                 mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
             }
+
+            if (msg.getData().containsKey("setup_done")) {
+                mCameraController = new CameraController(context, mCamera, mHandler);
+                //mPreview.removeAllViews();
+                mPreview.addView(mCameraController);
+                Log.v(TAG, "init camera preview");
+            }
         }
     };
 
@@ -132,7 +144,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "CREATE");
         setContentView(R.layout.activity_main);
-
+        context = this;
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
@@ -141,12 +153,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.fragment_main);
 
-        openCamera();
-
-        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
-
-        mLight = new LightController(mMorse, mCamera, mHandler, mPrefs.getBoolean("enable_sound", true));
-        mLight.start();
+        mPreview = (FrameLayout) findViewById(R.id.camera_preview);
 
         mTextViewMessage = (TextView) findViewById(R.id.txt_status);
         mTextViewMessage.setText("idle");
@@ -162,9 +169,13 @@ public class MainActivity extends Activity {
                     {
                         mStrMorse = mEdit.getText().toString();
                         mTextViewMorse = (TextView) findViewById(R.id.txt_tx);
-                        mTextViewMorse.setText(mMorse.getString(mStrMorse));
-                        mLight.setString(mStrMorse);
-                        mLight.activate();
+                        if (mMorse != null) {
+                            mTextViewMorse.setText(mMorse.getString(mStrMorse));
+                        }
+                        if (mLight != null) {
+                            mLight.setString(mStrMorse);
+                            mLight.activate();
+                        }
                     }
                 });
 
@@ -174,13 +185,12 @@ public class MainActivity extends Activity {
                 {
                     public void onClick(View view)
                     {
-                        mLight.setStatus(false);
+                        if (mLight != null )
+                            mLight.setStatus(false);
                     }
                 });
 
-        mPreview = new CameraController(this, mCamera, mHandler);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-        preview.addView(mPreview);
+        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
     }
 
     @Override
@@ -188,13 +198,7 @@ public class MainActivity extends Activity {
         super.onResume();
         Log.v(TAG, "RESUME");
         if (mCamera == null) {
-            openCamera();
-            mLight = new LightController(mMorse, mCamera, mHandler, mPrefs.getBoolean("enable_sound", true));
-            mLight.start();
-            mPreview = new CameraController(this, mCamera, mHandler);
-            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-            preview.removeAllViews();
-            preview.addView(mPreview);
+            setup();
         }
     }
 
@@ -202,11 +206,13 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE");
-        mLight.stop();
-        mPreview.stopPreviewAndFreeCamera();
+        if (mLight != null)
+            mLight.stop();
+        if (mCameraController != null)
+            mCameraController.stopPreviewAndFreeCamera();
         mCamera = null;
-        mThreadCamera = null;
-        mPreview = null;
+        mThreadSetup = null;
+        mCameraController = null;
         mLight = null;
     }
 

@@ -64,7 +64,8 @@ public class LightController extends MyRunnable {
     public void setString(String str)
     {
         data = new String(str);
-        pattern = mMorse.pattern(data);
+        if (mMorse != null)
+            pattern = mMorse.pattern(data);
     }
 
     public void setCamera(Camera camera) {

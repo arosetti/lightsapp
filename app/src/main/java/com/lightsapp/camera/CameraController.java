@@ -123,12 +123,10 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    // TODO move to checking class
     private boolean hasCamera(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    // TODO move to checking class
     private boolean hasFlash(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
