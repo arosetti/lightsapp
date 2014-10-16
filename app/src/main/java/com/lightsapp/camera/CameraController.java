@@ -31,19 +31,26 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public CameraController(Context context, Camera camera, Handler handler) {
         super(context);
+
         mCamera = camera;
         myHandler = new MyHandler(handler);
 
         mFrameA = new FrameAnalyzer(handler);
-        mFrameA.start();
-        mFrameA.activate();
 
         mHolder = getHolder();
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         timestamp = 0;
+    }
 
+    public void startAnalyzer() {
+        mFrameA.start();
+        mFrameA.activate();
+    }
+
+    public void stopAnalyzer() {
+        mFrameA.stop();
     }
 
     @Override

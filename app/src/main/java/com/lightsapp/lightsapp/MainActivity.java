@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,7 +51,7 @@ public class MainActivity extends Activity {
     private MorseConverter mMorse;
     private String mStrMorse;
 
-    private Camera mCamera;
+    private Camera mCamera = null;
     private LightController mLight;
     private CameraController mCameraController;
 
@@ -132,7 +133,7 @@ public class MainActivity extends Activity {
 
             if (msg.getData().containsKey("setup_done")) {
                 mCameraController = new CameraController(context, mCamera, mHandler);
-                //mPreview.removeAllViews();
+                mPreview.removeAllViews();
                 mPreview.addView(mCameraController);
                 Log.v(TAG, "init camera preview");
             }
@@ -154,6 +155,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.fragment_main);
 
         mPreview = (FrameLayout) findViewById(R.id.camera_preview);
+        mPreview.addView(new SurfaceView(this), 0);   // MAGIC avoids black flashing.
 
         mTextViewMessage = (TextView) findViewById(R.id.txt_status);
         mTextViewMessage.setText("idle");
