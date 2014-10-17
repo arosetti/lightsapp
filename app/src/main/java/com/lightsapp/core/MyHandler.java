@@ -3,6 +3,7 @@ package com.lightsapp.core;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class MyHandler implements MyHandlerInterface {
     private final String TAG = MyHandler.class.getSimpleName();
@@ -17,6 +18,11 @@ public class MyHandler implements MyHandlerInterface {
     }
 
     public void signalStr(String key, String str) {
+        if (mHandler == null) {
+            Log.e(TAG, "error: handler is null");
+            return;
+        }
+
         if (str != null && key != null && !key.equals("")) {
             Message msg = mHandler.obtainMessage();
             Bundle b = new Bundle();
@@ -27,6 +33,11 @@ public class MyHandler implements MyHandlerInterface {
     }
 
     public void signalInt(String key, int i) {
+        if (mHandler == null) {
+            Log.e(TAG, "error: handler is null");
+            return;
+        }
+
         if (key != null && !key.equals("")) {
             Message msg = mHandler.obtainMessage();
             Bundle b = new Bundle();
