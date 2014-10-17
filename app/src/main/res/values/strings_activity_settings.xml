@@ -14,7 +14,11 @@
 
     <string name="pref_title_speed">Base Speed</string>
     <string-array name="pref_speed_titles">
-        <item>1s</item>
+        <item>2.00s</item>
+        <item>1.75s</item>
+        <item>1.50s</item>
+        <item>1.25s</item>
+        <item>1.00s</item>
         <item>900ms</item>
         <item>800ms</item>
         <item>700ms</item>
@@ -26,6 +30,10 @@
         <item>100ms</item>
     </string-array>
     <string-array name="pref_speed_values">
+        <item>2000</item>
+        <item>1750</item>
+        <item>1500</item>
+        <item>1250</item>
         <item>1000</item>
         <item>900</item>
         <item>800</item>
