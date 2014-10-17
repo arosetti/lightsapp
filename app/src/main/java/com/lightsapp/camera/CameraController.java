@@ -24,8 +24,9 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private MyHandler myHandler;
     private FrameAnalyzer mFrameA;
 
-    private int PreviewSizeWidth;
-    private int PreviewSizeHeight;
+    private int imageFormat;
+    private int width;
+    private int height;
 
     private long timestamp;
 
@@ -55,15 +56,11 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        Camera.Parameters p = camera.getParameters();
-        int width = p.getPreviewSize().width;
-        int height = p.getPreviewSize().height;
-
-        //TODO ckeck image format
-        ByteArrayOutputStream outstr = new ByteArrayOutputStream();
-        Rect rect = new Rect(0, 0, width, height);
-        YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-        mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        if (imageFormat == ImageFormat.NV21) {
+            Rect rect = new Rect(0, 0, width, height);
+            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
+            mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        }
     }
 
     public void stopPreviewAndFreeCamera() {
@@ -77,7 +74,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceCreated(SurfaceHolder holder) {
         try {
-            //mCamera.setPreviewCallback(this);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
@@ -91,6 +87,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
         }
     }
 
@@ -108,13 +105,16 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         try {
             mCamera.setDisplayOrientation(90);
             Camera.Parameters params = mCamera.getParameters();
+            width = params.getPreviewSize().width;
+            height = params.getPreviewSize().height;
+            imageFormat = params.getPreviewFormat();
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
-            //params.setPreviewSize(PreviewSizeWidth, PreviewSizeHeight);
+            //params.setPreviewSize(width, height);
             mCamera.setParameters(params);
         } catch (Exception e){
             Log.d(TAG, "Error starting camera parameters: " + e.getMessage());

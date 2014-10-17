@@ -115,6 +115,6 @@ public class FrameAnalyzer extends MyRunnable {
                              "\ndelta: " + delta + "ms" +
                              "\nluminance: " + luminance);
 
-        logFrame();
+        //logFrame();
     }
 }
