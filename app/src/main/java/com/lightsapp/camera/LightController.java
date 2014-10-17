@@ -80,27 +80,33 @@ public class LightController extends MyRunnable {
 
     @Override
     public void loop() {
+        final long DOT = mMorse.get("DOT");
+        final long DASH = mMorse.get("DASH");
+        final long GAP = mMorse.get("GAP");
+        final long LETTER_GAP = mMorse.get("LETTER_GAP");
+        final long WORD_GAP = mMorse.get("WORD_GAP");
         pattern = mMorse.pattern(data);
+
         progress = 0;
         for (int i = 0; i < pattern.length; i++) {
             if (!getStatus())
                 break;
             if (i % 2 != 0) {
-                if (pattern[i] > mMorse.get("DOT"))
-                    myHandler.signalStr("message", "DASH");
+                if (pattern[i] > DOT)
+                    myHandler.signalStr("message", "DASH\n" + pattern[i] + "ms");
                 else
-                    myHandler.signalStr("message", "DOT");
+                    myHandler.signalStr("message", "DOT\n" + pattern[i] + "ms");
                 flash((int) pattern[i]);
                 progress++;
             }
             else {
-                myHandler.signalStr("message", "...");
+                myHandler.signalStr("message", "...\n" + pattern[i] + "ms" );
                 try {
                     Thread.sleep(pattern[i]);
                 } catch (InterruptedException e) {}
-                if (pattern[i] == mMorse.get("LETTER_GAP") )
+                if (pattern[i] == LETTER_GAP )
                     progress++;
-                else if (pattern[i] == mMorse.get("WORD_GAP"))
+                else if (pattern[i] == WORD_GAP)
                     progress += 3;
             }
             myHandler.signalInt("progress", progress);

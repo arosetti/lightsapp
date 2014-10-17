@@ -100,7 +100,7 @@ public class FrameAnalyzer extends MyRunnable {
         long luminance = 0;
         long delta;
 
-        luminance = getFrameLuminance(data, width, height);
+        luminance = getFrameLuminance(data, width, height); // TODO use a buffer and process in the loop
 
         if (timestamp != 0)
             delta = (System.currentTimeMillis() - timestamp);
@@ -111,8 +111,10 @@ public class FrameAnalyzer extends MyRunnable {
         lframes.add(frame);
 
         timestamp = System.currentTimeMillis();
-        Log.v(TAG, "Frame collected -> Lum = " + luminance + " | TimeDelta = " + delta );
-        Log.v(TAG, "Frames collected -> " + lframes.size() );
+        myHandler.signalStr("message", "frames: " + lframes.size() +
+                             "\ndelta: " + delta + "ms" +
+                             "\nluminance: " + luminance);
+
         logFrame();
     }
 }

@@ -49,12 +49,19 @@ public class RecvFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
+        mTextViewMessage = (TextView) v.findViewById(R.id.txt_status);
+        mTextViewMessage.setText("idle");
+
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+
+                if (mTextViewMessage != null && msg.getData().containsKey("message")) {
+                    mTextViewMessage.setText((String) msg.getData().get("message"));
+                }
 
                 if (msg.getData().containsKey("setup_done")) {
                     if (mCtx.mCamera == null)

@@ -63,7 +63,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, width, height);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-        //mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+        mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
     }
 
     public void stopPreviewAndFreeCamera() {
