@@ -1,16 +1,13 @@
 <resources>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
-    <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_enable_sound">enable sound</string>
-    <string name="pref_description_enable_sound">enable morse beep output</string>
+    <string name="pref_title_enable_sound">Enable Sound</string>
+    <string name="pref_description_enable_sound">Enable sound output while sending morse code</string>
 
     <string name="pref_title_default_text">Default morse text</string>
-    <string name="pref_default_default_text">sos</string>
+    <string name="pref_default_default_text"></string>
 
     <string name="pref_title_speed">Base Speed</string>
     <string-array name="pref_speed_titles">
