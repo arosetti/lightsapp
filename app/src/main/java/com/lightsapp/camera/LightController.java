@@ -20,6 +20,7 @@ public class LightController extends MyRunnable {
 
     private MorseConverter mMorse;
     private Beep mBeep;
+    private final int beepFreq = 850;
 
     public LightController(MorseConverter morse, Camera camera, Handler handler, boolean sound) {
         super(false);
@@ -31,31 +32,39 @@ public class LightController extends MyRunnable {
         this.sound = sound;
     }
 
-    private long sound(int t) {
-        int vol = 75;
-        long delta, timestamp;
-        //AudioManager mAudio = (AudioManager) Context.getSystemService(Context.AUDIO_SERVICE);
-        //vol = 100 * mAudio.getStreamVolume(AudioManager.STREAM_MUSIC) /
-        //        mAudio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        timestamp = System.currentTimeMillis();
-        mBeep.genTone(t/1000f, 800);
-        mBeep.playSound();
-        delta = (System.currentTimeMillis() - timestamp);
-        Log.v(TAG, ">>>>>>>>>>>>>> t: " + t);
-        Log.v(TAG, ">>>>>>>>>>>>>> delta: " + delta);
-        return delta;
+    public static void forceSleep(int msec) {
+        final long endingTime = System.currentTimeMillis() + msec;
+        long remainingTime = msec;
+        while (remainingTime > 0) {
+            try {
+                Thread.sleep(remainingTime);
+            } catch (InterruptedException ignore) {
+            }
+            remainingTime = endingTime - System.currentTimeMillis();
+        }
     }
 
-    private void flash(int tOn) {
+    private long sound(int t) { // TODO optimize this
+        final long timestamp = System.currentTimeMillis();
+        mBeep.genTone(t/1000f, beepFreq);
+        mBeep.playSound();
+        return (System.currentTimeMillis() - timestamp);
+    }
+
+    private void flash(int t) {
         long ret = 0;
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
+
         if (sound)
-            ret = sound(tOn);
-        try {
-            Thread.sleep(tOn - ret); //TODO check > 0 O.o
-        } catch (InterruptedException e) {}
+            ret = sound(t);
+
+        if ((t - ret) > 0)
+            forceSleep((int)(t - ret));
+        else
+            Log.v(TAG, "disable sound output please...");
+
         p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(p);
@@ -86,8 +95,8 @@ public class LightController extends MyRunnable {
         final long LETTER_GAP = mMorse.get("LETTER_GAP");
         final long WORD_GAP = mMorse.get("WORD_GAP");
         pattern = mMorse.pattern(data);
-
         progress = 0;
+
         for (int i = 0; i < pattern.length; i++) {
             if (!getStatus())
                 break;
@@ -96,20 +105,19 @@ public class LightController extends MyRunnable {
                     myHandler.signalStr("message", "DASH\n" + pattern[i] + "ms");
                 else
                     myHandler.signalStr("message", "DOT\n" + pattern[i] + "ms");
-                flash((int) pattern[i]);
                 progress++;
+                myHandler.signalInt("progress", progress);
+                flash((int) pattern[i]);
             }
             else {
                 myHandler.signalStr("message", "...\n" + pattern[i] + "ms" );
-                try {
-                    Thread.sleep(pattern[i]);
-                } catch (InterruptedException e) {}
                 if (pattern[i] == LETTER_GAP )
                     progress++;
                 else if (pattern[i] == WORD_GAP)
                     progress += 3;
+                myHandler.signalInt("progress", progress);
+                forceSleep((int) pattern[i]);
             }
-            myHandler.signalInt("progress", progress);
         }
     }
 }
