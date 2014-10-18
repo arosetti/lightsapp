@@ -7,8 +7,10 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -20,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.LightController;
@@ -88,6 +91,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 }
             });
         }
+
+
     }
 
     @Override
@@ -165,6 +170,26 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
     @Override
+    public void onPostResume() {
+        super.onPostResume();
+        if (!hasCamera() && !hasFlash())
+        {
+            Toast toast = Toast.makeText(this, "You can't use this app, you'll need a camera and flash.", Toast.LENGTH_LONG);
+            toast.show();
+        }
+        else {
+            if (!hasFlash()) {
+                Toast toast = Toast.makeText(this, "This app need a flash to send morse code.", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            if (!hasCamera()) {
+                Toast toast = Toast.makeText(this, "This app need a camera to receive morse code.", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -233,5 +258,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             }
             return null;
         }
+    }
+
+    private boolean hasCamera() {
+        return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
+    private boolean hasFlash() {
+        return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 }

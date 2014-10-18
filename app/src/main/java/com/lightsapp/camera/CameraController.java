@@ -129,12 +129,4 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
-
-    private boolean hasCamera(Context context) {
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-    }
-
-    private boolean hasFlash(Context context) {
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-    }
 }
