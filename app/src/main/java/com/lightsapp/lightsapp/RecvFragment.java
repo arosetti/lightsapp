@@ -59,6 +59,14 @@ public class RecvFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
+                if (msg.getData().containsKey("update")) {
+                    if (mCtx.mHandlerGraph != null) {
+                        Message msgx = mCtx.mHandlerGraph.obtainMessage();
+                        msgx.copyFrom(msg);
+                        mCtx.mHandlerGraph.sendMessage(msgx); // lol forward
+                    }
+                }
+
                 if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                     mTextViewMessage.setText((String) msg.getData().get("message"));
                 }

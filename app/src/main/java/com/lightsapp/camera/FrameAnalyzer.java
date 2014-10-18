@@ -33,20 +33,18 @@ public class FrameAnalyzer extends MyRunnable {
 
     @Override
     public void loop() {
-        d_max = Long.MIN_VALUE;
-        d_min = Long.MAX_VALUE;
-        d_avg = 0;
-        d_sum = 0;
-        l_max = Long.MIN_VALUE;
-        l_min = Long.MAX_VALUE;
-        l_avg = 0;
-        l_sum = 0;
         try {
             getFrameStats();
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        myHandler.signalStr("update", "");
+    }
+
+    public final List<Frame> getFrames() {
+        return lframes;
     }
 
     private long getFrameLuminance(byte[] data, int width, int height)

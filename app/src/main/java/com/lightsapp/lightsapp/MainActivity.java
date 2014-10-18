@@ -44,6 +44,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     Handler mHandlerSend = null;
     Handler mHandlerRecv = null;
+    Handler mHandlerGraph = null;
     private SetupHandler mThreadSetup = null;
 
     private void setup()
@@ -91,8 +92,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 }
             });
         }
-
-
     }
 
     @Override
@@ -238,13 +237,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return SendFragment.newInstance(position + 1);
                 case 1:
                     return RecvFragment.newInstance(position + 1);
+                case 2:
+                    return GraphFragment.newInstance(position + 1);
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -255,6 +256,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
+                case 2:
+                    return "Graph".toUpperCase();
             }
             return null;
         }

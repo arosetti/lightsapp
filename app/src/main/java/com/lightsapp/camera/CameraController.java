@@ -52,6 +52,10 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         mFrameA.activate();
     }
 
+    public final List<Frame> getFrames() {
+        return mFrameA.getFrames();
+    }
+
     public void stopAnalyzer() {
         mFrameA.stop();
     }
