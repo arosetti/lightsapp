@@ -22,6 +22,9 @@ public class FrameAnalyzer extends MyRunnable {
     private long timestamp;
     private MyHandler myHandler;
 
+    private long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
+    private long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
+
     public FrameAnalyzer(Handler handler) {
         super(true);
         lframes = new ArrayList<Frame>();
@@ -30,9 +33,17 @@ public class FrameAnalyzer extends MyRunnable {
 
     @Override
     public void loop() {
+        d_max = Long.MIN_VALUE;
+        d_min = Long.MAX_VALUE;
+        d_avg = 0;
+        d_sum = 0;
+        l_max = Long.MIN_VALUE;
+        l_min = Long.MAX_VALUE;
+        l_avg = 0;
+        l_sum = 0;
         try {
-            Thread.sleep(100);
             getFrameStats();
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -61,24 +72,29 @@ public class FrameAnalyzer extends MyRunnable {
         return luminance;
     }
 
-    private void getFrameStats() {
-        /* calc max,min,avg */
-        long max_lum = Long.MIN_VALUE;
-        long min_lum = Long.MAX_VALUE;
-        long sum = 0;
-
+    private void getFrameStats() { // TODO do it incrementally
         if (lframes.isEmpty())
             return;
 
+        l_sum = 0;
+        d_sum = 0;
+
         for(int i = 0; i < lframes.size(); i++) {
-            if (lframes.get(i).luminance > max_lum)
-                max_lum = lframes.get(i).luminance;
-            if (lframes.get(i).luminance < min_lum)
-                min_lum = lframes.get(i).luminance;
-            sum += lframes.get(i).luminance;
+            if (lframes.get(i).luminance > l_max)
+                l_max = lframes.get(i).luminance;
+            if (lframes.get(i).luminance < l_min)
+                l_min = lframes.get(i).luminance;
+            l_sum += lframes.get(i).luminance;
+
+            if (lframes.get(i).delta > d_max)
+                d_max = lframes.get(i).delta;
+            if (lframes.get(i).delta < d_min)
+                d_min = lframes.get(i).delta;
+            d_sum += lframes.get(i).delta;
         }
 
-        Log.v(TAG, "Luminance -> max " + max_lum + " | min = " + min_lum + " | avg " + sum / lframes.size());
+        l_avg = l_sum / lframes.size();
+        d_avg = d_sum / lframes.size();
     }
 
     private void logFrame() {
@@ -99,8 +115,8 @@ public class FrameAnalyzer extends MyRunnable {
     public void addFrame(byte[] data, int width, int height) {
         long luminance = 0;
         long delta;
-
-        luminance = getFrameLuminance(data, width, height); // TODO use a buffer and process in the loop
+        // TODO use a buffer and process in the loop
+        luminance = getFrameLuminance(data, width, height);
 
         if (timestamp != 0)
             delta = (System.currentTimeMillis() - timestamp);
@@ -112,8 +128,11 @@ public class FrameAnalyzer extends MyRunnable {
 
         timestamp = System.currentTimeMillis();
         myHandler.signalStr("message", "frames: " + lframes.size() +
-                             "\ndelta: " + delta + "ms" +
-                             "\nluminance: " + luminance);
+                             "\ncur / min / max / avg" +
+                             "\ndelta: (" + delta + " / " +
+                             d_min + " / " + d_max + " / " + d_avg + ") ms " +
+                             "\nluminance: (" + luminance / 1000 +
+                             " / " + l_min/1000 + " / " + l_max/1000 + " / " + l_avg/1000 +") K");
 
         //logFrame();
     }

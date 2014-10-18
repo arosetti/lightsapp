@@ -37,11 +37,13 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         myHandler = new MyHandler(handler);
 
         mFrameA = new FrameAnalyzer(handler);
+        startAnalyzer();
 
         mHolder = getHolder();
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
         timestamp = 0;
     }
 
@@ -112,6 +114,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
+            params.setRecordingHint(true);
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
             //params.setPreviewSize(width, height);
