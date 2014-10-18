@@ -57,7 +57,7 @@ public class GraphFragment extends Fragment {
 
         graphView_delay = new LineGraphView(mCtx, "Delay");
 
-        graphView_delay.setViewPort(1, 100);
+        graphView_delay.setViewPort(2, 300);
         graphView_delay.setScrollable(true);
         graphView_delay.setScalable(true);
         graphView_delay.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
@@ -68,7 +68,7 @@ public class GraphFragment extends Fragment {
 
         graphView_lum = new LineGraphView(mCtx, "Luminance");
 
-        graphView_lum.setViewPort(1, 100);
+        graphView_lum.setViewPort(2, 300);
         graphView_lum.setScrollable(true);
         graphView_lum.setScalable(true);
         graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
@@ -93,11 +93,11 @@ public class GraphFragment extends Fragment {
                     try {
                         for (int i = 0; i < lframes.size(); i++) {
                             data1[i] = new GraphView.GraphViewData(i, lframes.get(i).delta);
-                            data2[i] = new GraphView.GraphViewData(i, lframes.get(i).luminance);
+                            data2[i] = new GraphView.GraphViewData(i, lframes.get(i).luminance / 1000);
                         }
                     }
                     catch (IndexOutOfBoundsException e) {}
-                    
+
                     GraphViewSeries series = new GraphViewSeries(data1);
                     graphView_delay.removeAllSeries();
                     graphView_delay.addSeries(series);
@@ -106,6 +106,8 @@ public class GraphFragment extends Fragment {
                     graphView_lum.removeAllSeries();
                     graphView_lum.addSeries(series);
 
+                    graphView_delay.scrollToEnd();
+                    graphView_lum.scrollToEnd();
                 }
             }
         };
