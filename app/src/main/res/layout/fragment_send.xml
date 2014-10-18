@@ -46,7 +46,6 @@
             android:editable="true"
             android:enabled="true"
             android:focusable="true"
-            android:text="@string/sos"
             android:textAlignment="textEnd"
             android:clickable="false"
             android:gravity="center|center_vertical"
@@ -55,7 +54,9 @@
             android:selectAllOnFocus="true"
             android:minLines="2"
             android:maxLines="2"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/text_hint"
+            android:textStyle="normal"/>
 
         <LinearLayout
             android:orientation="horizontal"
