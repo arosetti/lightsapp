@@ -162,7 +162,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "300")));
+        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("speed", "500")));
 
         SendFragment sf = new SendFragment();
 

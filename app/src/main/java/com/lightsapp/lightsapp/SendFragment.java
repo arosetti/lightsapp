@@ -66,6 +66,7 @@ public class SendFragment extends Fragment {
                         mStrMorse = mEdit.getText().toString();
                         mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
                         if (mCtx.mMorse != null) {
+                            mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("speed", "500")));
                             mTextViewMorse.setText(mCtx.mMorse.getString(mStrMorse));
                         }
                         if (mCtx.mLight != null) {
