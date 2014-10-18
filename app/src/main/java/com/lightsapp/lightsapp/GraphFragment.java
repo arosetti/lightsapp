@@ -90,11 +90,14 @@ public class GraphFragment extends Fragment {
                     GraphView.GraphViewData data1[] = new GraphView.GraphViewData[lframes.size()];
                     GraphView.GraphViewData data2[] = new GraphView.GraphViewData[lframes.size()];
 
-                    for(int i = 0; i < lframes.size(); i++) {
-                        data1[i] = new GraphView.GraphViewData(i, lframes.get(i).delta);
-                        data2[i] = new GraphView.GraphViewData(i, lframes.get(i).luminance);
+                    try {
+                        for (int i = 0; i < lframes.size(); i++) {
+                            data1[i] = new GraphView.GraphViewData(i, lframes.get(i).delta);
+                            data2[i] = new GraphView.GraphViewData(i, lframes.get(i).luminance);
+                        }
                     }
-
+                    catch (IndexOutOfBoundsException e) {}
+                    
                     GraphViewSeries series = new GraphViewSeries(data1);
                     graphView_delay.removeAllSeries();
                     graphView_delay.addSeries(series);
