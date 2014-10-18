@@ -109,12 +109,15 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             Camera.Parameters params = mCamera.getParameters();
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
+            params.setPreviewFormat(ImageFormat.NV21);
             imageFormat = params.getPreviewFormat();
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
             params.setRecordingHint(true);
+            params.setAutoExposureLock(true);
+            params.setAutoWhiteBalanceLock(true);
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
             //params.setPreviewSize(width, height);
