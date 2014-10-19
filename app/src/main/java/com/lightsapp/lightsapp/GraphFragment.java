@@ -62,6 +62,7 @@ public class GraphFragment extends Fragment {
         graphView_delay.setScalable(true);
         graphView_delay.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
         graphView_delay.getGraphViewStyle().setGridColor(Color.rgb(30,30,30));
+        graphView_delay.getGraphViewStyle().setTextSize(getResources().getDimension(R.dimen.abc_action_bar_subtitle_text_size));
 
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph1);
         layout.addView(graphView_delay);
@@ -73,6 +74,7 @@ public class GraphFragment extends Fragment {
         graphView_lum.setScalable(true);
         graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
         graphView_lum.getGraphViewStyle().setGridColor(Color.rgb(30,30,30));
+        graphView_lum.getGraphViewStyle().setTextSize(getResources().getDimension(R.dimen.abc_action_bar_subtitle_text_size));
 
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(graphView_lum);
