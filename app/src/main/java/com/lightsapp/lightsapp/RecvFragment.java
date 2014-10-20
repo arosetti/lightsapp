@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -24,8 +25,8 @@ public class RecvFragment extends Fragment {
 
     private MainActivity mCtx;
 
-    private TextView mTextViewMessage;
-    private TextView mTextViewMorse;
+    private TextView mTextViewMessageStatus;
+    private TextView mTextViewMessageData;
     FrameLayout mPreview;
 
     public Handler mHandler;
@@ -49,11 +50,25 @@ public class RecvFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-        mTextViewMessage = (TextView) v.findViewById(R.id.txt_status);
-        mTextViewMessage.setText("idle");
+        mTextViewMessageStatus = (TextView) v.findViewById(R.id.txt_status);
+        mTextViewMessageStatus.setText("idle");
+
+        mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
+        mTextViewMessageData.setText("***");
 
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
+
+        Button mButton = (Button)v.findViewById(R.id.button_reset);
+        mButton.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        mCtx.mCameraController.reset();
+                    }
+                });
+
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -67,14 +82,21 @@ public class RecvFragment extends Fragment {
                     }
                 }
 
-                if (mTextViewMessage != null && msg.getData().containsKey("message")) {
-                    mTextViewMessage.setText((String) msg.getData().get("message"));
+                if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
+                    mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
+                }
+
+                if (mTextViewMessageData != null && msg.getData().containsKey("data_message")) {
+                    mTextViewMessageData.setText((String) msg.getData().get("data_message"));
                 }
 
                 if (msg.getData().containsKey("setup_done")) {
                     if (mCtx.mCamera == null)
                         Log.e(TAG, "camera is null");
-                    mCtx.mCameraController = new CameraController(mCtx, mCtx.mCamera, mHandler);
+                    mCtx.mCameraController = new CameraController(mCtx,
+                            mCtx.mCamera,
+                            mHandler,
+                            Integer.parseInt(mCtx.mPrefs.getString("speed", "500")));
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
                     Log.v(TAG, "init camera preview");

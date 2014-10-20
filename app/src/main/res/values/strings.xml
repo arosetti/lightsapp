@@ -10,5 +10,6 @@
     <string name="btn_start">start</string>
     <string name="btn_stop">stop</string>
     <string name="text_hint">Enter your message</string>
+    <string name="btn_reset">reset</string>
 
 </resources>

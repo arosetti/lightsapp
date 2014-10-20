@@ -24,17 +24,20 @@ public class FrameAnalyzer extends MyRunnable {
 
     private long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     private long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
+    private int start_frame = 0;
 
-    public FrameAnalyzer(Handler handler) {
+    public FrameAnalyzer(Handler handler, int speed) {
         super(true);
         lframes = new ArrayList<Frame>();
         myHandler = new MyHandler(handler);
+        mMorse = new MorseConverter(speed);
      }
 
     @Override
     public void loop() {
         try {
             getFrameStats();
+            analyze();
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -46,6 +49,8 @@ public class FrameAnalyzer extends MyRunnable {
     public final List<Frame> getFrames() {
         return lframes;
     }
+
+    public final void reset() { lframes.clear(); }
 
     private long getFrameLuminance(byte[] data, int width, int height)
     {
@@ -77,22 +82,104 @@ public class FrameAnalyzer extends MyRunnable {
         l_sum = 0;
         d_sum = 0;
 
-        for(int i = 0; i < lframes.size(); i++) {
+        for(int i = start_frame; i < lframes.size(); i++) {
+
+            l_sum += lframes.get(i).luminance;
+            d_sum += lframes.get(i).delta;
+
+            if (i < start_frame)
+                return;
+
             if (lframes.get(i).luminance > l_max)
                 l_max = lframes.get(i).luminance;
             if (lframes.get(i).luminance < l_min)
                 l_min = lframes.get(i).luminance;
-            l_sum += lframes.get(i).luminance;
 
             if (lframes.get(i).delta > d_max)
                 d_max = lframes.get(i).delta;
             if (lframes.get(i).delta < d_min)
                 d_min = lframes.get(i).delta;
-            d_sum += lframes.get(i).delta;
         }
 
         l_avg = l_sum / lframes.size();
         d_avg = d_sum / lframes.size();
+    }
+
+    private void analyze() {
+        // exit we do not have enough frames
+        if ((lframes.size() - start_frame) < 2)
+            return;
+
+        // search for a possible start of the transmission
+        if (start_frame == 0) {
+            for (int i = start_frame; i < (lframes.size() - 1); i++) {
+                if ((lframes.get(i).luminance * 2) < lframes.get(i + 1).luminance) {
+                    start_frame = i;
+                    myHandler.signalStr("data_message", "start_frame: " + start_frame);
+                }
+            }
+            return;
+        }
+
+        int dsum = 0;
+        List<Long> ldata = new ArrayList<Long>();
+
+        for (int i = start_frame; i < ( lframes.size() - 1 ); i++) {
+            long lcur = lframes.get(i).luminance;
+            long lnext = lframes.get(i+1).luminance;
+            long ldiff = Math.abs(lcur - lnext);
+
+            // add to counter if signal does not change too much
+            // add new element list on change and reset counter.
+            if ( ldiff < (lcur / 3) ) {
+                dsum += lframes.get(i).delta;
+            } else { /*else if (ldiff > lcur) {*/
+                dsum += lframes.get(i).delta;
+                ldata.add(new Long(dsum));
+                dsum = 0;
+            }
+            /*else {
+                // ABORT: not a morse signal?
+                //start_frame = 0;
+            }*/
+
+        }
+
+        // approximate to morse values and generate long[]
+        // TODO should be a morse function.
+        long base = mMorse.get("GAP");
+        long dbase, dlong, dvlong;
+
+        for (int i = 0; i < ldata.size(); i++) {
+
+            // remove wrong small values ( short glitches )
+            if (ldata.get(i) < base/2)
+                ldata.remove(i);
+
+            dbase = Math.abs(ldata.get(i) - base);
+            dlong = Math.abs(ldata.get(i) - 3 * base);
+            dvlong = Math.abs(ldata.get(i) - 7 * base);
+
+            // approximate to the closest value
+            long dd = Math.min(Math.min(dbase,dlong), dvlong);
+
+            if (dd == dbase) {
+                ldata.set(i, base);
+            }
+            else if (dd == dlong) {
+                ldata.set(i, 3 * base);
+            }
+            else if (dd == dvlong) {
+                ldata.set(i, 7 * base);
+            }
+        }
+
+        // translate morse array to string
+        long data[] = new long[ldata.size()];
+        for (int i = 0; i < ldata.size(); i++)
+            data[i] = ldata.get(i);
+        String str = mMorse.getString(data);
+        myHandler.signalStr("data_message", "str: " + str + "\nmorse : " + ldata.toString());
     }
 
     private void logFrame() {
@@ -125,13 +212,11 @@ public class FrameAnalyzer extends MyRunnable {
         lframes.add(frame);
 
         timestamp = System.currentTimeMillis();
-        myHandler.signalStr("message", "frames: " + lframes.size() +
+        myHandler.signalStr("info_message", "frames: " + lframes.size() +
                              "\ncur / min / max / avg" +
                              "\ndelta: (" + delta + " / " +
                              d_min + " / " + d_max + " / " + d_avg + ") ms " +
                              "\nluminance: (" + luminance / 1000 +
                              " / " + l_min/1000 + " / " + l_max/1000 + " / " + l_avg/1000 +") K");
-
-        //logFrame();
     }
 }

@@ -30,13 +30,13 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     private long timestamp;
 
-    public CameraController(Context context, Camera camera, Handler handler) {
+    public CameraController(Context context, Camera camera, Handler handler, int speed) {
         super(context);
 
         mCamera = camera;
         myHandler = new MyHandler(handler);
 
-        mFrameA = new FrameAnalyzer(handler);
+        mFrameA = new FrameAnalyzer(handler, speed);
         startAnalyzer();
 
         mHolder = getHolder();
@@ -55,6 +55,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public final List<Frame> getFrames() {
         return mFrameA.getFrames();
     }
+    public void reset() { mFrameA.reset(); }
 
     public void stopAnalyzer() {
         mFrameA.stop();

@@ -124,12 +124,12 @@ public class GraphFragment extends Fragment {
                     }
                     catch (IndexOutOfBoundsException e) {}
 
+                    GraphViewSeries series;
                     try {
-                        graphView_delay.removeAllSeries();
-
-                        GraphViewSeries series = new GraphViewSeries("delay_raw",
+                        series = new GraphViewSeries("delay_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
                                 data_delay);
+                        graphView_delay.removeAllSeries();
                         graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("delay_f",
@@ -137,11 +137,10 @@ public class GraphFragment extends Fragment {
                                 data_delay_f);
                         graphView_delay.addSeries(series);
 
-                        graphView_lum.removeAllSeries();
-
                         series = new GraphViewSeries("luminance_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
                                 data_lum);
+                        graphView_lum.removeAllSeries();
                         graphView_lum.addSeries(series);
 
                         series = new GraphViewSeries("luminance_f",

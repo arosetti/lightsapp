@@ -140,6 +140,12 @@ public class MorseConverter {
         return tmpStr;
     }
 
+    public String getString(long data[]) {
+        String tmpStr = "";
+        // TODO conversion function
+        return tmpStr;
+    }
+
     public long[] pattern(String str) {
         boolean lastWasWhitespace;
         int strlen = str.length();
