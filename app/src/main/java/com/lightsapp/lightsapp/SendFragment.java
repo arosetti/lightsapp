@@ -67,7 +67,7 @@ public class SendFragment extends Fragment {
                         mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
                         if (mCtx.mMorse != null) {
                             mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("speed", "500")));
-                            mTextViewMorse.setText(mCtx.mMorse.getString(mStrMorse));
+                            mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
                         }
                         if (mCtx.mLight != null) {
                             mCtx.mLight.setString(mStrMorse);
@@ -96,7 +96,7 @@ public class SendFragment extends Fragment {
                 }
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
-                    String str, str1, str2, mstr = mCtx.mMorse.getString(mStrMorse);
+                    String str, str1, str2, mstr = mCtx.mMorse.getMorse(mStrMorse);
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     len = mstr.length();

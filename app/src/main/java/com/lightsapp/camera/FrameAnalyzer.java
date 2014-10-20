@@ -178,7 +178,7 @@ public class FrameAnalyzer extends MyRunnable {
         long data[] = new long[ldata.size()];
         for (int i = 0; i < ldata.size(); i++)
             data[i] = ldata.get(i);
-        String str = mMorse.getString(data);
+        String str = mMorse.getText(data);
         myHandler.signalStr("data_message", "str: " + str + "\nmorse : " + ldata.toString());
     }
 

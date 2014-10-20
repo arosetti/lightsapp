@@ -117,7 +117,7 @@ public class MorseConverter {
         }
     }
 
-    public String getString(String str) {
+    public String getMorse(String str) {
         long[] l = pattern(str);
         String tmpStr = new String();
         for (int i = 0; i < l.length; i++) {
@@ -140,7 +140,7 @@ public class MorseConverter {
         return tmpStr;
     }
 
-    public String getString(long data[]) {
+    public String getText(long data[]) {
         String tmpStr = "";
         // TODO conversion function
         return tmpStr;
