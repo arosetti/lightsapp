@@ -94,9 +94,12 @@ public class GraphFragment extends Fragment {
 
                 if (msg.getData().containsKey("update")) {
                     Log.v(TAG, "updating graph");
-                    // TODO get frame by frame
 
-                    List<Frame> lframes = mCtx.mCameraController.getFrames();
+                    List<Frame> lframes;
+                    try {
+                        lframes = mCtx.mCameraController.getFrames();
+                    }
+                    catch (Exception e) { return; }
 
                     GraphView.GraphViewData data_delay[] = new GraphView.GraphViewData[lframes.size()];
                     GraphView.GraphViewData data_delay_f[] = new GraphView.GraphViewData[lframes.size()];
