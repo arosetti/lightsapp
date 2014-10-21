@@ -1,11 +1,10 @@
 package com.lightsapp.lightsapp;
 
 import android.app.Fragment;
-import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.lightsapp.camera.CameraController;
-import com.lightsapp.morse.MorseConverter;
 
 public class SendFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "0";
     private static final String TAG = SendFragment.class.getSimpleName();
 
     private MainActivity mCtx = (MainActivity) getActivity();
+
+    private ImageView mImageView_lightbulb;
+    private Drawable lightbulb_on, lightbulb_off;
 
     private TextView mTextViewMessage;
     private TextView mTextViewMorse;
@@ -51,18 +51,20 @@ public class SendFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
+        mImageView_lightbulb = (ImageView) v.findViewById(R.id.imageView_lightbulb);
+        lightbulb_off = getResources().getDrawable(R.drawable.lightbulb_off);
+        lightbulb_on = getResources().getDrawable(R.drawable.lightbulb_on);
+
         mTextViewMessage = (TextView) v.findViewById(R.id.txt_status);
         mTextViewMessage.setText("idle");
 
         mEdit = (EditText) v.findViewById(R.id.edit_tx);
         mEdit.setText(mCtx.mPrefs.getString("default_text", "sos"));
 
-        Button mButton = (Button)v.findViewById(R.id.button_start);
+        Button mButton = (Button) v.findViewById(R.id.button_start);
         mButton.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         mStrMorse = mEdit.getText().toString();
                         mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
                         if (mCtx.mMorse != null) {
@@ -76,14 +78,13 @@ public class SendFragment extends Fragment {
                     }
                 });
 
-        mButton = (Button)v.findViewById(R.id.button_stop);
+        mButton = (Button) v.findViewById(R.id.button_stop);
         mButton.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
-                        if (mCtx.mLight != null )
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (mCtx.mLight != null)
                             mCtx.mLight.setStatus(false);
+                        mImageView_lightbulb.setImageDrawable(lightbulb_off);
                     }
                 });
 
@@ -93,6 +94,16 @@ public class SendFragment extends Fragment {
 
                 if (mTextViewMessage != null && msg.getData().containsKey("message")) {
                     mTextViewMessage.setText((String) msg.getData().get("message"));
+                }
+
+                if (mImageView_lightbulb != null && msg.getData().containsKey("light")) {
+                    String str = msg.getData().getString("light");
+
+                    if (str == "on") {
+                        mImageView_lightbulb.setImageDrawable(lightbulb_on);
+                    } else {
+                        mImageView_lightbulb.setImageDrawable(lightbulb_off);
+                    }
                 }
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
@@ -106,10 +117,12 @@ public class SendFragment extends Fragment {
 
                     try {
                         str1 = mstr.substring(0, cut);
-                    } catch (IndexOutOfBoundsException e) { }
+                    } catch (IndexOutOfBoundsException e) {
+                    }
                     try {
                         str2 = mstr.substring(cut);
-                    } catch (IndexOutOfBoundsException e) { }
+                    } catch (IndexOutOfBoundsException e) {
+                    }
                     String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>";
                     mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
                     Log.v(TAG, "handler gui");

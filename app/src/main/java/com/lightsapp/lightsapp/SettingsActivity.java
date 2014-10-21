@@ -109,8 +109,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);

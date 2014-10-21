@@ -1,10 +1,7 @@
 package com.lightsapp.camera;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
@@ -13,7 +10,6 @@ import android.view.SurfaceView;
 
 import com.lightsapp.core.MyHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,8 +24,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private int width;
     private int height;
 
-    private long timestamp;
-
     public CameraController(Context context, Camera camera, Handler handler, int speed) {
         super(context);
 
@@ -43,8 +37,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-        timestamp = 0;
     }
 
     public void startAnalyzer() {
@@ -55,18 +47,20 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public final List<Frame> getFrames() {
         return mFrameA.getFrames();
     }
-    public void reset() { mFrameA.reset(); }
+
+    public void reset() {
+        mFrameA.reset();
+    }
 
     public void stopAnalyzer() {
         mFrameA.stop();
     }
 
+    // TODO send data to mFrame more efficently
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (imageFormat == ImageFormat.NV21) {
-            Rect rect = new Rect(0, 0, width, height);
-            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-            mFrameA.addFrame(yuvimage.getYuvData(), yuvimage.getWidth(), yuvimage.getHeight());
+            mFrameA.addFrame(data, width, height);
         }
     }
 
@@ -85,8 +79,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.startPreview();
         } catch (IOException e) {
             Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
@@ -123,11 +116,12 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             params.setRecordingHint(true);
             params.setAutoExposureLock(true);
             params.setAutoWhiteBalanceLock(true);
+
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
             //params.setPreviewSize(width, height);
             mCamera.setParameters(params);
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
         }
 

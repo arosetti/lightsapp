@@ -46,13 +46,14 @@ public class LightController extends MyRunnable {
 
     private long sound(int t) { // TODO optimize this
         final long timestamp = System.currentTimeMillis();
-        mBeep.genTone(t/1000f, beepFreq);
+        mBeep.genTone(t / 1000f, beepFreq);
         mBeep.playSound();
         return (System.currentTimeMillis() - timestamp);
     }
 
     private void flash(int t) {
         long ret = 0;
+
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         mCamera.setParameters(p);
@@ -61,7 +62,7 @@ public class LightController extends MyRunnable {
             ret = sound(t);
 
         if ((t - ret) > 0)
-            forceSleep((int)(t - ret));
+            forceSleep((int) (t - ret));
         else
             Log.v(TAG, "disable sound output please...");
 
@@ -70,8 +71,7 @@ public class LightController extends MyRunnable {
         mCamera.setParameters(p);
     }
 
-    public void setString(String str)
-    {
+    public void setString(String str) {
         data = new String(str);
         if (mMorse != null)
             pattern = mMorse.pattern(data);
@@ -101,6 +101,7 @@ public class LightController extends MyRunnable {
             if (!getStatus())
                 break;
             if (i % 2 != 0) {
+                myHandler.signalStr("light", "on");
                 if (pattern[i] > DOT)
                     myHandler.signalStr("message", "DASH\n" + pattern[i] + "ms");
                 else
@@ -108,10 +109,10 @@ public class LightController extends MyRunnable {
                 progress++;
                 myHandler.signalInt("progress", progress);
                 flash((int) pattern[i]);
-            }
-            else {
-                myHandler.signalStr("message", "...\n" + pattern[i] + "ms" );
-                if (pattern[i] == LETTER_GAP )
+                myHandler.signalStr("light", "off");
+            } else {
+                myHandler.signalStr("message", "...\n" + pattern[i] + "ms");
+                if (pattern[i] == LETTER_GAP)
                     progress++;
                 else if (pattern[i] == WORD_GAP)
                     progress += 3;

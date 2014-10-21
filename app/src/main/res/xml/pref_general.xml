@@ -4,7 +4,7 @@
         android:key="enable_sound"
         android:title="@string/pref_title_enable_sound"
         android:summary="@string/pref_description_enable_sound"
-        android:defaultValue="true" />
+        android:defaultValue="true"/>
 
     <EditTextPreference
         android:key="default_text"
@@ -14,7 +14,7 @@
         android:inputType="textCapWords"
         android:capitalize="none"
         android:singleLine="true"
-        android:maxLines="1" />
+        android:maxLines="1"/>
 
     <ListPreference
         android:key="speed"
@@ -23,5 +23,5 @@
         android:entryValues="@array/pref_speed_values"
         android:defaultValue="300"
         android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        android:positiveButtonText="@null"/>
 </PreferenceScreen>

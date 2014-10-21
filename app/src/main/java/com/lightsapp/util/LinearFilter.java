@@ -1,6 +1,5 @@
 package com.lightsapp.util;
 
-import android.util.Log;
 import junit.framework.Assert;
 
 public class LinearFilter {
@@ -45,22 +44,22 @@ public class LinearFilter {
 
     public static final LinearFilter[] Kernel = {
             new LinearFilter(Filter.KERNEL_NONE,
-                    new float[] { 1f }),
+                    new float[]{1f}),
             new LinearFilter(Filter.KERNEL_GAUSSIAN_5,
-                    new float[] { 0.535139208712f,
+                    new float[]{0.535139208712f,
                             0.191553166229f,
-                            0.0358772294153f }),
+                            0.0358772294153f}),
             new LinearFilter(Filter.KERNEL_GAUSSIAN_11,
-                    new float[] { 0.197952965559f,
+                    new float[]{0.197952965559f,
                             0.173313792797f,
                             0.118141540812f,
                             0.0645048567988f,
                             0.0290276086587f,
-                            0.0110357181537f }),
+                            0.0110357181537f}),
             new LinearFilter(Filter.KERNEL_SAVITZKY_GOLAY_5,
-                    new float[] { 17f, 12f, -3f }),
+                    new float[]{17f, 12f, -3f}),
             new LinearFilter(Filter.KERNEL_SAVITZKY_GOLAY_11,
-                    new float[] { 89f, 84f, 69f, 44f, 9f, -36f }),
+                    new float[]{89f, 84f, 69f, 44f, 9f, -36f}),
     };
 
     public enum Filter {
@@ -102,6 +101,7 @@ public class LinearFilter {
 
     /**
      * Apply the filter to an array
+     *
      * @param x the array of floats to operate on. Will be mutated.
      */
     public void apply(float[] x) {
@@ -114,31 +114,31 @@ public class LinearFilter {
 
         // split [0 .. N-1] into [ 0, .., i_pre-1] + [i_pre, ..., i_post-1], [i_post, ..., N-1 ]
         // such that i_pre = length-1 and i_post = N-length if there is enough space
-        int i_pre  = Math.min(length-1, N/2);
-        int i_post = Math.max(N-length, N/2);
+        int i_pre = Math.min(length - 1, N / 2);
+        int i_post = Math.max(N - length, N / 2);
 
-        for (i=0; i<i_pre; i++) {
+        for (i = 0; i < i_pre; i++) {
             norm = weight[0];
             sum = raw_x[i] * weight[0];
-            for (int n=1; n<=i; n++) {
-                sum += (raw_x[i-n] + raw_x[i+n]) * weight[n];
+            for (int n = 1; n <= i; n++) {
+                sum += (raw_x[i - n] + raw_x[i + n]) * weight[n];
                 norm += 2 * weight[n];
             }
             //x[i] = sum / norm;
         }
 
-        for (i=i_pre; i<i_post; i++) {
+        for (i = i_pre; i < i_post; i++) {
             sum = raw_x[i] * weight[0];
-            for (int n=1; n<length; n++)
-                sum += (raw_x[i-n] + raw_x[i+n]) * weight[n];
+            for (int n = 1; n < length; n++)
+                sum += (raw_x[i - n] + raw_x[i + n]) * weight[n];
             x[i] = sum;
         }
 
-        for (i=i_post; i<N; i++) {
+        for (i = i_post; i < N; i++) {
             norm = weight[0];
             sum = raw_x[i] * weight[0];
-            for (int n=1; n<N-i; n++) {
-                sum += (raw_x[i-n] + raw_x[i+n]) * weight[n];
+            for (int n = 1; n < N - i; n++) {
+                sum += (raw_x[i - n] + raw_x[i + n]) * weight[n];
                 norm += 2 * weight[n];
             }
             x[i] = sum / norm;

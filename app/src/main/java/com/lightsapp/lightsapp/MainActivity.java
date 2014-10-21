@@ -1,23 +1,20 @@
 package com.lightsapp.lightsapp;
 
-import java.util.Locale;
-
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +24,8 @@ import android.widget.Toast;
 import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.LightController;
 import com.lightsapp.morse.MorseConverter;
+
+import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -47,8 +46,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     Handler mHandlerGraph = null;
     private SetupHandler mThreadSetup = null;
 
-    private void setup()
-    {
+    private void setup() {
         if (mThreadSetup == null) {
             mThreadSetup = new SetupHandler();
         }
@@ -75,7 +73,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     try {
                         mCamera = Camera.open();
                         mLight = new LightController(mMorse, mCamera, mHandlerSend,
-                                                     mPrefs.getBoolean("enable_sound", true));
+                                mPrefs.getBoolean("enable_sound", true));
                         mLight.start();
 
                         Message msg = mHandlerRecv.obtainMessage();
@@ -85,9 +83,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
                         mHandlerRecv.sendMessage(msg);
                         Log.v(TAG, "setup done");
-                    }
-                    catch (RuntimeException e) {
-                        Log.e(TAG, "failed to setup in setuphandler");
+                    } catch (RuntimeException e) {
+                        Log.e(TAG, "failed to setup in setuphandler: " + e.getMessage());
                     }
                 }
             });
@@ -123,8 +120,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.v(TAG, "STOP");
     }
 
-    public void setFragment(Fragment frag)
-    {
+    public void setFragment(Fragment frag) {
         FragmentManager fm = getFragmentManager();
         if (fm.findFragmentById(R.id.pager) == null) {
             fm.beginTransaction().add(R.id.pager, frag).commit();
@@ -138,7 +134,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.v(TAG, "CREATE");
 
         final ActionBar actionBar = getActionBar();
-        if(actionBar != null)
+        if (actionBar != null)
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
@@ -171,12 +167,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onPostResume() {
         super.onPostResume();
-        if (!hasCamera() && !hasFlash())
-        {
+        if (!hasCamera() && !hasFlash()) {
             Toast toast = Toast.makeText(this, "You can't use this app, you'll need a camera and flash.", Toast.LENGTH_LONG);
             toast.show();
-        }
-        else {
+        } else {
             if (!hasFlash()) {
                 Toast toast = Toast.makeText(this, "This app need a flash to send morse code.", Toast.LENGTH_LONG);
                 toast.show();
@@ -200,6 +194,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;
         }
@@ -253,11 +251,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.title_section_send).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.title_section_recv).toUpperCase(l);
                 case 2:
-                    return "Graph".toUpperCase();
+                    return getString(R.string.title_section_graph).toUpperCase();
             }
             return null;
         }

@@ -34,7 +34,9 @@ public abstract class MyRunnable implements Runnable {
         return status;
     }
 
-    public final void setStatus(boolean s) { status = s; }
+    public final void setStatus(boolean s) {
+        status = s;
+    }
 
     public final void start() {
         tid = new Thread(this);
@@ -58,10 +60,17 @@ public abstract class MyRunnable implements Runnable {
         }
     }
 
-    public void setup() {}
-    public void beforeloop() {}
-    public void loop() {}
-    public void afterloop() {}
+    public void setup() {
+    }
+
+    public void beforeloop() {
+    }
+
+    public void loop() {
+    }
+
+    public void afterloop() {
+    }
 
     public final void run() {
         setup();
@@ -82,8 +91,7 @@ public abstract class MyRunnable implements Runnable {
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
             }
         }

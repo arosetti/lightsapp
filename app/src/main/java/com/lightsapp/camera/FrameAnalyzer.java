@@ -1,6 +1,5 @@
 package com.lightsapp.camera;
 
-import android.hardware.Camera;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
@@ -15,30 +14,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FrameAnalyzer extends MyRunnable {
-    private final String TAG = "FrameAnalyzer";
-    private Camera mCamera;
+    private final String TAG = FrameAnalyzer.class.getSimpleName();
+
+    private MyHandler myHandler;
+
     private MorseConverter mMorse;
     private List<Frame> lframes;
     private long timestamp;
-    private MyHandler myHandler;
+    private int start_frame = 0;
+    private int last_frame_analyzed = 0;
 
     private long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     private long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
-    private int start_frame = 0;
 
     public FrameAnalyzer(Handler handler, int speed) {
         super(true);
         lframes = new ArrayList<Frame>();
         myHandler = new MyHandler(handler);
         mMorse = new MorseConverter(speed);
-     }
+    }
 
     @Override
     public void loop() {
+
+        try {
+            Frame frm;
+            for (int i = last_frame_analyzed; i < lframes.size(); i++) {
+                frm = lframes.get(i);
+                if (frm.luminance < 0) {
+                    frm.analyze();
+                    last_frame_analyzed = i;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "error analyzing frames: " + e.getMessage());
+        }
+
         try {
             getFrameStats();
             analyze();
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -50,29 +65,11 @@ public class FrameAnalyzer extends MyRunnable {
         return lframes;
     }
 
-    public final void reset() { lframes.clear(); }
-
-    private long getFrameLuminance(byte[] data, int width, int height)
-    {
-        final int frameSize = width * height;
-        long luminance = 0;
-
-        for (int j = 0, yp = 0; j < height; j++) {
-            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-            for (int i = 0; i < width; i++, yp++) {
-                int y = (0xff & ((int) data[yp])) - 16;
-                if (y < 0)
-                    y = 0;
-                if ((i & 1) == 0) {
-                    v = (0xff & data[uvp++]) - 128;
-                    u = (0xff & data[uvp++]) - 128;
-                }
-
-                luminance += (long) y;
-            }
-        }
-
-        return luminance;
+    public final void reset() {
+        myHandler.signalStr("data_message", "***");
+        lframes.clear();
+        start_frame = 0;
+        last_frame_analyzed = 0;
     }
 
     private void getFrameStats() { // TODO do it incrementally
@@ -82,7 +79,7 @@ public class FrameAnalyzer extends MyRunnable {
         l_sum = 0;
         d_sum = 0;
 
-        for(int i = start_frame; i < lframes.size(); i++) {
+        for (int i = start_frame; i < lframes.size(); i++) {
 
             l_sum += lframes.get(i).luminance;
             d_sum += lframes.get(i).delta;
@@ -124,14 +121,14 @@ public class FrameAnalyzer extends MyRunnable {
         int dsum = 0;
         List<Long> ldata = new ArrayList<Long>();
 
-        for (int i = start_frame; i < ( lframes.size() - 1 ); i++) {
+        for (int i = start_frame; i < (lframes.size() - 1); i++) {
             long lcur = lframes.get(i).luminance;
-            long lnext = lframes.get(i+1).luminance;
+            long lnext = lframes.get(i + 1).luminance;
             long ldiff = Math.abs(lcur - lnext);
 
             // add to counter if signal does not change too much
             // add new element list on change and reset counter.
-            if ( ldiff < (lcur / 3) ) {
+            if (ldiff < (lcur / 3)) {
                 dsum += lframes.get(i).delta;
             } else { /*else if (ldiff > lcur) {*/
                 dsum += lframes.get(i).delta;
@@ -153,23 +150,27 @@ public class FrameAnalyzer extends MyRunnable {
         for (int i = 0; i < ldata.size(); i++) {
 
             // remove wrong small values ( short glitches )
-            if (ldata.get(i) < base/2)
+            if (ldata.get(i) < base / 2)
                 ldata.remove(i);
+
+            // abort if values are too high
+            if (ldata.get(i) > (8*base)) {
+                reset();
+                return;
+            }
 
             dbase = Math.abs(ldata.get(i) - base);
             dlong = Math.abs(ldata.get(i) - 3 * base);
             dvlong = Math.abs(ldata.get(i) - 7 * base);
 
             // approximate to the closest value
-            long dd = Math.min(Math.min(dbase,dlong), dvlong);
+            long dd = Math.min(Math.min(dbase, dlong), dvlong);
 
             if (dd == dbase) {
                 ldata.set(i, base);
-            }
-            else if (dd == dlong) {
+            } else if (dd == dlong) {
                 ldata.set(i, 3 * base);
-            }
-            else if (dd == dvlong) {
+            } else if (dd == dvlong) {
                 ldata.set(i, 7 * base);
             }
         }
@@ -197,26 +198,24 @@ public class FrameAnalyzer extends MyRunnable {
         }
     }
 
+    // TODO use a buffer and process in the loop, except for timestamp
     public void addFrame(byte[] data, int width, int height) {
-        long luminance = 0;
         long delta;
-        // TODO use a buffer and process in the loop
-        luminance = getFrameLuminance(data, width, height);
 
         if (timestamp != 0)
             delta = (System.currentTimeMillis() - timestamp);
         else
             delta = 0;
 
-        Frame frame = new Frame(delta, luminance);
+        Frame frame = new Frame(data, width, height, delta);
         lframes.add(frame);
 
         timestamp = System.currentTimeMillis();
         myHandler.signalStr("info_message", "frames: " + lframes.size() +
-                             "\ncur / min / max / avg" +
-                             "\ndelta: (" + delta + " / " +
-                             d_min + " / " + d_max + " / " + d_avg + ") ms " +
-                             "\nluminance: (" + luminance / 1000 +
-                             " / " + l_min/1000 + " / " + l_max/1000 + " / " + l_avg/1000 +") K");
+                "\ncur / min / max / avg" +
+                "\ndelta: (" + delta + " / " +
+                d_min + " / " + d_max + " / " + d_avg + ") ms " +
+                "\nluminance: (" + lframes.get(last_frame_analyzed).luminance / 1000 +
+                " / " + l_min / 1000 + " / " + l_max / 1000 + " / " + l_avg / 1000 + ") K");
     }
 }

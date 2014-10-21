@@ -1,12 +1,9 @@
 package com.lightsapp.lightsapp;
 
 import android.app.Fragment;
-import android.content.SharedPreferences;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -14,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lightsapp.camera.CameraController;
-import com.lightsapp.morse.MorseConverter;
 
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
@@ -59,12 +56,10 @@ public class RecvFragment extends Fragment {
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
-        Button mButton = (Button)v.findViewById(R.id.button_reset);
+        Button mButton = (Button) v.findViewById(R.id.button_reset);
         mButton.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         mCtx.mCameraController.reset();
                     }
                 });
@@ -78,7 +73,7 @@ public class RecvFragment extends Fragment {
                     if (mCtx.mHandlerGraph != null) {
                         Message msgx = mCtx.mHandlerGraph.obtainMessage();
                         msgx.copyFrom(msg);
-                        mCtx.mHandlerGraph.sendMessage(msgx); // lol forward
+                        mCtx.mHandlerGraph.sendMessage(msgx);
                     }
                 }
 

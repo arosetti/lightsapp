@@ -2,14 +2,18 @@
 <resources>
 
     <string name="app_name">Lightsapp</string>
-    <string name="title_section1">Send</string>
-    <string name="title_section2">Recv</string>
+    <string name="title_section_send">Send</string>
+    <string name="title_section_recv">Recv</string>
+    <string name="title_section_graph">Graph</string>
     <string name="action_settings">Settings</string>
     <string name="action_exit">Exit</string>
     <string name="idle">...</string>
     <string name="btn_start">start</string>
     <string name="btn_stop">stop</string>
-    <string name="text_hint">Enter your message</string>
     <string name="btn_reset">reset</string>
+    <string name="text_hint">Enter your message</string>
+    <string name="title_activity_info">Info</string>
+    <string name="txt_info">This is the info activity, res@fpsrange, other desc. tips and tricks, authors</string>
+    <string name="action_about">About</string>
 
 </resources>

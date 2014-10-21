@@ -80,7 +80,7 @@ public class MorseConverter {
         /* 9 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DOT},
         };
 
-        ERROR_GAP = new long[] { GAP };
+        ERROR_GAP = new long[]{GAP};
     }
 
     public MorseConverter(int speed) {
@@ -108,11 +108,9 @@ public class MorseConverter {
         }
         if (c >= 'a' && c <= 'z') {
             return LETTERS[c - 'a'];
-        }
-        else if (c >= '0' && c <= '9') {
+        } else if (c >= '0' && c <= '9') {
             return NUMBERS[c - '0'];
-        }
-        else {
+        } else {
             return ERROR_GAP;
         }
     }
@@ -124,15 +122,13 @@ public class MorseConverter {
             if (i % 2 != 0) {
                 if (l[i] == DOT) {
                     tmpStr = tmpStr.concat(".");
-                }
-                else if (l[i] == DASH) {
-                        tmpStr = tmpStr.concat("-");
+                } else if (l[i] == DASH) {
+                    tmpStr = tmpStr.concat("-");
                 }
             } else {
                 if (l[i] == LETTER_GAP) {
                     tmpStr = tmpStr.concat(" ");
-                }
-                else if (l[i] ==  WORD_GAP) {
+                } else if (l[i] == WORD_GAP) {
                     tmpStr = tmpStr.concat("   ");
                 }
             }
@@ -152,7 +148,7 @@ public class MorseConverter {
 
         int len = 1;
         lastWasWhitespace = true;
-        for (int i=0; i<strlen; i++) {
+        for (int i = 0; i < strlen; i++) {
             char c = str.charAt(i);
             if (Character.isWhitespace(c)) {
                 if (!lastWasWhitespace) {
@@ -168,11 +164,11 @@ public class MorseConverter {
             }
         }
 
-        long[] result = new long[len+1];
+        long[] result = new long[len + 1];
         result[0] = 0;
         int pos = 1;
         lastWasWhitespace = true;
-        for (int i=0; i<strlen; i++) {
+        for (int i = 0; i < strlen; i++) {
             char c = str.charAt(i);
             if (Character.isWhitespace(c)) {
                 if (!lastWasWhitespace) {
