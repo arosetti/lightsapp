@@ -16,6 +16,8 @@
 
 package com.lightsapp.morse;
 
+import android.util.Log;
+
 public class MorseConverter {
     private final String TAG = "MorseConverter";
     private long SPEED_BASE;
@@ -28,6 +30,8 @@ public class MorseConverter {
     private long[][] LETTERS;
     private long[][] NUMBERS;
     private long[] ERROR_GAP;
+    private char[] charArray;
+    private char[] simbolArray;
 
     public void updateValues(long speed) {
         DOT = SPEED_BASE = speed;
@@ -66,6 +70,8 @@ public class MorseConverter {
         /* Z */ new long[]{DASH, GAP, DASH, GAP, DOT, GAP, DOT},
         };
 
+        charArray = new char[]{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'w', 'x', 'y', 'z' };
+
         /** The characters from '0' to '9' */
         NUMBERS = new long[][]{
         /* 0 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH},
@@ -79,6 +85,8 @@ public class MorseConverter {
         /* 8 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DOT, GAP, DOT},
         /* 9 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DOT},
         };
+
+        simbolArray = new char[]{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         ERROR_GAP = new long[]{GAP};
     }
@@ -138,8 +146,50 @@ public class MorseConverter {
 
     public String getText(long data[]) {
         String tmpStr = "";
-        // TODO conversion function
+        // TOTO
         return tmpStr;
+    }
+
+    public char getChar(long sequence[])
+    {
+        //Log.v(TAG, "Ricevuto Carattere");
+        boolean find = false;
+
+        for (int i = 0; i < LETTERS.length; i++) {
+            // Se sono di lunghezza diversa continua
+            if (sequence.length != LETTERS[i].length)
+                continue;
+            for (int j = 0; j < LETTERS[i].length; j++) {
+                if (sequence[j] != LETTERS[i][j]) {
+                    find = false;
+                    break;
+                } else {
+                    find = true;
+                }
+            }
+            if (find == true) {
+                return charArray[i];
+            }
+        }
+
+        for (int i = 0; i < NUMBERS.length; i++) {
+            // Se sono di lunghezza diversa continua
+            if (sequence.length != NUMBERS[i].length)
+                continue;
+            for (int j = 0; j < NUMBERS[i].length; j++) {
+                if (sequence[j] != NUMBERS[i][j]) {
+                    find = false;
+                    break;
+                } else {
+                    find = true;
+                }
+            }
+            if (find == true) {
+                return simbolArray[i];
+            }
+        }
+
+        return '#';
     }
 
     public long[] pattern(String str) {
