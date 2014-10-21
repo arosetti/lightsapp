@@ -112,16 +112,27 @@ public class GraphFragment extends Fragment {
                         first = last - GRAPH_SIZE;
                     }
 
-                    GraphView.GraphViewData data_delay[] = new GraphView.GraphViewData[size];
-                    GraphView.GraphViewData data_delay_f[] = new GraphView.GraphViewData[size];
-                    GraphView.GraphViewData data_lum[] = new GraphView.GraphViewData[size];
-                    GraphView.GraphViewData data_lum_f[] = new GraphView.GraphViewData[size];
-                    float fdata_delay[] = new float[size];
-                    float fdata_lum[] = new float[size];
-
-                    LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
+                    GraphView.GraphViewData data_delay[];
+                    GraphView.GraphViewData data_delay_f[];
+                    GraphView.GraphViewData data_lum[];
+                    GraphView.GraphViewData data_lum_f[];
+                    float fdata_delay[];
+                    float fdata_lum[];
 
                     try {
+                        data_delay = new GraphView.GraphViewData[size];
+                        data_delay_f = new GraphView.GraphViewData[size];
+                        data_lum = new GraphView.GraphViewData[size];
+                        data_lum_f = new GraphView.GraphViewData[size];
+                        fdata_delay = new float[size];
+                        fdata_lum = new float[size];
+                    }
+                    catch (Exception e) {
+                        return;
+                    }
+
+                    try {
+                        LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
                         for (int i = first, j = 0; i < last; i++ , j++) {
                             fdata_delay[j] = (float) lframes.get(i).delta;
                             fdata_lum[j] = (float) lframes.get(i).luminance / 1000;
