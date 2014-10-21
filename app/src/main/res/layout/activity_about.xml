@@ -9,8 +9,12 @@
                 tools:context="com.lightsapp.lightsapp.AboutActivity">
 
     <TextView
-        android:text="@string/txt_info"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/TextViewInfo"
+        android:linksClickable="true"
+        android:clickable="true"
+        android:enabled="true"
+        android:autoLink="web|email"/>
 
 </RelativeLayout>

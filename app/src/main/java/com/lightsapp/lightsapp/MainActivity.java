@@ -193,10 +193,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            if(mLight != null)
+                mLight.setStatus(false);
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
+            if(mLight != null)
+                mLight.setStatus(false);
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;

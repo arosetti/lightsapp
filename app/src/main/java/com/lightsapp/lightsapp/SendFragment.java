@@ -5,7 +5,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,16 +62,31 @@ public class SendFragment extends Fragment {
 
         mEdit = (EditText) v.findViewById(R.id.edit_tx);
         mEdit.setText(mCtx.mPrefs.getString("default_text", "sos"));
+        mStrMorse = mEdit.getText().toString();
+
+        mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
+        mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
+
+        mEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                mStrMorse = mEdit.getText().toString();
+                mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
+            }
+        });
 
         Button mButton = (Button) v.findViewById(R.id.button_start);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mStrMorse = mEdit.getText().toString();
-                        mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
                         if (mCtx.mMorse != null) {
                             mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("speed", "500")));
-                            mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
                         }
                         if (mCtx.mLight != null) {
                             mCtx.mLight.setString(mStrMorse);
