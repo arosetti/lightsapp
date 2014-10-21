@@ -147,50 +147,44 @@ public class MorseConverter {
         return tmpStr;
     }
 
+    private long[] ListToPrimitiveArray(List<Long> input) {
+        long output[] = new long[input.size()];
+        int index = 0;
+        for(Long val : input) {
+            output[index] =  val;
+            index++;
+        }
+        return output;
+    }
+
     public String getText(long data[]) {
         String str = "";
-        char c;
-
         List<Long> lchar = new ArrayList<Long>();
-        int len = 0;
+
         for (int i = 0; i < data.length; i++) {
             if (data[i] == DOT) { /* or GAP */
                 lchar.add(data[i]);
-                len++;
             }
             else if (data[i] == DASH) { /* or LETTER_GAP */
                 if (i % 2 != 0) {
-                    long character[] = new long[lchar.size()];
-                    for (int j = 0; j < lchar.size(); j++)
-                        character[j] = lchar.get(j);
-                    str += getChar(character);
-                    len = 0;
+                    str += getChar(ListToPrimitiveArray(lchar));
                     lchar.clear();
                 } else {
-                    len++;
-                    lchar.add(len, GAP);
+                    lchar.add(data[i]);
                 }
             }
-            else if (data [i] == WORD_GAP) {
-                long character[] = new long[lchar.size()];
-                for (int j = 0; j < lchar.size(); j++)
-                    character[j] = lchar.get(j);
-                str += getChar(character);
+            else if (data [i] == WORD_GAP) { /* possible merge with previous else if ( data[i] >= DASH) */
+                str += getChar(ListToPrimitiveArray(lchar));
                 str += ' ';
-                len = 0;
                 lchar.clear();
             }
             else {
                 Log.e(TAG, "malformed morse data");
             }
+        }
 
-            if (lchar.size() != 0) {
-                long character[] = new long[lchar.size()];
-                for (int j = 0; j < lchar.size(); j++)
-                    character[j] = lchar.get(j);
-                str += getChar(character);
-            }
-
+        if (lchar.size() != 0) {
+            str += getChar(ListToPrimitiveArray(lchar));
         }
 
         return str;
