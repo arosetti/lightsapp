@@ -18,6 +18,9 @@ package com.lightsapp.morse;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MorseConverter {
     private final String TAG = "MorseConverter";
     private long SPEED_BASE;
@@ -145,51 +148,97 @@ public class MorseConverter {
     }
 
     public String getText(long data[]) {
-        String tmpStr = "";
-        // TOTO
-        return tmpStr;
-    }
+        String str = "";
+        char c;
 
-    public char getChar(long sequence[])
-    {
-        //Log.v(TAG, "Ricevuto Carattere");
-        boolean find = false;
-
-        for (int i = 0; i < LETTERS.length; i++) {
-            // Se sono di lunghezza diversa continua
-            if (sequence.length != LETTERS[i].length)
-                continue;
-            for (int j = 0; j < LETTERS[i].length; j++) {
-                if (sequence[j] != LETTERS[i][j]) {
-                    find = false;
-                    break;
+        List<Long> lchar = new ArrayList<Long>();
+        int len = 0;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == DOT) { /* or GAP */
+                lchar.add(data[i]);
+                len++;
+            }
+            else if (data[i] == DASH) { /* or LETTER_GAP */
+                if (i % 2 != 0) {
+                    long character[] = new long[lchar.size()];
+                    for (int j = 0; j < lchar.size(); j++)
+                        character[j] = lchar.get(j);
+                    str += getChar(character);
+                    len = 0;
+                    lchar.clear();
                 } else {
-                    find = true;
+                    len++;
+                    lchar.add(len, GAP);
                 }
             }
-            if (find == true) {
-                return charArray[i];
+            else if (data [i] == WORD_GAP) {
+                long character[] = new long[lchar.size()];
+                for (int j = 0; j < lchar.size(); j++)
+                    character[j] = lchar.get(j);
+                str += getChar(character);
+                str += ' ';
+                len = 0;
+                lchar.clear();
             }
+            else {
+                Log.e(TAG, "malformed morse data");
+            }
+
+            if (lchar.size() != 0) {
+                long character[] = new long[lchar.size()];
+                for (int j = 0; j < lchar.size(); j++)
+                    character[j] = lchar.get(j);
+                str += getChar(character);
+            }
+
+        }
+
+        return str;
+    }
+
+    private char getChar(long sequence[])
+    {
+        boolean found = false;
+
+        for (int i = 0; i < LETTERS.length; i++) {
+            if (sequence.length != LETTERS[i].length)
+                continue;
+            try {
+                for (int j = 0; j < LETTERS[i].length; j++) {
+                    if (sequence[j] != LETTERS[i][j]) {
+                        found = false;
+                        break;
+                    } else {
+                        found = true;
+                    }
+                }
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+            }
+            if (found)
+                return charArray[i];
         }
 
         for (int i = 0; i < NUMBERS.length; i++) {
-            // Se sono di lunghezza diversa continua
             if (sequence.length != NUMBERS[i].length)
                 continue;
-            for (int j = 0; j < NUMBERS[i].length; j++) {
-                if (sequence[j] != NUMBERS[i][j]) {
-                    find = false;
-                    break;
-                } else {
-                    find = true;
+            try {
+                for (int j = 0; j < NUMBERS[i].length; j++) {
+                    if (sequence[j] != NUMBERS[i][j]) {
+                        found = false;
+                        break;
+                    } else {
+                        found = true;
+                    }
                 }
             }
-            if (find == true) {
-                return simbolArray[i];
+            catch (ArrayIndexOutOfBoundsException e) {
             }
+            if (found)
+                return simbolArray[i];
         }
 
-        return '#';
+        return '*';
     }
 
     public long[] pattern(String str) {

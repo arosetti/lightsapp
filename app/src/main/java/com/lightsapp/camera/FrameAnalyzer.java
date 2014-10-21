@@ -143,21 +143,19 @@ public class FrameAnalyzer extends MyRunnable {
         }
 
         // approximate to morse values and generate long[]
-        // TODO should be a morse function.
         long base = mMorse.get("GAP");
         long dbase, dlong, dvlong;
 
-        int leng_char = 0;
-        List<Long> lchar = new ArrayList<Long>();
-        String str = "";
-
         for (int i = 0; i < ldata.size(); i++) {
             // remove wrong small values ( short glitches )
-            if (ldata.get(i) < base / 2)
+            if (ldata.get(i) < base / 2) {
+                Log.d(TAG,"removing glitch value in morse long array");
                 ldata.remove(i);
+            }
 
             // abort if values are too high
             if (ldata.get(i) > (8*base)) {
+                Log.d(TAG,"abort analyze, symbol too long.");
                 reset();
                 return;
             }
@@ -171,52 +169,19 @@ public class FrameAnalyzer extends MyRunnable {
 
             if (dd == dbase) {
                 ldata.set(i, base);
-                leng_char++;
-                lchar.add(leng_char, base);
             } else if (dd == dlong) {
                 ldata.set(i, 3 * base);
-
-                if (i%2 != 0) {
-                    // Aggiunge carattere (linea spenta)
-                    long character[] = new long[lchar.size()];
-                    for (int j = 0; j < lchar.size(); j++)
-                        character[j] = lchar.get(j);
-                    str += mMorse.getChar(character);
-                    leng_char = 0;
-                    lchar.clear();
-                } else {
-                    // Linea accesa
-                    leng_char++;
-                    lchar.add(leng_char, base);
-                }
-
             } else if (dd == dvlong) {
                 ldata.set(i, 7 * base);
-
-                // Aggiunge carattere e spazio
-                long character[] = new long[lchar.size()];
-                for (int j = 0; j < lchar.size(); j++)
-                    character[j] = lchar.get(j);
-                str += mMorse.getChar(character);
-                str += ' ';
-                leng_char = 0;
-                lchar.clear();
             }
         }
 
-        // Dati rimanenti
-        if (lchar.size() != 0) {
-            long character[] = new long[lchar.size()];
-            for (int j = 0; j < lchar.size(); j++)
-                character[j] = lchar.get(j);
-            str += mMorse.getChar(character);
-        }
-
         // translate morse array to string
-        /*long data[] = new long[ldata.size()];
+        String str;
+        long data[] = new long[ldata.size()];
         for (int i = 0; i < ldata.size(); i++)
             data[i] = ldata.get(i);
-        str = mMorse.getText(data);*/
+        str = mMorse.getText(data);
         myHandler.signalStr("data_message", "str: " + str + "\nmorse : " + ldata.toString());
     }
 
