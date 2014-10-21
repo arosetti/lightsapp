@@ -128,7 +128,7 @@ public class FrameAnalyzer extends MyRunnable {
 
             // add to counter if signal does not change too much
             // add new element list on change and reset counter.
-            if (ldiff < (lcur / 3)) {
+            if (ldiff < (lcur / 2)) {
                 dsum += lframes.get(i).delta;
             } else { /*else if (ldiff > lcur) {*/
                 dsum += lframes.get(i).delta;
@@ -148,7 +148,7 @@ public class FrameAnalyzer extends MyRunnable {
 
         for (int i = 0; i < ldata.size(); i++) {
             // remove wrong small values ( short glitches )
-            if (ldata.get(i) < base / 2) {
+            if (ldata.get(i) < (base / 3)) {
                 Log.d(TAG,"removing glitch value in morse long array");
                 ldata.remove(i);
             }
