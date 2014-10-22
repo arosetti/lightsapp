@@ -27,6 +27,8 @@ public class FrameAnalyzer extends MyRunnable {
     private int start_frame = 0;
     private int last_frame_analyzed = 0;
 
+    private int sensibility = 0;
+
     private final Lock lock_tmp_frames;
 
     private List<Long> ldata_total;
@@ -182,7 +184,7 @@ public class FrameAnalyzer extends MyRunnable {
         for (int i = 0; i < ldata.size(); i++) {
             // remove wrong small values ( short glitches )
             if (ldata.get(i) < (base / 3)) {
-                Log.d(TAG,"removing glitch value in morse long array");
+                //Log.d(TAG,"removing glitch value in morse long array");
                 ldata.remove(i);
                 i--;
                 continue;
@@ -190,7 +192,7 @@ public class FrameAnalyzer extends MyRunnable {
 
             // abort if values are too high
             if (ldata.get(i) > (8*base)) {
-                Log.d(TAG,"abort analyze, symbol too long.");
+                //Log.d(TAG,"abort analyze, symbol too long.");
                 reset();
                 return;
             }
@@ -232,6 +234,11 @@ public class FrameAnalyzer extends MyRunnable {
             Log.e(TAG, "Error saving frames");
             return;
         }
+    }
+
+    public void setSensibility(int sensibility) {
+        Log.v(TAG, "Sensibility set to " + sensibility);
+        this.sensibility=sensibility;
     }
 
     // TODO use a buffer and process in the loop, except for timestamp

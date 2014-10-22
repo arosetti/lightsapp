@@ -56,6 +56,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         mFrameA.stop();
     }
 
+    public void setSensibility(int sensibility) { mFrameA.setSensibility(sensibility); }
+
     // TODO send data to mFrame more efficently
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
@@ -114,8 +116,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
             params.setRecordingHint(true);
-            params.setAutoExposureLock(true);
-            params.setAutoWhiteBalanceLock(true);
+            params.setAutoExposureLock(false);
+            params.setAutoWhiteBalanceLock(false);
 
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);

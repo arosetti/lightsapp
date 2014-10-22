@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.lightsapp.camera.CameraController;
@@ -24,6 +24,7 @@ public class RecvFragment extends Fragment {
 
     private TextView mTextViewMessageStatus;
     private TextView mTextViewMessageData;
+    private SeekBar mSeekBarSensibility;
     FrameLayout mPreview;
 
     public Handler mHandler;
@@ -52,6 +53,27 @@ public class RecvFragment extends Fragment {
 
         mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
         mTextViewMessageData.setText("***");
+
+        SeekBar mSeekBarSensibility = (SeekBar) v.findViewById(R.id.seekBarSensibility);
+
+        mSeekBarSensibility.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+                // TODO Auto-generated method stub
+                mCtx.mCameraController.setSensibility(progress);
+            }
+        });
 
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
