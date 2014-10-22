@@ -64,7 +64,8 @@
                 android:focusable="true"
                 android:max="100"
                 android:minWidth="150dp"
-                android:layout_gravity="right" />
+                android:layout_gravity="right"
+                android:progress="50"/>
         </LinearLayout>
 
         <LinearLayout

@@ -158,44 +158,24 @@ public class FrameAnalyzer extends MyRunnable {
         long base = mMorse.get("SPEED_BASE");
         long dbase, dlong, dvlong;
 
+        if (ldata.size() == 0)
+            return;
+
         for (int i = 0; i < ldata.size(); i++) {
-            // remove wrong small values ( short glitches )
-            if (Math.abs(ldata.get(i)) < (base / 3)) {
-                //Log.d(TAG,"removing glitch value in morse long array");
-                ldata.remove(i);
-                i--;
-                continue;
-            }
-
-            // abort if values are too high
-            if (Math.abs(ldata.get(i)) > (8*base)) {
-                //Log.d(TAG,"abort analyze, symbol too long.");
-                reset();
-                return;
-            }
-
             dbase = Math.abs(Math.abs(ldata.get(i)) - base);
             dlong = Math.abs(Math.abs(ldata.get(i)) - 3 * base);
             dvlong = Math.abs(Math.abs(ldata.get(i)) - 7 * base);
 
             // approximate to the closest value
-            long dd = Math.min(Math.min(dbase, dlong), dvlong);
+            long closest_val = Math.min(Math.min(dbase, dlong), dvlong);
+            long sign = (ldata.get(i) > 0)? 1:-1;
 
-            if (dd == dbase) {
-                if (ldata.get(i) >= 0)
-                    ldata.set(i, base);
-                else
-                    ldata.set(i, -base);
-            } else if (dd == dlong) {
-                if (ldata.get(i) >= 0)
-                    ldata.set(i, 3 * base);
-                else
-                    ldata.set(i, -3 * base);
-            } else if (dd == dvlong) {
-                if (ldata.get(i) >= 0)
-                    ldata.set(i, 7 * base);
-                else
-                    ldata.set(i, -7 * base);
+            if (closest_val == dbase) {
+                ldata.set(i, sign * base);
+            } else if (closest_val == dlong) {
+                ldata.set(i, 3 * sign * base);
+            } else if (closest_val == dvlong) {
+                ldata.set(i, 7 * sign * base);
             }
         }
 
@@ -203,8 +183,8 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     protected final void signalToGui(List<Long> ldata) {
-        str = mMorse.getText(ListToPrimitiveArray(ldata));
-        myHandler.signalStr("data_message", "str: " + str + "\nmorse : " + ldata.toString());
+        myHandler.signalStr("data_message", mMorse.getText(ListToPrimitiveArray(ldata)) +
+                                            "\nmorse : " + ldata.toString());
     }
 
     public final void setSensitivity(int sensitivity) {

@@ -22,7 +22,8 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
         // search for a possible start of the transmission
         if (start_frame == 0) {
             for (int i = start_frame; i < (lframes.size() - 1); i++) {
-                if ((lframes.get(i).luminance * 2) < lframes.get(i + 1).luminance) {
+                if ( ((float) lframes.get(i).luminance *
+                     ((float) sensitivity / 25f)) < lframes.get(i + 1).luminance ) {
                     start_frame = i;
                     myHandler.signalStr("data_message", "start_frame: " + start_frame);
                 }
@@ -31,7 +32,9 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
         }
 
         int dsum = 0;
+        int n = 0;
         List<Long> ldata = new ArrayList<Long>();
+        long base = mMorse.get("SPEED_BASE");
 
         for (int i = start_frame; i < (lframes.size() - 1); i++) {
             long lcur = lframes.get(i).luminance;
@@ -42,10 +45,21 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
             // add new element list on change and reset counter.
             if (ldiff < (lcur / 2)) {
                 dsum += lframes.get(i).delta;
-            } else { //else if (ldiff > lcur) {
+            }
+            else {
                 dsum += lframes.get(i).delta;
-                ldata.add(new Long(dsum));
-                dsum = 0;
+                long sign = ((n % 2) == 0) ? 1:-1;
+
+                if (dsum > 8 * base) {
+                    reset();
+                    return;
+                }
+
+                if (dsum > (base / 3)) {
+                    ldata.add(new Long(sign * dsum));
+                    n++;
+                }
+                dsum = 0; // oppure non lo azzero?
             }
         }
 

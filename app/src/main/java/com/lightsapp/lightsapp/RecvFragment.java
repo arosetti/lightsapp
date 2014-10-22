@@ -54,8 +54,7 @@ public class RecvFragment extends Fragment {
         mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
         mTextViewMessageData.setText("***");
 
-        SeekBar mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
-
+        mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
         mSeekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -113,6 +112,7 @@ public class RecvFragment extends Fragment {
                     mCtx.mCameraController = new CameraController(mCtx, mHandler);
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
+                    mCtx.mCameraController.setSensitivity(mSeekBarSensitivity.getProgress());
                     Log.v(TAG, "init camera preview");
                 }
             }

@@ -129,8 +129,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
             params.setRecordingHint(true);
-            params.setAutoExposureLock(false);
-            params.setAutoWhiteBalanceLock(false);
+            params.setAutoExposureLock(true);
+            params.setAutoWhiteBalanceLock(true);
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
             //params.setPreviewSize(width, height);
