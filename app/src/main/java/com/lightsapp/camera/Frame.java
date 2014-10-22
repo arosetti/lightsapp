@@ -26,7 +26,7 @@ public class Frame {
 
     private long getLuminance(byte[] data, int width, int height) {
         final int frameSize = width * height;
-        long luminance = 0;
+        long ysum = 0;
 
         for (int j = 0, yp = 0; j < height; j++) {
             int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
@@ -39,11 +39,11 @@ public class Frame {
                     u = (0xff & data[uvp++]) - 128;
                 }
 
-                luminance += (long) y;
+                ysum += (long) y;
             }
         }
 
-        return luminance;
+        return (int) ((float)ysum / (float)frameSize);
     }
     @Override
     public String toString() {

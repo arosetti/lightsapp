@@ -65,8 +65,8 @@ public class FrameAnalyzer extends MyRunnable {
                     "\ncur / min / max / avg" +
                     "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
                     d_min + " / " + d_max + " / " + d_avg + ") ms " +
-                    "\nluminance: (" + lframes.get(last_frame_analyzed).luminance / 1000 +
-                    " / " + l_min / 1000 + " / " + l_max / 1000 + " / " + l_avg / 1000 + ") K");
+                    "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
+                    " / " + l_min + " / " + l_max + " / " + l_avg + ")");
             myHandler.signalStr("update", "");
         }
     }

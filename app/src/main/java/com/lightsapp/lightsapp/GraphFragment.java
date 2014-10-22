@@ -116,6 +116,7 @@ public class GraphFragment extends Fragment {
                     GraphView.GraphViewData data_delay_f[];
                     GraphView.GraphViewData data_lum[];
                     GraphView.GraphViewData data_lum_f[];
+                    GraphView.GraphViewData data_lum_d[];
                     float fdata_delay[];
                     float fdata_lum[];
 
@@ -124,6 +125,7 @@ public class GraphFragment extends Fragment {
                         data_delay_f = new GraphView.GraphViewData[size];
                         data_lum = new GraphView.GraphViewData[size];
                         data_lum_f = new GraphView.GraphViewData[size];
+                        data_lum_d = new GraphView.GraphViewData[size - 1];
                         fdata_delay = new float[size];
                         fdata_lum = new float[size];
                     }
@@ -135,18 +137,30 @@ public class GraphFragment extends Fragment {
                         LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
                         for (int i = first, j = 0; i < last; i++ , j++) {
                             fdata_delay[j] = (float) lframes.get(i).delta;
-                            fdata_lum[j] = (float) lframes.get(i).luminance / 1000;
+                            fdata_lum[j] = (float) lframes.get(i).luminance;
+                            fdata_lum[j] = (float) lframes.get(i).luminance;
                         }
                         dataFilter.apply(fdata_lum);
                         dataFilter.apply(fdata_delay);
 
                         for (int i = first, j = 0; i < last; i++, j++) {
                             data_delay[j] = new GraphView.GraphViewData(i, lframes.get(i).delta);
-                            data_lum[j] = new GraphView.GraphViewData(i, lframes.get(i).luminance / 1000);
+                            data_lum[j] = new GraphView.GraphViewData(i, lframes.get(i).luminance);
                             data_delay_f[j] = new GraphView.GraphViewData(i, fdata_delay[j]);
                             data_lum_f[j] = new GraphView.GraphViewData(i, fdata_lum[j]);
+
+
                         }
-                    } catch (IndexOutOfBoundsException e) {
+
+                        // derivative of smoothed luminance
+                        for (int i = first, j = 1; i < (last - 1); i++, j++) {
+                            data_lum_d[j - 1] = new GraphView.GraphViewData(i, (fdata_lum[j] - fdata_lum[j - 1]));
+                        }
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        Log.e(TAG, "out of bounds: " + e.getMessage());
+                    }
+                    catch (Exception e) {
                         Log.e(TAG, "error while generating graph data: " + e.getMessage());
                     }
 
@@ -169,11 +183,18 @@ public class GraphFragment extends Fragment {
                         graphView_lum.removeAllSeries();
                         graphView_lum.addSeries(series);
 
+                        //derivative of smoothed lum
+                        series = new GraphViewSeries("luminance_d",
+                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(170, 80, 255), 3),
+                                data_lum_d);
+                        graphView_lum.addSeries(series);
+
                         series = new GraphViewSeries("luminance_f",
-                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 00), 3),
+                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 0), 3),
                                 data_lum_f);
                         graphView_lum.addSeries(series);
-                    } catch (NullPointerException e) {
+                    } catch (Exception e) {
+                        Log.d(TAG, "" + e.getMessage());
                     }
 
                     graphView_delay.scrollToEnd();
