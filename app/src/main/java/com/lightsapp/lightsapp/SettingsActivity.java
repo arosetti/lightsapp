@@ -41,7 +41,8 @@ public class SettingsActivity extends PreferenceActivity {
 
         bindPreferenceSummaryToValue(findPreference("default_text"));
         //bindPreferenceSummaryToValue(findPreference("enable_sound"));
-        bindPreferenceSummaryToValue(findPreference("speed"));
+        bindPreferenceSummaryToValue(findPreference("interval"));
+        bindPreferenceSummaryToValue(findPreference("algorithm"));
     }
 
     @Override
@@ -105,7 +106,8 @@ public class SettingsActivity extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference("default_text"));
             //bindPreferenceSummaryToValue(findPreference("enable_sound"));
-            bindPreferenceSummaryToValue(findPreference("speed"));
+            bindPreferenceSummaryToValue(findPreference("interval"));
+            bindPreferenceSummaryToValue(findPreference("algorithm"));
         }
     }
 

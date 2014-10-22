@@ -99,7 +99,9 @@ public class MorseConverter {
     }
 
     public long get(String val) {
-        if (val.equals("GAP"))
+        if (val.equals("SPEED_BASE"))
+            return SPEED_BASE;
+        else if (val.equals("GAP"))
             return Math.abs(GAP);
         else if (val.equals("DASH"))
             return DASH;

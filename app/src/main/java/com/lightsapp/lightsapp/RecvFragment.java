@@ -110,10 +110,7 @@ public class RecvFragment extends Fragment {
                 if (msg.getData().containsKey("setup_done")) {
                     if (mCtx.mCamera == null)
                         Log.e(TAG, "camera is null");
-                    mCtx.mCameraController = new CameraController(mCtx,
-                            mCtx.mCamera,
-                            mHandler,
-                            Integer.parseInt(mCtx.mPrefs.getString("speed", "500")));
+                    mCtx.mCameraController = new CameraController(mCtx, mHandler);
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
                     Log.v(TAG, "init camera preview");

@@ -3,14 +3,14 @@
 
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_enable_sound">Enable Sound</string>
+    <string name="pref_title_enable_sound">Enable sound</string>
     <string name="pref_description_enable_sound">Enable sound output while sending morse code</string>
 
     <string name="pref_title_default_text">Default morse text</string>
     <string name="pref_default_default_text"></string>
 
-    <string name="pref_title_speed">Base Speed</string>
-    <string-array name="pref_speed_titles">
+    <string name="pref_title_interval">Base morse interval</string>
+    <string-array name="pref_interval_titles">
         <item>2.00s</item>
         <item>1.75s</item>
         <item>1.50s</item>
@@ -26,7 +26,7 @@
         <item>200ms</item>
         <item>100ms</item>
     </string-array>
-    <string-array name="pref_speed_values">
+    <string-array name="pref_interval_values">
         <item>2000</item>
         <item>1750</item>
         <item>1500</item>
@@ -41,6 +41,19 @@
         <item>300</item>
         <item>200</item>
         <item>100</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_algorithm">Frame analyzer algorithm</string>
+    <string-array name="pref_algorithm_titles">
+        <item>basic</item>
+        <item>threshold</item>
+        <item>derivative</item>
+    </string-array>
+    <string-array name="pref_algorithm_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
         <item>-1</item>
     </string-array>
 </resources>

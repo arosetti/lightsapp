@@ -86,7 +86,7 @@ public class SendFragment extends Fragment {
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         if (mCtx.mMorse != null) {
-                            mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("speed", "500")));
+                            mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
                         }
                         if (mCtx.mLight != null) {
                             mCtx.mLight.setString(mStrMorse);

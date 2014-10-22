@@ -8,29 +8,43 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.lightsapp.camera.FrameAnalyzer.*;
 import com.lightsapp.core.MyHandler;
+import com.lightsapp.lightsapp.MainActivity;
 
 import java.io.IOException;
 import java.util.List;
 
 public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
-    private final String TAG = "CameraController";
+    private final String TAG = CameraController.class.getSimpleName();
+
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private MyHandler myHandler;
     private FrameAnalyzer mFrameA;
 
-    private int imageFormat;
-    private int width;
-    private int height;
+    private int format, width, height;
 
-    public CameraController(Context context, Camera camera, Handler handler, int speed) {
+    public CameraController(Context context, Handler handler) {
         super(context);
 
-        mCamera = camera;
+        MainActivity mCtx = (MainActivity) context;
+
+        mCamera = mCtx.mCamera;
         myHandler = new MyHandler(handler);
 
-        mFrameA = new FrameAnalyzer(handler, speed);
+        int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "0"));
+        switch (algorithm) {
+            case 1:
+                mFrameA = new ThresholdFrameAnalyzer(context, handler);
+            break;
+            case 2:
+                mFrameA = new DerivativeFrameAnalyzer(context, handler);
+            break;
+            default:
+                mFrameA = new BasicFrameAnalyzer(context, handler);
+        }
+
         startAnalyzer();
 
         mHolder = getHolder();
@@ -58,10 +72,9 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void setSensitivity(int sensitivity) { mFrameA.setSensitivity(sensitivity); }
 
-    // TODO send data to mFrame more efficently
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        if (imageFormat == ImageFormat.NV21) {
+        if (format == ImageFormat.NV21) {
             mFrameA.addFrame(data, width, height);
         }
     }
@@ -110,7 +123,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
             params.setPreviewFormat(ImageFormat.NV21);
-            imageFormat = params.getPreviewFormat();
+            this.format = params.getPreviewFormat();
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
@@ -118,7 +131,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             params.setRecordingHint(true);
             params.setAutoExposureLock(false);
             params.setAutoWhiteBalanceLock(false);
-
             params.setPreviewFrameRate(30);
             params.setPreviewFpsRange(15000, 30000);
             //params.setPreviewSize(width, height);

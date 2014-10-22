@@ -1,7 +1,6 @@
 syntax: glob
 .gradle/
 .idea/
-app/
 build/
 local.properties
 lightsapp.iml
