@@ -24,7 +24,7 @@ public class RecvFragment extends Fragment {
 
     private TextView mTextViewMessageStatus;
     private TextView mTextViewMessageData;
-    private SeekBar mSeekBarSensibility;
+    private SeekBar mSeekBarSensitivity;
     FrameLayout mPreview;
 
     public Handler mHandler;
@@ -54,9 +54,9 @@ public class RecvFragment extends Fragment {
         mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
         mTextViewMessageData.setText("***");
 
-        SeekBar mSeekBarSensibility = (SeekBar) v.findViewById(R.id.seekBarSensibility);
+        SeekBar mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
 
-        mSeekBarSensibility.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -71,7 +71,7 @@ public class RecvFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
                 // TODO Auto-generated method stub
-                mCtx.mCameraController.setSensibility(progress);
+                mCtx.mCameraController.setSensitivity(progress);
             }
         });
 

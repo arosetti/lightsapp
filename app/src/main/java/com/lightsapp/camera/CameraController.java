@@ -56,7 +56,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         mFrameA.stop();
     }
 
-    public void setSensibility(int sensibility) { mFrameA.setSensibility(sensibility); }
+    public void setSensitivity(int sensitivity) { mFrameA.setSensitivity(sensitivity); }
 
     // TODO send data to mFrame more efficently
     @Override

@@ -27,7 +27,7 @@ public class FrameAnalyzer extends MyRunnable {
     private int start_frame = 0;
     private int last_frame_analyzed = 0;
 
-    private int sensibility = 0;
+    private int sensitivity = 0;
 
     private final Lock lock_tmp_frames;
 
@@ -236,9 +236,9 @@ public class FrameAnalyzer extends MyRunnable {
         }
     }
 
-    public void setSensibility(int sensibility) {
-        Log.v(TAG, "Sensibility set to " + sensibility);
-        this.sensibility=sensibility;
+    public void setSensitivity(int sensitivity) {
+        Log.v(TAG, "Sensitivity set to " + sensitivity);
+        this.sensitivity=sensitivity;
     }
 
     // TODO use a buffer and process in the loop, except for timestamp

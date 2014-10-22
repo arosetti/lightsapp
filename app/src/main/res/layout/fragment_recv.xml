@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="@string/sensibility"
+                android:text="@string/sensitivity"
                 android:id="@+id/textView"
                 android:layout_gravity="center_vertical|left"
                 android:gravity="center_vertical"
@@ -59,7 +59,7 @@
             <SeekBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/seekBarSensibility"
+                android:id="@+id/seekBarSensitivity"
                 android:clickable="true"
                 android:focusable="true"
                 android:max="100"
