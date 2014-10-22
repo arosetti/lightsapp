@@ -128,6 +128,10 @@ public class SendFragment extends Fragment {
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     len = mstr.length();
+
+                    if (len == 0)
+                        return;
+
                     str = String.format("%03d%% |", 100 * cut / len);
                     str1 = "";
                     str2 = "";

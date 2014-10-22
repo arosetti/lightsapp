@@ -22,12 +22,12 @@ public class FrameAnalyzer extends MyRunnable {
 
     private MorseConverter mMorse;
     private List<Frame> lframes;
-    private List<Frame> bframes;
+    private List<Frame> ltmp_frames;
     private long timestamp;
     private int start_frame = 0;
     private int last_frame_analyzed = 0;
 
-    private final Lock lock_bframe;
+    private final Lock lock_tmp_frames;
 
     private List<Long> ldata_total;
     private String str = "";
@@ -38,9 +38,9 @@ public class FrameAnalyzer extends MyRunnable {
 
     public FrameAnalyzer(Handler handler, int speed) {
         super(true);
-        lock_bframe = new ReentrantLock(true);
+        lock_tmp_frames = new ReentrantLock(true);
         lframes = new ArrayList<Frame>();
-        bframes = new ArrayList<Frame>();
+        ltmp_frames = new ArrayList<Frame>();
         myHandler = new MyHandler(handler);
         mMorse = new MorseConverter(speed);
         ldata_total = new ArrayList<Long>();
@@ -49,26 +49,24 @@ public class FrameAnalyzer extends MyRunnable {
     @Override
     public void loop() {
         try {
-            updateBuffers();
+            update();
+            analyze();
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        catch (Exception e){
+            Log.e(TAG, "error analyzing frames: " + e.getMessage());
+        }
+        finally {
             myHandler.signalStr("info_message", "frames: " + lframes.size() +
                     "\ncur / min / max / avg" +
                     "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
                     d_min + " / " + d_max + " / " + d_avg + ") ms " +
                     "\nluminance: (" + lframes.get(last_frame_analyzed).luminance / 1000 +
                     " / " + l_min / 1000 + " / " + l_max / 1000 + " / " + l_avg / 1000 + ") K");
-        } catch (Exception e) {
-            Log.e(TAG, "error analyzing frames: " + e.getMessage());
+            myHandler.signalStr("update", "");
         }
-
-        try {
-            getFrameStats();
-            analyze();
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        myHandler.signalStr("update", "");
     }
 
     public final List<Frame> getFrames() {
@@ -78,27 +76,33 @@ public class FrameAnalyzer extends MyRunnable {
     public final void reset() {
         myHandler.signalStr("data_message", "***");
         lframes.clear();
+        lock_tmp_frames.lock();
+        ltmp_frames.clear();
+        lock_tmp_frames.unlock();
+
         start_frame = 0;
         last_frame_analyzed = 0;
         str = "";
     }
 
-    private void updateBuffers() {
-        List<Frame> temp_frames;
-        lock_bframe.lock();
+    private void update() {
+        List<Frame> lswap_frames;
+        lock_tmp_frames.lock();
         try {
-            temp_frames = bframes;
-            bframes = new ArrayList<Frame>();
+            lswap_frames = ltmp_frames;
+            ltmp_frames = new ArrayList<Frame>();
         }
         finally {
-            lock_bframe.unlock();
+            lock_tmp_frames.unlock();
         }
-        for (int i = 0; i < temp_frames.size(); i++) {
-            temp_frames.get(i).analyze();
-            lframes.add(temp_frames.get(i));
+
+        for (int i = 0; i < lswap_frames.size(); i++) {
+            lswap_frames.get(i).analyze();
+            lframes.add(lswap_frames.get(i));
         }
-        temp_frames = null;
+        lswap_frames = null;
         last_frame_analyzed = lframes.size() - 1;
+        getFrameStats();
     }
 
     private void getFrameStats() { // TODO do it incrementally
@@ -238,12 +242,12 @@ public class FrameAnalyzer extends MyRunnable {
         else
             delta = 0;
 
-        lock_bframe.lock();
+        lock_tmp_frames.lock();
         try {
-            bframes.add(new Frame(data, width, height, delta));
+            ltmp_frames.add(new Frame(data, width, height, delta));
         }
         finally {
-            lock_bframe.unlock();
+            lock_tmp_frames.unlock();
         }
 
         timestamp = System.currentTimeMillis();
