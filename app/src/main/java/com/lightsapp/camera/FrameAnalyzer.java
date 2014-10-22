@@ -143,7 +143,7 @@ public class FrameAnalyzer extends MyRunnable {
             return;
 
         // search for a possible start of the transmission
-        if (start_frame == 0) {
+        /*if (start_frame == 0) {
             for (int i = start_frame; i < (lframes.size() - 1); i++) {
                 if ((lframes.get(i).luminance * 2) < lframes.get(i + 1).luminance) {
                     start_frame = i;
@@ -151,12 +151,41 @@ public class FrameAnalyzer extends MyRunnable {
                 }
             }
             return;
-        }
+        }*/
 
         int dsum = 0;
         List<Long> ldata = new ArrayList<Long>();
 
+        int m_sensitivity = sensitivity;
+        boolean light = false;
         for (int i = start_frame; i < (lframes.size() - 1); i++) {
+            if (i == 0 && lframes.get(i).luminance > m_sensitivity) {
+                light = true;
+            }
+
+            Log.v(TAG, "Luminance " + lframes.get(i).luminance);
+
+            if (light) {
+                if (lframes.get(i).luminance > m_sensitivity) {
+                    dsum += lframes.get(i).delta;
+                } else {
+                    dsum += lframes.get(i).delta;
+                    ldata.add(new Long(dsum));
+                    light = false;
+                    dsum = 0;
+                }
+            } else {
+                if (lframes.get(i).luminance < m_sensitivity) {
+                    dsum += lframes.get(i).delta;
+                } else {
+                    dsum += lframes.get(i).delta;
+                    ldata.add(new Long(-dsum));
+                    light = true;
+                    dsum = 0;
+                }
+            }
+        }
+        /*for (int i = start_frame; i < (lframes.size() - 1); i++) {
             long lcur = lframes.get(i).luminance;
             long lnext = lframes.get(i + 1).luminance;
             long ldiff = Math.abs(lcur - lnext);
@@ -165,17 +194,12 @@ public class FrameAnalyzer extends MyRunnable {
             // add new element list on change and reset counter.
             if (ldiff < (lcur / 2)) {
                 dsum += lframes.get(i).delta;
-            } else { /*else if (ldiff > lcur) {*/
+            } else { //else if (ldiff > lcur) {
                 dsum += lframes.get(i).delta;
                 ldata.add(new Long(dsum));
                 dsum = 0;
             }
-            /*else {
-                // ABORT: not a morse signal?
-                //start_frame = 0;
-            }*/
-
-        }
+        }*/
 
         // approximate to morse values and generate long[]
         long base = mMorse.get("GAP");
@@ -183,33 +207,41 @@ public class FrameAnalyzer extends MyRunnable {
 
         for (int i = 0; i < ldata.size(); i++) {
             // remove wrong small values ( short glitches )
-            if (ldata.get(i) < (base / 3)) {
+            /*if (Math.abs(ldata.get(i)) < (base / 3)) {
                 //Log.d(TAG,"removing glitch value in morse long array");
                 ldata.remove(i);
                 i--;
                 continue;
-            }
+            }*/
 
             // abort if values are too high
-            if (ldata.get(i) > (8*base)) {
+            /*if (Math.abs(ldata.get(i)) > (8*base)) {
                 //Log.d(TAG,"abort analyze, symbol too long.");
                 reset();
                 return;
-            }
-
-            dbase = Math.abs(ldata.get(i) - base);
-            dlong = Math.abs(ldata.get(i) - 3 * base);
-            dvlong = Math.abs(ldata.get(i) - 7 * base);
+            }*/
+            dbase = Math.abs(Math.abs(ldata.get(i)) - base);
+            dlong = Math.abs(Math.abs(ldata.get(i)) - 3 * base);
+            dvlong = Math.abs(Math.abs(ldata.get(i)) - 7 * base);
 
             // approximate to the closest value
             long dd = Math.min(Math.min(dbase, dlong), dvlong);
 
             if (dd == dbase) {
-                ldata.set(i, base);
+                if (ldata.get(i) >= 0)
+                    ldata.set(i, base);
+                else
+                    ldata.set(i, -base);
             } else if (dd == dlong) {
-                ldata.set(i, 3 * base);
+                if (ldata.get(i) >= 0)
+                    ldata.set(i, 3 * base);
+                else
+                    ldata.set(i, -3 * base);
             } else if (dd == dvlong) {
-                ldata.set(i, 7 * base);
+                if (ldata.get(i) >= 0)
+                    ldata.set(i, 7 * base);
+                else
+                    ldata.set(i, -7 * base);
             }
         }
 

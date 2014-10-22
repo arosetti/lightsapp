@@ -39,9 +39,9 @@ public class MorseConverter {
     public void updateValues(long speed) {
         DOT = SPEED_BASE = speed;
         DASH = SPEED_BASE * 3;
-        GAP = SPEED_BASE;
-        LETTER_GAP = SPEED_BASE * 3;
-        WORD_GAP = SPEED_BASE * 7;
+        GAP = -SPEED_BASE;
+        LETTER_GAP = -SPEED_BASE * 3;
+        WORD_GAP = -SPEED_BASE * 7;
 
         /** The characters from 'A' to 'Z' */
         LETTERS = new long[][]{
@@ -100,15 +100,15 @@ public class MorseConverter {
 
     public long get(String val) {
         if (val.equals("GAP"))
-            return GAP;
+            return Math.abs(GAP);
         else if (val.equals("DASH"))
             return DASH;
         else if (val.equals("DOT"))
             return DOT;
         else if (val.equals("LETTER_GAP"))
-            return LETTER_GAP;
+            return Math.abs(LETTER_GAP);
         else if (val.equals("WORD_GAP"))
-            return WORD_GAP;
+            return Math.abs(WORD_GAP);
         else
             return GAP;
     }
@@ -162,18 +162,14 @@ public class MorseConverter {
         List<Long> lchar = new ArrayList<Long>();
 
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == DOT) { /* or GAP */
+            if (data[i] == DOT || data[i] == GAP || data[i] == DASH) {
                 lchar.add(data[i]);
             }
-            else if (data[i] == DASH) { /* or LETTER_GAP */
-                if (i % 2 != 0) {
-                    str += getChar(ListToPrimitiveArray(lchar));
-                    lchar.clear();
-                } else {
-                    lchar.add(data[i]);
-                }
+            else if (data[i] == LETTER_GAP) {
+                str += getChar(ListToPrimitiveArray(lchar));
+                lchar.clear();
             }
-            else if (data [i] == WORD_GAP) { /* possible merge with previous else if ( data[i] >= DASH) */
+            else if (data [i] == WORD_GAP) {
                 str += getChar(ListToPrimitiveArray(lchar));
                 str += ' ';
                 lchar.clear();

@@ -102,22 +102,22 @@ public class LightController extends MyRunnable {
                 break;
             if (i % 2 != 0) {
                 myHandler.signalStr("light", "on");
-                if (pattern[i] > DOT)
+                if (Math.abs(pattern[i]) > DOT)
                     myHandler.signalStr("message", "DASH\n" + pattern[i] + "ms");
                 else
                     myHandler.signalStr("message", "DOT\n" + pattern[i] + "ms");
                 progress++;
                 myHandler.signalInt("progress", progress);
-                flash((int) pattern[i]);
+                flash((int) Math.abs(pattern[i]));
                 myHandler.signalStr("light", "off");
             } else {
                 myHandler.signalStr("message", "...\n" + pattern[i] + "ms");
-                if (pattern[i] == LETTER_GAP)
+                if (Math.abs(pattern[i]) == LETTER_GAP)
                     progress++;
-                else if (pattern[i] == WORD_GAP)
+                else if (Math.abs(pattern[i]) == WORD_GAP)
                     progress += 3;
                 myHandler.signalInt("progress", progress);
-                forceSleep((int) pattern[i]);
+                forceSleep((int) Math.abs(pattern[i]));
             }
         }
     }
