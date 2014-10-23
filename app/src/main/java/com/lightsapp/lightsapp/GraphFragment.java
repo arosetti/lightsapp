@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
@@ -28,6 +29,8 @@ public class GraphFragment extends Fragment {
     private MainActivity mCtx;
 
     public Handler mHandler;
+
+    private TextView mTextViewMessageStatus;
 
     private GraphView graphView_delay, graphView_lum;
     private GraphViewSeries series;
@@ -50,6 +53,9 @@ public class GraphFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_graph, container, false);
 
         mCtx = (MainActivity) getActivity();
+
+        mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
+        mTextViewMessageStatus.setText("idle");
 
         graphView_delay = new LineGraphView(mCtx, "Delay");
 
@@ -86,6 +92,10 @@ public class GraphFragment extends Fragment {
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+
+                if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
+                    mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
+                }
 
                 if (msg.getData().containsKey("update")) {
                     List<Frame> lframes;

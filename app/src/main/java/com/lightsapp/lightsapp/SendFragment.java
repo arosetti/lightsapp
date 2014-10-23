@@ -29,6 +29,7 @@ public class SendFragment extends Fragment {
     private TextView mTextViewMessage;
     private TextView mTextViewMorse;
     private EditText mEdit;
+    private Button mButtonSend;
 
     private String mStrMorse;
 
@@ -81,27 +82,28 @@ public class SendFragment extends Fragment {
             }
         });
 
-        Button mButton = (Button) v.findViewById(R.id.button_start);
-        mButton.setOnClickListener(
+        mButtonSend = (Button) v.findViewById(R.id.button_send);
+        mButtonSend.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (mCtx.mMorse != null) {
-                            mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
+                        if (mButtonSend.getText() ==
+                            getResources().getString(R.string.btn_send_start) ) {
+                            if (mCtx.mMorse != null) {
+                                mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
+                            }
+                            if (mCtx.mLight != null) {
+                                mCtx.mLight.setString(mStrMorse);
+                                mCtx.mLight.activate();
+                                mButtonSend.setText(R.string.btn_send_stop);
+                            }
                         }
-                        if (mCtx.mLight != null) {
-                            mCtx.mLight.setString(mStrMorse);
-                            mCtx.mLight.activate();
+                        else if (mButtonSend.getText() ==
+                                 getResources().getString(R.string.btn_send_stop) ) {
+                            if (mCtx.mLight != null)
+                                mCtx.mLight.setStatus(false);
+                            mImageView_lightbulb.setImageDrawable(lightbulb_off);
+                            mButtonSend.setText(R.string.btn_send_start);
                         }
-                    }
-                });
-
-        mButton = (Button) v.findViewById(R.id.button_stop);
-        mButton.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (mCtx.mLight != null)
-                            mCtx.mLight.setStatus(false);
-                        mImageView_lightbulb.setImageDrawable(lightbulb_off);
                     }
                 });
 

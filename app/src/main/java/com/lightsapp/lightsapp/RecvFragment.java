@@ -22,7 +22,6 @@ public class RecvFragment extends Fragment {
 
     private MainActivity mCtx;
 
-    private TextView mTextViewMessageStatus;
     private TextView mTextViewMessageData;
     private SeekBar mSeekBarSensitivity;
     FrameLayout mPreview;
@@ -47,9 +46,6 @@ public class RecvFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recv, container, false);
 
         mCtx = (MainActivity) getActivity();
-
-        mTextViewMessageStatus = (TextView) v.findViewById(R.id.txt_status);
-        mTextViewMessageStatus.setText("idle");
 
         mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
         mTextViewMessageData.setText("***");
@@ -77,7 +73,7 @@ public class RecvFragment extends Fragment {
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
-        Button mButton = (Button) v.findViewById(R.id.button_reset);
+        Button mButton = (Button) v.findViewById(R.id.button_recv);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
@@ -89,18 +85,6 @@ public class RecvFragment extends Fragment {
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
-                if (msg.getData().containsKey("update")) {
-                    if (mCtx.mHandlerGraph != null) {
-                        Message msgx = mCtx.mHandlerGraph.obtainMessage();
-                        msgx.copyFrom(msg);
-                        mCtx.mHandlerGraph.sendMessage(msgx);
-                    }
-                }
-
-                if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
-                    mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
-                }
 
                 if (mTextViewMessageData != null && msg.getData().containsKey("data_message")) {
                     mTextViewMessageData.setText((String) msg.getData().get("data_message"));

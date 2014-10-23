@@ -18,32 +18,40 @@ public class MyHandler implements MyHandlerInterface {
     }
 
     public void signalStr(String key, String str) {
-        if (mHandler == null) {
+        signalStr(mHandler, key, str);
+    }
+
+    public void signalStr(Handler handler, String key, String str) {
+        if (handler == null) {
             Log.e(TAG, "error: handler is null");
             return;
         }
 
         if (str != null && key != null && !key.equals("")) {
-            Message msg = mHandler.obtainMessage();
+            Message msg = handler.obtainMessage();
             Bundle b = new Bundle();
             b.putString(key, str);
             msg.setData(b);
-            mHandler.sendMessage(msg);
+            handler.sendMessage(msg);
         }
     }
 
     public void signalInt(String key, int i) {
-        if (mHandler == null) {
+        signalInt(mHandler, key, i);
+    }
+
+    public void signalInt(Handler handler, String key, int i) {
+        if (handler == null) {
             Log.e(TAG, "error: handler is null");
             return;
         }
 
         if (key != null && !key.equals("")) {
-            Message msg = mHandler.obtainMessage();
+            Message msg = handler.obtainMessage();
             Bundle b = new Bundle();
             b.putInt(key, i);
             msg.setData(b);
-            mHandler.sendMessage(msg);
+            handler.sendMessage(msg);
         }
     }
 }

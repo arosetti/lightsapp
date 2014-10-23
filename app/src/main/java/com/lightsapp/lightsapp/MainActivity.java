@@ -41,9 +41,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public LightController mLight;
     public CameraController mCameraController;
 
-    Handler mHandlerSend = null;
-    Handler mHandlerRecv = null;
-    Handler mHandlerGraph = null;
+    public Handler mHandlerSend = null;
+    public Handler mHandlerRecv = null;
+    public Handler mHandlerGraph = null;
     private SetupHandler mThreadSetup = null;
 
     private void setup() {

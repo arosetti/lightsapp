@@ -14,15 +14,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <TextView
-            android:id="@+id/txt_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="true"
-            android:gravity="top|center"
-            android:layout_gravity="center_horizontal"
-            android:textSize="@dimen/small_text_size"/>
-
         <FrameLayout
             android:id="@+id/camera_preview"
             android:layout_width="fill_parent"
@@ -44,7 +35,9 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:paddingBottom="12dp"
+            android:paddingTop="8dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -78,19 +71,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_start"
-                android:id="@+id/button_start"
-                android:textAlignment="center"
-                android:clickable="true"
-                android:enabled="true"
-                android:layout_gravity="right"
-                android:gravity="center_vertical|center"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_reset"
-                android:id="@+id/button_reset"
+                android:text="@string/btn_recv_reset"
+                android:id="@+id/button_recv"
                 android:layout_gravity="center_horizontal"/>
 
         </LinearLayout>

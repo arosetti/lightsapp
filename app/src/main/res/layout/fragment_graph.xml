@@ -18,6 +18,16 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/textViewStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:gravity="top|center|center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:textSize="@dimen/small_text_size"
+                android:padding="12dp"/>
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
@@ -32,4 +42,5 @@
 
         </LinearLayout>
     </ScrollView>
+
 </RelativeLayout>

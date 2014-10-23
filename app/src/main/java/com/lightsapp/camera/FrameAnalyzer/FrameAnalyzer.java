@@ -18,6 +18,7 @@ public class FrameAnalyzer extends MyRunnable {
     protected final String TAG = FrameAnalyzer.class.getSimpleName();
 
     protected MyHandler myHandler;
+    protected MainActivity mCtx;
 
     protected MorseConverter mMorse;
     protected List<Frame> lframes;
@@ -38,7 +39,7 @@ public class FrameAnalyzer extends MyRunnable {
     protected FrameAnalyzer(Context context, Handler handler) {
         super(true);
 
-        MainActivity mCtx = (MainActivity) context;
+        mCtx = (MainActivity) context;
 
         lock_tmp_frames = new ReentrantLock(true);
         lframes = new ArrayList<Frame>();
@@ -61,13 +62,13 @@ public class FrameAnalyzer extends MyRunnable {
             Log.e(TAG, "error analyzing frames: " + e.getMessage());
         }
         finally {
-            myHandler.signalStr("info_message", "frames: " + lframes.size() +
+            myHandler.signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
                     "\ncur / min / max / avg" +
                     "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
                     d_min + " / " + d_max + " / " + d_avg + ") ms " +
                     "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
                     " / " + l_min + " / " + l_max + " / " + l_avg + ")");
-            myHandler.signalStr("update", "");
+            myHandler.signalStr(mCtx.mHandlerGraph, "update", "");
         }
     }
 

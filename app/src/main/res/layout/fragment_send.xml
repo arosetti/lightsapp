@@ -37,15 +37,6 @@
             android:enabled="true"
             android:gravity="top|left"/>
 
-        <TextView
-            android:id="@+id/txt_rx"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="true"
-            android:gravity="top|left"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/idle"/>
-
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,7 +56,8 @@
             android:hint="@string/text_hint"
             android:textStyle="normal"
             android:capitalize="none"
-            android:focusableInTouchMode="true"/>
+            android:focusableInTouchMode="true"
+            android:paddingBottom="10dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -77,20 +69,15 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_start"
-                android:id="@+id/button_start"
+                android:text="@string/btn_send_start"
+                android:id="@+id/button_send"
                 android:textAlignment="center"
                 android:clickable="true"
                 android:enabled="true"
                 android:layout_gravity="right"
-                android:gravity="center_vertical|center"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_stop"
-                android:id="@+id/button_stop"
-                android:layout_gravity="center_horizontal"/>
+                android:gravity="center_vertical|center"
+                android:visibility="visible"
+                />
 
         </LinearLayout>
 
