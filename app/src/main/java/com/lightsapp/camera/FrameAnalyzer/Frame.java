@@ -5,15 +5,16 @@ import android.graphics.YuvImage;
 
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();
-    public long delta;
+    public long delta, timestamp;
     public long luminance = -1;
     private int width,height;
     public byte[] data_raw = null;
 
-    public Frame(byte [] data, int width, int height, long delta) {
+    public Frame(byte [] data, int width, int height, long timestamp, long delta) {
         this.data_raw = data;
         this.width = width;
         this.height = height;
+        this.timestamp = timestamp;
         this.delta = delta;
     }
 

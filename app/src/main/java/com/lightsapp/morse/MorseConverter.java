@@ -33,8 +33,6 @@ public class MorseConverter {
     private long[][] LETTERS;
     private long[][] NUMBERS;
     private long[] ERROR_GAP;
-    private char[] charArray;
-    private char[] simbolArray;
 
     public void updateValues(long speed) {
         DOT = SPEED_BASE = speed;
@@ -73,8 +71,6 @@ public class MorseConverter {
         /* Z */ new long[]{DASH, GAP, DASH, GAP, DOT, GAP, DOT},
         };
 
-        charArray = new char[]{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'w', 'x', 'y', 'z' };
-
         /** The characters from '0' to '9' */
         NUMBERS = new long[][]{
         /* 0 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DASH},
@@ -88,8 +84,6 @@ public class MorseConverter {
         /* 8 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DOT, GAP, DOT},
         /* 9 */ new long[]{DASH, GAP, DASH, GAP, DASH, GAP, DASH, GAP, DOT},
         };
-
-        simbolArray = new char[]{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         ERROR_GAP = new long[]{GAP};
     }
@@ -208,7 +202,7 @@ public class MorseConverter {
             catch (ArrayIndexOutOfBoundsException e) {
             }
             if (found)
-                return charArray[i];
+                return (char) ('a' + i);
         }
 
         for (int i = 0; i < NUMBERS.length; i++) {
@@ -227,7 +221,7 @@ public class MorseConverter {
             catch (ArrayIndexOutOfBoundsException e) {
             }
             if (found)
-                return simbolArray[i];
+                return (char) ('0' + i);
         }
 
         return '*';

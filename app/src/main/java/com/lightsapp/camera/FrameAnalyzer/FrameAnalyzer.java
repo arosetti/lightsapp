@@ -56,10 +56,11 @@ public class FrameAnalyzer extends MyRunnable {
             if (myHandler.isHandlerNull()) {
                 myHandler.setHandler(mCtx.mHandlerRecv);
             }
-
+            Thread.sleep(100);
             update();
+            Thread.sleep(100);
             analyze();
-            Thread.sleep(500);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -199,11 +200,12 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     public final void addFrame(byte[] data, int width, int height) {
-        long delta = (timestamp == 0)? 0 : (System.currentTimeMillis() - timestamp);
+        long timestamp_now = System.currentTimeMillis() ;
+        long delta = (timestamp == 0)? 0 : (timestamp_now - timestamp);
 
         lock_tmp_frames.lock();
         try {
-            ltmp_frames.add(new Frame(data, width, height, delta));
+            ltmp_frames.add(new Frame(data, width, height, timestamp_now, delta));
         }
         finally {
             lock_tmp_frames.unlock();
