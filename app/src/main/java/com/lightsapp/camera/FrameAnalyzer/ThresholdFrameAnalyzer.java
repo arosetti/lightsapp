@@ -9,8 +9,8 @@ import java.util.List;
 
 public class ThresholdFrameAnalyzer extends FrameAnalyzer {
 
-    public ThresholdFrameAnalyzer(Context context, Handler handler){
-        super(context, handler);
+    public ThresholdFrameAnalyzer(Context context){
+        super(context);
     }
 
     @Override

@@ -8,8 +8,8 @@ import java.util.List;
 
 public class BasicFrameAnalyzer extends FrameAnalyzer {
 
-    public BasicFrameAnalyzer(Context context, Handler handler){
-        super(context, handler);
+    public BasicFrameAnalyzer(Context context){
+        super(context);
     }
 
     @Override

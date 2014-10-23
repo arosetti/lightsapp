@@ -20,29 +20,27 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private MyHandler myHandler;
     private FrameAnalyzer mFrameA;
 
     private int format, width, height;
 
-    public CameraController(Context context, Handler handler) {
+    public CameraController(Context context) {
         super(context);
 
         MainActivity mCtx = (MainActivity) context;
 
         mCamera = mCtx.mCamera;
-        myHandler = new MyHandler(handler);
 
         int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "0"));
         switch (algorithm) {
             case 1:
-                mFrameA = new ThresholdFrameAnalyzer(context, handler);
+                mFrameA = new ThresholdFrameAnalyzer(context);
             break;
             case 2:
-                mFrameA = new DerivativeFrameAnalyzer(context, handler);
+                mFrameA = new DerivativeFrameAnalyzer(context);
             break;
             default:
-                mFrameA = new BasicFrameAnalyzer(context, handler);
+                mFrameA = new BasicFrameAnalyzer(context);
         }
 
         startAnalyzer();

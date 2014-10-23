@@ -93,7 +93,7 @@ public class RecvFragment extends Fragment {
                 if (msg.getData().containsKey("setup_done")) {
                     if (mCtx.mCamera == null)
                         Log.e(TAG, "camera is null");
-                    mCtx.mCameraController = new CameraController(mCtx, mHandler);
+                    mCtx.mCameraController = new CameraController(mCtx);
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
                     mCtx.mCameraController.setSensitivity(mSeekBarSensitivity.getProgress());

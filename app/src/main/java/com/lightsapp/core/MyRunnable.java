@@ -89,10 +89,12 @@ public abstract class MyRunnable implements Runnable {
                     }
                     lock.unlock();
                 }
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+            }
+            catch (Exception e) {
+                Log.e(TAG, "error " + e.getMessage());
             }
         }
     }

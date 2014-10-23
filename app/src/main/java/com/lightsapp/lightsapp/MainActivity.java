@@ -70,21 +70,37 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             mHandlerSetup.post(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        mCamera = Camera.open();
-                        mLight = new LightController(mMorse, mCamera, mHandlerSend,
-                                mPrefs.getBoolean("enable_sound", true));
-                        mLight.start();
+                    boolean done = false;
 
-                        Message msg = mHandlerRecv.obtainMessage();
-                        Bundle b = new Bundle();
-                        b.putString("setup_done", "");
-                        msg.setData(b);
+                    while (!done) {
+                        try {
+                            if (mCamera == null)
+                                mCamera = Camera.open();
 
-                        mHandlerRecv.sendMessage(msg);
-                        Log.v(TAG, "setup done");
-                    } catch (RuntimeException e) {
-                        Log.e(TAG, "failed to setup in setuphandler: " + e.getMessage());
+                            if (mHandlerRecv != null && mHandlerSend != null && mCamera != null) {
+                                mLight = new LightController(mMorse, mCamera, mHandlerSend,
+                                                             mPrefs.getBoolean("enable_sound", true));
+                                mLight.start();
+
+                                Message msg = mHandlerRecv.obtainMessage();
+                                Bundle b = new Bundle();
+                                b.putString("setup_done", "");
+                                msg.setData(b);
+
+                                mHandlerRecv.sendMessage(msg);
+                                done = true;
+                            }
+                            if (!done)
+                                Thread.sleep(100);
+                        }
+                        catch (InterruptedException e) {
+                        }
+                        catch (RuntimeException e) {
+                            Log.e(TAG, "failed to setup in setuphandler: " + e.getMessage());
+                        }
+                        finally {
+                            Log.v(TAG, "setup done");
+                        }
                     }
                 }
             });

@@ -6,16 +6,21 @@ import android.os.Message;
 import android.util.Log;
 
 public class MyHandler implements MyHandlerInterface {
-    private final String TAG = MyHandler.class.getSimpleName();
+    private String TAG = MyHandler.class.getSimpleName();
     Handler mHandler = null;
 
-    public MyHandler(Handler handler) {
+    public MyHandler(Handler handler, String TAG) {
+
+        this.TAG += "_" + TAG;
         mHandler = handler;
     }
 
     public void setHandler(Handler handler) {
         mHandler = handler;
     }
+    public Handler getHandler() { return mHandler; }
+
+    public boolean isHandlerNull() { return mHandler == null; }
 
     public void signalStr(String key, String str) {
         signalStr(mHandler, key, str);
@@ -23,7 +28,7 @@ public class MyHandler implements MyHandlerInterface {
 
     public void signalStr(Handler handler, String key, String str) {
         if (handler == null) {
-            Log.e(TAG, "error: handler is null");
+            Log.e(TAG, "handler is null");
             return;
         }
 
@@ -42,7 +47,7 @@ public class MyHandler implements MyHandlerInterface {
 
     public void signalInt(Handler handler, String key, int i) {
         if (handler == null) {
-            Log.e(TAG, "error: handler is null");
+            Log.e(TAG, "handler is null");
             return;
         }
 

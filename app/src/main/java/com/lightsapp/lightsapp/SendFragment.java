@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.lightsapp.camera.LightController;
+
 public class SendFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "0";
     private static final String TAG = SendFragment.class.getSimpleName();
@@ -137,6 +139,10 @@ public class SendFragment extends Fragment {
                     str = String.format("%03d%% |", 100 * cut / len);
                     str1 = "";
                     str2 = "";
+
+                    if (((float)cut / (float)len) == 1) {
+                        mButtonSend.setText(R.string.btn_send_start);
+                    }
 
                     try {
                         str1 = mstr.substring(0, cut);

@@ -8,8 +8,8 @@ import java.util.List;
 
 public class DerivativeFrameAnalyzer extends FrameAnalyzer {
 
-    public DerivativeFrameAnalyzer(Context context, Handler handler){
-        super(context, handler);
+    public DerivativeFrameAnalyzer(Context context){
+        super(context);
     }
 
     @Override

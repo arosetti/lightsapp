@@ -36,7 +36,7 @@ public class FrameAnalyzer extends MyRunnable {
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
 
-    protected FrameAnalyzer(Context context, Handler handler) {
+    protected FrameAnalyzer(Context context) {
         super(true);
 
         mCtx = (MainActivity) context;
@@ -44,7 +44,7 @@ public class FrameAnalyzer extends MyRunnable {
         lock_tmp_frames = new ReentrantLock(true);
         lframes = new ArrayList<Frame>();
         ltmp_frames = new ArrayList<Frame>();
-        myHandler = new MyHandler(handler);
+        myHandler = new MyHandler(mCtx.mHandlerRecv, TAG);
 
         mMorse = new MorseConverter(Integer.parseInt(mCtx.mPrefs.getString("interval", "500")));
     }
@@ -52,6 +52,11 @@ public class FrameAnalyzer extends MyRunnable {
     @Override
     public final void loop() {
         try {
+
+            if (myHandler.isHandlerNull()) {
+                myHandler.setHandler(mCtx.mHandlerRecv);
+            }
+
             update();
             analyze();
             Thread.sleep(500);

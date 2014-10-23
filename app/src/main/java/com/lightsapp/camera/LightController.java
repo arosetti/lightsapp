@@ -24,7 +24,7 @@ public class LightController extends MyRunnable {
 
     public LightController(MorseConverter morse, Camera camera, Handler handler, boolean sound) {
         super(false);
-        myHandler = new MyHandler(handler);
+        myHandler = new MyHandler(handler, TAG);
         data = "";
         mCamera = camera;
         mMorse = morse;
