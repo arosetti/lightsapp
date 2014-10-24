@@ -1,0 +1,88 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:id="@+id/fragment_send"
+                tools:context=".Main$PlaceholderFragment">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:id="@+id/imageView_lightbulb"
+        android:src="@drawable/lightbulb_off"
+        android:layout_gravity="top|center_horizontal"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom|center_horizontal">
+
+        <TextView
+            android:id="@+id/txt_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:gravity="top|center"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/txt_tx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:gravity="top|left"
+            android:textSize="16dp"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_tx"
+            android:editable="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:textAlignment="textEnd"
+            android:clickable="false"
+            android:gravity="center|center_vertical"
+            android:ellipsize="end"
+            android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:minLines="2"
+            android:maxLines="2"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/text_hint"
+            android:textStyle="normal"
+            android:capitalize="none"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="10dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:paddingTop="5dp">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_start"
+                android:id="@+id/button_send"
+                android:textAlignment="center"
+                android:clickable="true"
+                android:enabled="true"
+                android:layout_gravity="right"
+                android:gravity="center_vertical|center"
+                android:visibility="visible"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
