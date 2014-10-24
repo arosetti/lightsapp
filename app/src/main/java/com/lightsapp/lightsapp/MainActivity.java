@@ -61,7 +61,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Handler mHandlerSetup = null;
 
         SetupHandler() {
-            super("CameraHandler");
+            super("SetupHandler");
             start();
             mHandlerSetup = new Handler(getLooper());
         }
@@ -77,29 +77,33 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             if (mCamera == null)
                                 mCamera = Camera.open();
 
-                            if (mHandlerRecv != null && mHandlerSend != null && mCamera != null) {
+                            if (mHandlerGraph != null && mHandlerSend != null && mCamera != null) {
                                 mLight = new LightController(mMorse, mCamera, mHandlerSend,
                                                              mPrefs.getBoolean("enable_sound", true));
                                 mLight.start();
 
-                                Message msg = mHandlerRecv.obtainMessage();
+                                Message msg = mHandlerGraph.obtainMessage();
                                 Bundle b = new Bundle();
                                 b.putString("setup_done", "");
                                 msg.setData(b);
 
-                                mHandlerRecv.sendMessage(msg);
+                                mHandlerGraph.sendMessage(msg);
                                 done = true;
                             }
+                        }
+                        catch (RuntimeException e) {
+                            Log.e(TAG, "error: " + e.getMessage());
+                        }
+                        finally {
+                            if (done)
+                                Log.v(TAG, "setup done");
+                        }
+
+                        try {
                             if (!done)
                                 Thread.sleep(100);
                         }
                         catch (InterruptedException e) {
-                        }
-                        catch (RuntimeException e) {
-                            Log.e(TAG, "failed to setup in setuphandler: " + e.getMessage());
-                        }
-                        finally {
-                            Log.v(TAG, "setup done");
                         }
                     }
                 }
@@ -136,13 +140,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.v(TAG, "STOP");
     }
 
-    public void setFragment(Fragment frag) {
-        FragmentManager fm = getFragmentManager();
-        if (fm.findFragmentById(R.id.pager) == null) {
-            fm.beginTransaction().add(R.id.pager, frag).commit();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,10 +171,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("interval", "500")));
-
-        SendFragment sf = new SendFragment();
-
-        setFragment(sf);
     }
 
     @Override

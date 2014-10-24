@@ -4,17 +4,12 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.lightsapp.camera.CameraController;
 
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
@@ -25,7 +20,6 @@ public class RecvFragment extends Fragment {
     private TextView mTextViewMessageData;
     private SeekBar mSeekBarSensitivity;
     private Button mButtonRecv;
-    FrameLayout mPreview;
 
     public Handler mHandler;
 
@@ -71,9 +65,6 @@ public class RecvFragment extends Fragment {
             }
         });
 
-        mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
-        mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
-
         Button mButton = (Button) v.findViewById(R.id.button_reset);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -109,14 +100,8 @@ public class RecvFragment extends Fragment {
                     mTextViewMessageData.setText((String) msg.getData().get("data_message"));
                 }
 
-                if (msg.getData().containsKey("setup_done")) {
-                    if (mCtx.mCamera == null)
-                        Log.e(TAG, "camera is null");
-                    mCtx.mCameraController = new CameraController(mCtx);
-                    mPreview.removeAllViews();
-                    mPreview.addView(mCtx.mCameraController);
+                if ( msg.getData().containsKey("set_sensitivity")) {
                     mCtx.mCameraController.setSensitivity(mSeekBarSensitivity.getProgress());
-                    Log.v(TAG, "init camera preview");
                 }
             }
         };

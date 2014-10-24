@@ -7,8 +7,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,13 +18,14 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
+import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.FrameAnalyzer.Frame;
 import com.lightsapp.utils.LinearFilter;
 
 import java.util.List;
 
 public class GraphFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "1";
+    private static final String ARG_SECTION_NUMBER = "2";
     private static final String TAG = SendFragment.class.getSimpleName();
     private static final int GRAPH_SIZE = 300;
 
@@ -31,6 +34,8 @@ public class GraphFragment extends Fragment {
     public Handler mHandler;
 
     private TextView mTextViewMessageStatus;
+
+    FrameLayout mPreview;
 
     private GraphView graphView_delay, graphView_lum;
     private GraphViewSeries series;
@@ -48,11 +53,31 @@ public class GraphFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.v(TAG, "RESUME_GRAPH");
+        if (mCtx.mCameraController != null) {
+            mPreview.removeAllViews();
+            mPreview.addView(mCtx.mCameraController);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(TAG, "PAUSE_GRAPH");
+            mPreview.removeAllViews();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_graph, container, false);
 
         mCtx = (MainActivity) getActivity();
+
+        mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
+        mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
         mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
         mTextViewMessageStatus.setText("idle");
@@ -95,6 +120,15 @@ public class GraphFragment extends Fragment {
 
                 if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
                     mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
+                }
+
+                if (msg.getData().containsKey("setup_done")) {
+                    if (mCtx.mCamera == null)
+                        Log.e(TAG, "camera is null");
+                    mCtx.mCameraController = new CameraController(mCtx);
+                    mPreview.removeAllViews();
+                    mPreview.addView(mCtx.mCameraController);
+                    Log.v(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {

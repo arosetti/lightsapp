@@ -58,6 +58,7 @@ public class FrameAnalyzer extends MyRunnable {
         try {
             if (myHandler.isHandlerNull()) {
                 myHandler.setHandler(mCtx.mHandlerRecv);
+                myHandler.signalStr("set_sensitivity", "");
             }
 
             Thread.sleep(100);
