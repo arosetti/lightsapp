@@ -8,6 +8,7 @@ import com.lightsapp.core.Beep;
 import com.lightsapp.core.MyHandler;
 import com.lightsapp.core.MyRunnable;
 import com.lightsapp.morse.MorseConverter;
+import static com.lightsapp.utils.Utils.*;
 
 public class LightController extends MyRunnable {
     private final String TAG = LightController.class.getSimpleName();
@@ -32,18 +33,6 @@ public class LightController extends MyRunnable {
         this.sound = sound;
     }
 
-    public static void forceSleep(int msec) {
-        final long endingTime = System.currentTimeMillis() + msec;
-        long remainingTime = msec;
-        while (remainingTime > 0) {
-            try {
-                Thread.sleep(remainingTime);
-            } catch (InterruptedException ignore) {
-            }
-            remainingTime = endingTime - System.currentTimeMillis();
-        }
-    }
-
     private long sound(int t) { // TODO optimize this
         final long timestamp = System.currentTimeMillis();
         mBeep.genTone(t / 1000f, beepFreq);
@@ -62,7 +51,7 @@ public class LightController extends MyRunnable {
             ret = sound(t);
 
         if ((t - ret) > 0)
-            forceSleep((int) (t - ret));
+            ForcedSleep((int) (t - ret));
         else
             Log.v(TAG, "disable sound output please...");
 
@@ -79,12 +68,6 @@ public class LightController extends MyRunnable {
 
     public void setCamera(Camera camera) {
         mCamera = camera;
-    }
-
-    @Override
-    public void afterloop() {
-        myHandler.signalInt("progress", 0);
-        myHandler.signalStr("message", "");
     }
 
     @Override
@@ -117,7 +100,7 @@ public class LightController extends MyRunnable {
                 else if (Math.abs(pattern[i]) == WORD_GAP)
                     progress += 3;
                 myHandler.signalInt("progress", progress);
-                forceSleep((int) Math.abs(pattern[i]));
+                ForcedSleep((int) Math.abs(pattern[i]));
             }
         }
     }

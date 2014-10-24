@@ -34,8 +34,6 @@ public class SendFragment extends Fragment {
     private EditText mEdit;
     private Button mButtonSend;
 
-    private String mStrMorse;
-
     public Handler mHandler;
 
     public static SendFragment newInstance(int sectionNumber) {
@@ -48,6 +46,11 @@ public class SendFragment extends Fragment {
 
     public SendFragment() {
         mCtx = (MainActivity) getActivity();
+    }
+
+    public void reset() {
+        mTextViewMessage.setText("idle");
+        mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
     }
 
     @Override
@@ -66,10 +69,9 @@ public class SendFragment extends Fragment {
 
         mEdit = (EditText) v.findViewById(R.id.edit_tx);
         mEdit.setText(mCtx.mPrefs.getString("default_text", "sos"));
-        mStrMorse = mEdit.getText().toString();
 
         mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
-        mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
+        mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
 
         mEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -80,8 +82,7 @@ public class SendFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mStrMorse = mEdit.getText().toString();
-                mTextViewMorse.setText(mCtx.mMorse.getMorse(mStrMorse));
+                mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
             }
         });
 
@@ -95,7 +96,7 @@ public class SendFragment extends Fragment {
                                 mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
                             }
                             if (mCtx.mLight != null) {
-                                mCtx.mLight.setString(mStrMorse);
+                                mCtx.mLight.setString(CleanString(mEdit.getText().toString()));
                                 mCtx.mLight.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
@@ -106,6 +107,7 @@ public class SendFragment extends Fragment {
                                 mCtx.mLight.setStatus(false);
                             mImageView_lightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);
+                            reset();
                         }
                     }
                 });
@@ -129,7 +131,8 @@ public class SendFragment extends Fragment {
                 }
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
-                    String str, str1, str2, mstr = mCtx.mMorse.getMorse(CleanString(mStrMorse));
+                    String str, str1, str2,
+                           mstr = mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString()));
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     len = mstr.length();
@@ -141,10 +144,6 @@ public class SendFragment extends Fragment {
                     str1 = "";
                     str2 = "";
 
-                    if (((float)cut / (float)len) == 1) {
-                        mButtonSend.setText(R.string.btn_start);
-                    }
-
                     try {
                         str1 = mstr.substring(0, cut);
                     } catch (IndexOutOfBoundsException e) {
@@ -155,6 +154,13 @@ public class SendFragment extends Fragment {
                     }
                     String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>";
                     mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
+
+                    if (((float)cut / (float)len) == 1) {
+                        mButtonSend.setText(R.string.btn_start);
+                        ForcedSleep(500);
+                        reset();
+                    }
+
                     Log.v(TAG, "handler gui");
                 }
             }

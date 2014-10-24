@@ -223,6 +223,9 @@ public class FrameAnalyzer extends MyRunnable {
         long timestamp_now = System.currentTimeMillis() ;
         long delta = (timestamp == 0)? 0 : (timestamp_now - timestamp);
 
+        if (!getStatus())
+            return;
+
         lock_frames_tmp.lock();
         try {
             lframes_tmp.add(new Frame(data, width, height, timestamp_now, delta));
