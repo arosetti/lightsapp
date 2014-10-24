@@ -79,7 +79,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
                             if (mHandlerRecv != null && mHandlerSend != null && mCamera != null) {
                                 mLight = new LightController(mMorse, mCamera, mHandlerSend,
-                                                             mPrefs.getBoolean("enable_sound", true));
+                                                             mPrefs.getBoolean("enable_sound", false));
                                 mLight.start();
 
                                 Message msg = mHandlerRecv.obtainMessage();
