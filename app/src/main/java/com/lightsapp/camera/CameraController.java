@@ -43,17 +43,10 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
                 mFrameA = new BasicFrameAnalyzer(context);
         }
 
-        startAnalyzer();
-
         mHolder = getHolder();
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-    public void startAnalyzer() {
-        mFrameA.start();
-        mFrameA.activate();
     }
 
     public final List<Frame> getFrames() {
@@ -62,6 +55,11 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void reset() {
         mFrameA.reset();
+    }
+
+    public void startAnalyzer() {
+        mFrameA.start();
+        mFrameA.activate();
     }
 
     public void stopAnalyzer() {

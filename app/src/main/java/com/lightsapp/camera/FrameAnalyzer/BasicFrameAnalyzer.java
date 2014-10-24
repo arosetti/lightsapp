@@ -34,7 +34,6 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
         int dsum = 0;
         int n = 0;
         List<Long> ldata = new ArrayList<Long>();
-        long base = mMorse.get("SPEED_BASE");
 
         for (int i = start_frame; i < (lframes.size() - 1); i++) {
             long lcur = lframes.get(i).luminance;
@@ -50,12 +49,12 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
                 dsum += lframes.get(i).delta;
                 long sign = ((n % 2) == 0) ? 1:-1;
 
-                if (dsum > 8 * base) {
+                if (dsum > 8 * speed_base) {
                     reset();
                     return;
                 }
 
-                if (dsum > (base / 3)) {
+                if (dsum > (speed_base / 3)) {
                     ldata.add(new Long(sign * dsum));
                     n++;
                 }

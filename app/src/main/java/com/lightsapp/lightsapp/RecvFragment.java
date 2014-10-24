@@ -24,6 +24,7 @@ public class RecvFragment extends Fragment {
 
     private TextView mTextViewMessageData;
     private SeekBar mSeekBarSensitivity;
+    private Button mButtonRecv;
     FrameLayout mPreview;
 
     public Handler mHandler;
@@ -73,11 +74,29 @@ public class RecvFragment extends Fragment {
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
-        Button mButton = (Button) v.findViewById(R.id.button_recv);
+        Button mButton = (Button) v.findViewById(R.id.button_reset);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         mCtx.mCameraController.reset();
+                    }
+                });
+
+
+        mButtonRecv = (Button) v.findViewById(R.id.button_recv);
+        mButtonRecv.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (mButtonRecv.getText() ==
+                                getResources().getString(R.string.btn_start) ) {
+                            mCtx.mCameraController.startAnalyzer();
+                            mButtonRecv.setText(R.string.btn_stop);
+                        }
+                        else if (mButtonRecv.getText() ==
+                                getResources().getString(R.string.btn_stop) ) {
+                            mCtx.mCameraController.stopAnalyzer();
+                            mButtonRecv.setText(R.string.btn_start);
+                        }
                     }
                 });
 

@@ -20,23 +20,13 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
             return;
         }
 
-        // search for a possible start of the transmission
-        /*if (start_frame == 0) {
-            for (int i = start_frame; i < (lframes.size() - 1); i++) {
-                if ((lframes.get(i).luminance * 2) < lframes.get(i + 1).luminance) {
-                    start_frame = i;
-                    myHandler.signalStr("data_message", "start_frame: " + start_frame);
-                }
-            }
-            return;
-        }*/
-
         int dsum = 0;
         List<Long> ldata = new ArrayList<Long>();
 
         int m_sensitivity = sensitivity;
         boolean light = false;
-        for (int i = start_frame; i < (lframes.size() - 1); i++) {
+
+        for (int i = 0; i < lframes.size(); i++) {
             if (i == 0 && lframes.get(i).luminance > m_sensitivity) {
                     light = true;
             }
@@ -65,7 +55,7 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
                         dsum = 0;
                 }
             }
-    }
+        }
 
         endAnalyze(ldata);
     }

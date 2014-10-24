@@ -43,6 +43,12 @@ public abstract class MyRunnable implements Runnable {
         tid.start();
     }
 
+    public final void stop() {
+        lock.lock();
+        tid.interrupt();
+        lock.unlock();
+    }
+
     public final void activate() {
         try {
             lock.lock();
@@ -91,15 +97,12 @@ public abstract class MyRunnable implements Runnable {
                 }
             }
             catch (InterruptedException e) {
+                Log.d(TAG, "Thread Interrupted");
                 Thread.currentThread().interrupt();
             }
             catch (Exception e) {
                 Log.e(TAG, "error " + e.getMessage());
             }
         }
-    }
-
-    public final void stop() {
-        tid.interrupt();
     }
 }

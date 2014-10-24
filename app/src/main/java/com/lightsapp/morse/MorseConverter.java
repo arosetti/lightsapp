@@ -18,6 +18,8 @@ package com.lightsapp.morse;
 
 import android.util.Log;
 
+import static com.lightsapp.utils.Utils.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,16 +143,6 @@ public class MorseConverter {
             }
         }
         return tmpStr;
-    }
-
-    private long[] ListToPrimitiveArray(List<Long> input) {
-        long output[] = new long[input.size()];
-        int index = 0;
-        for(Long val : input) {
-            output[index] =  val;
-            index++;
-        }
-        return output;
     }
 
     public String getText(long data[]) {

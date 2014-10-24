@@ -17,7 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lightsapp.camera.LightController;
+import static com.lightsapp.utils.Utils.*;
+
 
 public class SendFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "0";
@@ -89,22 +90,22 @@ public class SendFragment extends Fragment {
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         if (mButtonSend.getText() ==
-                            getResources().getString(R.string.btn_send_start) ) {
+                            getResources().getString(R.string.btn_start) ) {
                             if (mCtx.mMorse != null) {
                                 mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
                             }
                             if (mCtx.mLight != null) {
                                 mCtx.mLight.setString(mStrMorse);
                                 mCtx.mLight.activate();
-                                mButtonSend.setText(R.string.btn_send_stop);
+                                mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() ==
-                                 getResources().getString(R.string.btn_send_stop) ) {
+                                 getResources().getString(R.string.btn_stop) ) {
                             if (mCtx.mLight != null)
                                 mCtx.mLight.setStatus(false);
                             mImageView_lightbulb.setImageDrawable(lightbulb_off);
-                            mButtonSend.setText(R.string.btn_send_start);
+                            mButtonSend.setText(R.string.btn_start);
                         }
                     }
                 });
@@ -128,7 +129,7 @@ public class SendFragment extends Fragment {
                 }
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
-                    String str, str1, str2, mstr = mCtx.mMorse.getMorse(mStrMorse);
+                    String str, str1, str2, mstr = mCtx.mMorse.getMorse(CleanString(mStrMorse));
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     len = mstr.length();
@@ -141,7 +142,7 @@ public class SendFragment extends Fragment {
                     str2 = "";
 
                     if (((float)cut / (float)len) == 1) {
-                        mButtonSend.setText(R.string.btn_send_start);
+                        mButtonSend.setText(R.string.btn_start);
                     }
 
                     try {

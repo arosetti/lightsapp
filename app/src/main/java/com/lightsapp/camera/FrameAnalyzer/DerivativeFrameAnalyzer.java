@@ -24,7 +24,6 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         List<Long> lframes_d = new ArrayList<Long>();
 
         long tstart = 0, tstop = 0, diff;
-        long base = mMorse.get("SPEED_BASE");
 
         // TODO optimize and compute incrementally, use, last_diff and add new frames.
         for (int i = start_frame + 1; i < lframes.size(); i++) {
@@ -46,7 +45,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
             if (tstart != 0 && tstop == 0) {
                 diff = lframes.get(i + start_frame).timestamp - tstart;
 
-                if (diff > (8 * base)) {
+                if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long high signal");
                     tstart = 0;
                     continue;
@@ -54,7 +53,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
 
                 if (lframes_d.get(i) <  -sensitivity) {
                     Log.w(TAG, "2) down");
-                    if (diff > (long) (0.6 * (float) base)) {
+                    if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(diff));
                         tstop = lframes.get(i + start_frame).timestamp;
                         tstart = 0;
@@ -68,7 +67,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
             if (tstop != 0 && tstart == 0) {
                 diff = lframes.get(i + start_frame).timestamp - tstop;
 
-                if (diff > (8 * base)) {
+                if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long low signal");
                     tstop = 0;
                     continue;
@@ -76,7 +75,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
 
                 if ((lframes_d.get(i) > sensitivity)) {
                     Log.w(TAG, "3) up");
-                    if (diff > (long) (0.6 * (float) base)) {
+                    if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(-diff));
                         tstop = 0;
                         tstart = lframes.get(i + start_frame).timestamp;
