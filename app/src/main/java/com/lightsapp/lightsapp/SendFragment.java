@@ -140,7 +140,7 @@ public class SendFragment extends Fragment {
                     if (len == 0)
                         return;
 
-                    str = String.format("%03d%% |", 100 * cut / len);
+                    str = String.format("%d%%", 100 * cut / len);
                     str1 = "";
                     str2 = "";
 
@@ -152,7 +152,10 @@ public class SendFragment extends Fragment {
                         str2 = mstr.substring(cut);
                     } catch (IndexOutOfBoundsException e) {
                     }
-                    String text = "<font color='green'>" + str + "</font> <font color='red'>" + str1 + "</font><font color='black'>" + str2 + "</font>";
+                    String text = "<font color='green'>" + str + "</font>" +
+                                  "<font color='grey'> | </font>" +
+                                  "<font color='red'>" + str1 + "</font>" +
+                                  "<font color='black'>" + str2 + "</font>";
                     mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
 
                     if (((float)cut / (float)len) == 1) {
