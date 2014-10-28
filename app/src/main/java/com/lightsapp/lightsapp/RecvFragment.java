@@ -24,8 +24,6 @@ public class RecvFragment extends Fragment {
     private SeekBar mSeekBarSensitivity;
     private Button mButtonRecv;
 
-    FrameLayout mPreview;
-
     public Handler mHandler;
 
     public static RecvFragment newInstance(int sectionNumber) {
@@ -46,9 +44,6 @@ public class RecvFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recv, container, false);
 
         mCtx = (MainActivity) getActivity();
-
-        mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
-        mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
         mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
         mTextViewMessageData.setText("***");
@@ -106,12 +101,6 @@ public class RecvFragment extends Fragment {
 
                 if (mTextViewMessageData != null && msg.getData().containsKey("data_message")) {
                     mTextViewMessageData.setText((String) msg.getData().get("data_message"));
-                }
-
-                if (msg.getData().containsKey("setup_done")) {
-                    mPreview.removeAllViews();
-                    mPreview.addView(mCtx.mCameraController);
-                    Log.v(TAG, "init camera preview done");
                 }
 
                 if ( msg.getData().containsKey("set_sensitivity")) {

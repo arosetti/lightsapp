@@ -13,9 +13,9 @@ public abstract class MyRunnable implements Runnable {
     private final Condition started;
     private final Condition stopped;
 
-    private final AtomicReference<Boolean> status;
+    private AtomicReference<Boolean> status;
+    private AtomicReference<Boolean> loop;
 
-    private boolean loop = false;
     private Thread tid;
 
     public MyRunnable(boolean loop) {
@@ -23,40 +23,45 @@ public abstract class MyRunnable implements Runnable {
         started = lock.newCondition();
         stopped = lock.newCondition();
         status = new AtomicReference<Boolean>(false);
+        this.loop = new AtomicReference<Boolean>(loop);
         setLoop(loop);
     }
 
-    public final void setLoop(boolean loop) {
-        this.loop = loop;
+    public final boolean getLoop() {
+        return loop.get();
     }
 
-    public final boolean getLoop() {
-        return loop;
+    public final void setLoop(boolean l) {
+        loop.getAndSet(l);
     }
 
     public final boolean getStatus() {
+
         return status.get();
     }
 
     public final void setStatus(boolean s) {
+
         status.getAndSet(s);
     }
 
     public final void start() {
-        tid = new Thread(this);
-        tid.start();
+        if (tid == null) {
+            tid = new Thread(this);
+            tid.start();
+        }
     }
 
     public final void stop() {
-        lock.lock();
-        tid.interrupt();
-        lock.unlock();
+        setLoop(false);
+        setStatus(false);
+        //tid.interrupt();
     }
 
     public final void activate() {
         try {
             lock.lock();
-            if (!loop) {
+            if (!loop.get()) {
                 while (status.get())
                     stopped.await();
             }
@@ -93,7 +98,7 @@ public abstract class MyRunnable implements Runnable {
                     beforeloop();
                     loop();
                     afterloop();
-                    if (!loop) {
+                    if (!loop.get()) {
                         status.getAndSet(false);
                         stopped.signal();
                     }
@@ -105,7 +110,7 @@ public abstract class MyRunnable implements Runnable {
                 Thread.currentThread().interrupt();
             }
             catch (Exception e) {
-                Log.e(TAG, "loop error -> " + e.getMessage());
+                Log.e(TAG, "loop exception -> " + e.toString() + " " + e.getMessage());
             }
         }
     }

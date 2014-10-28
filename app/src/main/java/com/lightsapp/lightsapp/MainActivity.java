@@ -79,14 +79,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             if (mCamera == null)
                                 mCamera = Camera.open();
 
-                            if (mCamera != null) {
+                            if (mCamera != null && (mLight == null || mCameraController == null)) {
                                 mLight = new LightController(mContext);
                                 mLight.start();
                                 mCameraController = new CameraController(mContext);
                             }
 
-                            if ( mCamera != null && mLight != null && mCameraController != null) {
-                                signalStr(mHandlerRecv, "setup_done", "");
+                            if (mHandlerGraph != null && mCameraController != null &&
+                                mCamera != null && mLight != null) {
+                                signalStr(mHandlerGraph, "setup_done", "");
                                 done = true;
                             }
                         }
@@ -154,6 +155,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
