@@ -3,13 +3,11 @@ package com.lightsapp.camera;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
-import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.lightsapp.camera.FrameAnalyzer.*;
-import com.lightsapp.core.MyHandler;
 import com.lightsapp.lightsapp.MainActivity;
 
 import java.io.IOException;
@@ -28,25 +26,23 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         super(context);
 
         MainActivity mCtx = (MainActivity) context;
-
         mCamera = mCtx.mCamera;
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        // deprecated setting, but required on Android versions prior to 3.0
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "0"));
         switch (algorithm) {
             case 1:
                 mFrameA = new ThresholdFrameAnalyzer(context);
-            break;
+                break;
             case 2:
                 mFrameA = new DerivativeFrameAnalyzer(context);
-            break;
+                break;
             default:
                 mFrameA = new BasicFrameAnalyzer(context);
         }
-
-        mHolder = getHolder();
-        mHolder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public final List<Frame> getFrames() {

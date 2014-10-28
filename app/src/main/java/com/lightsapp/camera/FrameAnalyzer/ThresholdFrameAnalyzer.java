@@ -1,11 +1,13 @@
 package com.lightsapp.camera.FrameAnalyzer;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.lightsapp.utils.HandlerUtils.*;
+
 
 public class ThresholdFrameAnalyzer extends FrameAnalyzer {
 
@@ -16,7 +18,7 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            myHandler.signalStr("data_message", "<threshold algorithm>");
+            signalStr(mCtx.mHandlerRecv, "data_message", "<threshold algorithm>");
             return;
         }
 

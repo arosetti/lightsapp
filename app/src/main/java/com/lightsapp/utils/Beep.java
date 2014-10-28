@@ -1,4 +1,4 @@
-package com.lightsapp.core;
+package com.lightsapp.utils;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;

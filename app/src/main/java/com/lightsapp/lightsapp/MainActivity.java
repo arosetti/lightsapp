@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,7 +13,6 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -24,12 +24,14 @@ import android.widget.Toast;
 import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.LightController;
 import com.lightsapp.morse.MorseConverter;
+import static com.lightsapp.utils.HandlerUtils.*;
 
 import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private final String TAG = MainActivity.class.getSimpleName();
+    private Context mContext;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -77,17 +79,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             if (mCamera == null)
                                 mCamera = Camera.open();
 
-                            if (mHandlerGraph != null && mHandlerSend != null && mCamera != null) {
-                                mLight = new LightController(mMorse, mCamera, mHandlerSend,
-                                                             mPrefs.getBoolean("enable_sound", true));
+                            if (mCamera != null) {
+                                mLight = new LightController(mContext);
                                 mLight.start();
+                                mCameraController = new CameraController(mContext);
+                            }
 
-                                Message msg = mHandlerGraph.obtainMessage();
-                                Bundle b = new Bundle();
-                                b.putString("setup_done", "");
-                                msg.setData(b);
-
-                                mHandlerGraph.sendMessage(msg);
+                            if ( mCamera != null && mLight != null && mCameraController != null) {
+                                signalStr(mHandlerRecv, "setup_done", "");
                                 done = true;
                             }
                         }
@@ -145,6 +144,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.v(TAG, "CREATE");
+
+        mContext = this;
 
         final ActionBar actionBar = getActionBar();
         if (actionBar != null)

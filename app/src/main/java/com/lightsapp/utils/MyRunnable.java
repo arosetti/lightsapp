@@ -1,17 +1,20 @@
-package com.lightsapp.core;
+package com.lightsapp.utils;
 
 import android.util.Log;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class MyRunnable implements Runnable {
-    private final String TAG = MyHandler.class.getSimpleName();
+    private final String TAG = HandlerUtils.class.getSimpleName();
     private final Lock lock;
     private final Condition started;
     private final Condition stopped;
-    private boolean status = false;
+
+    private final AtomicReference<Boolean> status;
+
     private boolean loop = false;
     private Thread tid;
 
@@ -19,6 +22,7 @@ public abstract class MyRunnable implements Runnable {
         lock = new ReentrantLock(true);
         started = lock.newCondition();
         stopped = lock.newCondition();
+        status = new AtomicReference<Boolean>(false);
         setLoop(loop);
     }
 
@@ -31,11 +35,11 @@ public abstract class MyRunnable implements Runnable {
     }
 
     public final boolean getStatus() {
-        return status;
+        return status.get();
     }
 
     public final void setStatus(boolean s) {
-        status = s;
+        status.getAndSet(s);
     }
 
     public final void start() {
@@ -53,10 +57,10 @@ public abstract class MyRunnable implements Runnable {
         try {
             lock.lock();
             if (!loop) {
-                while (status)
+                while (status.get())
                     stopped.await();
             }
-            status = true;
+            status.getAndSet(true);
             started.signal();
 
         } catch (InterruptedException e) {
@@ -84,13 +88,13 @@ public abstract class MyRunnable implements Runnable {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
-                    while (!status)
+                    while (!status.get())
                         started.await();
                     beforeloop();
                     loop();
                     afterloop();
                     if (!loop) {
-                        status = false;
+                        status.getAndSet(false);
                         stopped.signal();
                     }
                     lock.unlock();
@@ -101,7 +105,7 @@ public abstract class MyRunnable implements Runnable {
                 Thread.currentThread().interrupt();
             }
             catch (Exception e) {
-                Log.e(TAG, "error " + e.getMessage());
+                Log.e(TAG, "loop error -> " + e.getMessage());
             }
         }
     }
