@@ -33,8 +33,8 @@ public class GraphFragment extends Fragment {
 
     public Handler mHandler;
 
+    FrameLayout mPreview;
     private TextView mTextViewMessageStatus;
-
     private GraphView graphView_delay, graphView_lum;
     private GraphViewSeries series;
 
@@ -74,6 +74,9 @@ public class GraphFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_graph, container, false);
 
         mCtx = (MainActivity) getActivity();
+
+        mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
+        mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
         mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
         mTextViewMessageStatus.setText("idle");
@@ -116,6 +119,12 @@ public class GraphFragment extends Fragment {
 
                 if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
                     mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
+                }
+
+                if (msg.getData().containsKey("setup_done")) {
+                    mPreview.removeAllViews();
+                    mPreview.addView(mCtx.mCameraController);
+                    Log.v(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {
