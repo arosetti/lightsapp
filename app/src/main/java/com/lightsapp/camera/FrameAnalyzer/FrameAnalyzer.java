@@ -3,11 +3,11 @@ package com.lightsapp.camera.FrameAnalyzer;
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.core.MyHandler;
-import com.lightsapp.core.MyRunnable;
+import com.lightsapp.utils.MyRunnable;
 import com.lightsapp.lightsapp.MainActivity;
 import com.lightsapp.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
+import static com.lightsapp.utils.HandlerUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ public class FrameAnalyzer extends MyRunnable {
     protected final String TAG = FrameAnalyzer.class.getSimpleName();
 
     protected MainActivity mCtx;
-    protected MyHandler myHandler;
 
     protected List<Frame> lframes;
     protected List<Frame> lframes_tmp;
@@ -28,7 +27,7 @@ public class FrameAnalyzer extends MyRunnable {
 
     protected int start_frame = 0,
                   last_frame_analyzed = 0,
-                  sensitivity = 0;
+                  sensitivity = -1;
 
     protected final MorseConverter mMorse;
     protected long speed_base;
@@ -47,7 +46,6 @@ public class FrameAnalyzer extends MyRunnable {
 
         lframes = new ArrayList<Frame>();
         lframes_tmp = new ArrayList<Frame>();
-        myHandler = new MyHandler(mCtx.mHandlerRecv, TAG);
 
         mMorse = new MorseConverter(Integer.parseInt(mCtx.mPrefs.getString("interval", "500")));
         speed_base = mMorse.get("SPEED_BASE");
@@ -56,15 +54,13 @@ public class FrameAnalyzer extends MyRunnable {
     @Override
     public final void loop() {
         try {
-            if (myHandler.isHandlerNull()) {
-                myHandler.setHandler(mCtx.mHandlerRecv);
-                myHandler.signalStr("set_sensitivity", "");
+            if (sensitivity < 0 && mCtx.mHandlerRecv != null) {
+                signalStr(mCtx.mHandlerRecv, "set_sensitivity", "");
             }
 
-            Thread.sleep(100);
             update();
 
-            Thread.sleep(100);
+            Thread.sleep(200);
             analyze();
 
             Thread.sleep(200);
@@ -76,13 +72,13 @@ public class FrameAnalyzer extends MyRunnable {
             Log.e(TAG, "error analyzing frames: " + e.getMessage());
         }
         finally {
-            myHandler.signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
+            signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
                     "\ncur / min / max / avg" +
                     "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
                     d_min + " / " + d_max + " / " + d_avg + ") ms " +
                     "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
                     " / " + l_min + " / " + l_max + " / " + l_avg + ")");
-            myHandler.signalStr(mCtx.mHandlerGraph, "update", "");
+            signalStr(mCtx.mHandlerGraph, "update", "");
         }
     }
 
@@ -91,7 +87,7 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     public final void reset() {
-        myHandler.signalStr("data_message", "***");
+        signalStr(mCtx.mHandlerRecv, "data_message", "***");
 
         lock_frames_tmp.lock();
         try {
@@ -211,7 +207,7 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     protected final void signalToGui(List<Long> ldata) {
-        myHandler.signalStr("data_message", mMorse.getText(ListToPrimitiveArray(ldata)) +
+        signalStr(mCtx.mHandlerRecv, "data_message", mMorse.getText(ListToPrimitiveArray(ldata)) +
                                             "\n" + ldata.toString());
     }
 

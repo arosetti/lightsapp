@@ -1,10 +1,9 @@
 package com.lightsapp.camera.FrameAnalyzer;
 
 import android.content.Context;
-import android.os.Handler;
-
 import java.util.ArrayList;
 import java.util.List;
+import static com.lightsapp.utils.HandlerUtils.*;
 
 public class BasicFrameAnalyzer extends FrameAnalyzer {
 
@@ -15,7 +14,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            myHandler.signalStr("data_message", "<basic algorithm>");
+            signalStr(mCtx.mHandlerRecv, "data_message", "<basic algorithm>");
             return;
         }
 
@@ -25,7 +24,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
                 if ( ((float) lframes.get(i).luminance *
                      ((float) sensitivity / 25f)) < lframes.get(i + 1).luminance ) {
                     start_frame = i;
-                    myHandler.signalStr("data_message", "start_frame: " + start_frame);
+                    signalStr(mCtx.mHandlerRecv, "data_message", "start_frame: " + start_frame);
                 }
             }
             return;

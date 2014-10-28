@@ -1,19 +1,22 @@
 package com.lightsapp.camera;
 
+import android.content.Context;
 import android.hardware.Camera;
-import android.os.Handler;
 import android.util.Log;
 
-import com.lightsapp.core.Beep;
-import com.lightsapp.core.MyHandler;
-import com.lightsapp.core.MyRunnable;
+import com.lightsapp.utils.Beep;
+import com.lightsapp.utils.MyRunnable;
+import com.lightsapp.lightsapp.MainActivity;
 import com.lightsapp.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
+import static com.lightsapp.utils.HandlerUtils.*;
 
 public class LightController extends MyRunnable {
     private final String TAG = LightController.class.getSimpleName();
+
+    private MainActivity mCtx;
+
     private Camera mCamera;
-    private MyHandler myHandler;
     private volatile String data;
     private long[] pattern;
     private int progress;
@@ -23,14 +26,16 @@ public class LightController extends MyRunnable {
     private Beep mBeep;
     private final int beepFreq = 850;
 
-    public LightController(MorseConverter morse, Camera camera, Handler handler, boolean sound) {
+    public LightController(Context context) {
         super(false);
-        myHandler = new MyHandler(handler, TAG);
-        data = "";
-        mCamera = camera;
-        mMorse = morse;
+
+        mCtx = (MainActivity) context;
+
+        mCamera = mCtx.mCamera;
+        mMorse = mCtx.mMorse;
         mBeep = new Beep();
-        this.sound = sound;
+        sound = mCtx.mPrefs.getBoolean("enable_sound", false);
+        data = "";
     }
 
     private long sound(int t) { // TODO optimize this
@@ -81,27 +86,30 @@ public class LightController extends MyRunnable {
         progress = 0;
 
         for (int i = 0; i < pattern.length; i++) {
-            if (!getStatus())
+            if (!getStatus()) {
+                Log.v(TAG, "STOPPING LED OUTPUT");
                 break;
+            }
             if (i % 2 != 0) {
-                myHandler.signalStr("light", "on");
+                signalStr(mCtx.mHandlerSend, "light", "on");
                 if (Math.abs(pattern[i]) > DOT)
-                    myHandler.signalStr("message", "DASH\n" + pattern[i] + "ms");
+                    signalStr(mCtx.mHandlerSend, "message", "DASH\n" + pattern[i] + "ms");
                 else
-                    myHandler.signalStr("message", "DOT\n" + pattern[i] + "ms");
+                    signalStr(mCtx.mHandlerSend, "message", "DOT\n" + pattern[i] + "ms");
                 progress++;
-                myHandler.signalInt("progress", progress);
+                signalInt(mCtx.mHandlerSend, "progress", progress);
                 flash((int) Math.abs(pattern[i]));
-                myHandler.signalStr("light", "off");
+                signalStr(mCtx.mHandlerSend, "light", "off");
             } else {
-                myHandler.signalStr("message", "...\n" + pattern[i] + "ms");
+                signalStr(mCtx.mHandlerSend, "message", "...\n" + pattern[i] + "ms");
                 if (Math.abs(pattern[i]) == LETTER_GAP)
                     progress++;
                 else if (Math.abs(pattern[i]) == WORD_GAP)
                     progress += 3;
-                myHandler.signalInt("progress", progress);
+                signalInt(mCtx.mHandlerSend, "progress", progress);
                 ForcedSleep((int) Math.abs(pattern[i]));
             }
         }
+        Log.v(TAG, "END LED OUTPUT");
     }
 }

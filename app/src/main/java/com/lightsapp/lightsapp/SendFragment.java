@@ -24,7 +24,7 @@ public class SendFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "0";
     private static final String TAG = SendFragment.class.getSimpleName();
 
-    private MainActivity mCtx = (MainActivity) getActivity();
+    private MainActivity mCtx;
 
     private ImageView mImageView_lightbulb;
     private Drawable lightbulb_on, lightbulb_off;
@@ -48,7 +48,7 @@ public class SendFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
-    public void reset() {
+    public void resetText() {
         mTextViewMessage.setText("idle");
         mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
     }
@@ -90,8 +90,7 @@ public class SendFragment extends Fragment {
         mButtonSend.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (mButtonSend.getText() ==
-                            getResources().getString(R.string.btn_start) ) {
+                        if (mButtonSend.getText() == getResources().getString(R.string.btn_start) ) {
                             if (mCtx.mMorse != null) {
                                 mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
                             }
@@ -101,13 +100,13 @@ public class SendFragment extends Fragment {
                                 mButtonSend.setText(R.string.btn_stop);
                             }
                         }
-                        else if (mButtonSend.getText() ==
-                                 getResources().getString(R.string.btn_stop) ) {
-                            if (mCtx.mLight != null)
+                        else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
+                            if (mCtx.mLight != null) {
                                 mCtx.mLight.setStatus(false);
+                            }
                             mImageView_lightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);
-                            reset();
+                            resetText();
                         }
                     }
                 });
@@ -161,7 +160,7 @@ public class SendFragment extends Fragment {
                     if (((float)cut / (float)len) == 1) {
                         mButtonSend.setText(R.string.btn_start);
                         ForcedSleep(500);
-                        reset();
+                        resetText();
                     }
 
                     Log.v(TAG, "handler gui");

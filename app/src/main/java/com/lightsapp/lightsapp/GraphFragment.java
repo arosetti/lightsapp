@@ -35,8 +35,6 @@ public class GraphFragment extends Fragment {
 
     private TextView mTextViewMessageStatus;
 
-    FrameLayout mPreview;
-
     private GraphView graphView_delay, graphView_lum;
     private GraphViewSeries series;
 
@@ -52,7 +50,7 @@ public class GraphFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
-    @Override
+/*
     public void onResume() {
         super.onResume();
         Log.v(TAG, "RESUME_GRAPH");
@@ -68,6 +66,7 @@ public class GraphFragment extends Fragment {
         Log.v(TAG, "PAUSE_GRAPH");
             mPreview.removeAllViews();
     }
+*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,9 +74,6 @@ public class GraphFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_graph, container, false);
 
         mCtx = (MainActivity) getActivity();
-
-        mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
-        mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
         mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
         mTextViewMessageStatus.setText("idle");
@@ -120,15 +116,6 @@ public class GraphFragment extends Fragment {
 
                 if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
                     mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
-                }
-
-                if (msg.getData().containsKey("setup_done")) {
-                    if (mCtx.mCamera == null)
-                        Log.e(TAG, "camera is null");
-                    mCtx.mCameraController = new CameraController(mCtx);
-                    mPreview.removeAllViews();
-                    mPreview.addView(mCtx.mCameraController);
-                    Log.v(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MorseConverter {
-    private final String TAG = "MorseConverter";
+    private final String TAG = MorseConverter.class.getSimpleName();
     private long SPEED_BASE;
     private long DOT;
     private long DASH;
