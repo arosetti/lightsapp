@@ -12,7 +12,7 @@
     <HorizontalScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView_text"
+        android:id="@+id/scrollViewText"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
@@ -22,7 +22,7 @@
         android:layout_alignWithParentIfMissing="false">
 
         <TextView
-            android:id="@+id/txt_rx"
+            android:id="@+id/TextViewRecv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
@@ -40,19 +40,19 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView_morse"
+        android:id="@+id/scrollViewMorse"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
         android:paddingTop="5dp"
         android:textAlignment="textEnd"
         android:layout_alignParentTop="false"
-        android:layout_above="@+id/layout_ctl"
+        android:layout_above="@+id/LayoutCtl"
         android:layout_alignWithParentIfMissing="false"
-        android:layout_below="@+id/scrollView_text">
+        android:layout_below="@+id/scrollViewText">
 
         <TextView
-            android:id="@+id/txt_morse"
+            android:id="@+id/TextViewMorse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
@@ -67,7 +67,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom"
-        android:id="@+id/layout_ctl"
+        android:id="@+id/LayoutCtl"
         android:layout_alignParentBottom="true">
 
         <LinearLayout
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="@string/sensitivity"
-                android:id="@+id/textView"
+                android:id="@+id/textViewSensitivity"
                 android:layout_gravity="center_vertical|left"
                 android:gravity="center_vertical"
                 android:paddingRight="4dp" />
@@ -97,7 +97,7 @@
                 android:max="100"
                 android:minWidth="150dp"
                 android:layout_gravity="right"
-                android:progress="35"/>
+                android:progress="30"/>
         </LinearLayout>
 
         <LinearLayout
@@ -111,14 +111,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_start"
-                android:id="@+id/button_recv"
+                android:id="@+id/ButtonRecv"
                 />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_reset"
-                android:id="@+id/button_reset"
+                android:id="@+id/ButtonReset"
                 android:layout_gravity="center_horizontal"/>
 
         </LinearLayout>

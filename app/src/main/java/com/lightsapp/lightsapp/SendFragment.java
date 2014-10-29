@@ -49,8 +49,13 @@ public class SendFragment extends Fragment {
     }
 
     public void resetText() {
-        mTextViewMessage.setText("idle");
+        mTextViewMessage.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms");
         mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        resetText();
     }
 
     @Override
@@ -60,17 +65,16 @@ public class SendFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-        mImageView_lightbulb = (ImageView) v.findViewById(R.id.imageView_lightbulb);
+        mImageView_lightbulb = (ImageView) v.findViewById(R.id.ImageViewLightbulb);
         lightbulb_off = getResources().getDrawable(R.drawable.lightbulb_off);
         lightbulb_on = getResources().getDrawable(R.drawable.lightbulb_on);
 
-        mTextViewMessage = (TextView) v.findViewById(R.id.txt_status);
-        mTextViewMessage.setText("idle");
+        mTextViewMessage = (TextView) v.findViewById(R.id.TextViewStatus);
 
-        mEdit = (EditText) v.findViewById(R.id.edit_tx);
+        mEdit = (EditText) v.findViewById(R.id.EditViewSend);
         mEdit.setText(mCtx.mPrefs.getString("default_text", "sos"));
 
-        mTextViewMorse = (TextView) v.findViewById(R.id.txt_tx);
+        mTextViewMorse = (TextView) v.findViewById(R.id.TextViewSend);
         mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
 
         mEdit.addTextChangedListener(new TextWatcher() {
@@ -86,7 +90,7 @@ public class SendFragment extends Fragment {
             }
         });
 
-        mButtonSend = (Button) v.findViewById(R.id.button_send);
+        mButtonSend = (Button) v.findViewById(R.id.ButtonSend);
         mButtonSend.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {

@@ -10,7 +10,7 @@
                 tools:context=".Main$PlaceholderFragment">
 
     <TextView
-        android:id="@+id/txt_status"
+        android:id="@+id/TextViewStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="true"
@@ -25,27 +25,28 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/imageView_lightbulb"
+        android:id="@+id/ImageViewLightbulb"
         android:src="@drawable/lightbulb_off"
         android:layout_gravity="top|center"
         android:contentDescription="@string/lightbulb_desc"
         android:minHeight="100dp"
         android:minWidth="100dp"
-        android:layout_below="@+id/txt_status"
-        android:layout_above="@+id/layout_ctl"/>
+        android:layout_below="@+id/TextViewStatus"
+        android:layout_above="@+id/LayoutCtl"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom|center_horizontal"
-        android:id="@+id/layout_ctl"
+        android:id="@+id/LayoutCtl"
         android:padding="5dp"
         android:layout_alignParentBottom="true"
-        >
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants">
 
         <TextView
-            android:id="@+id/txt_tx"
+            android:id="@+id/TextViewSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
@@ -55,12 +56,10 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/edit_tx"
+            android:id="@+id/EditViewSend"
             android:editable="true"
             android:enabled="true"
-            android:focusable="true"
             android:textAlignment="textEnd"
-            android:clickable="false"
             android:gravity="center|center_vertical"
             android:ellipsize="end"
             android:inputType="text"
@@ -71,7 +70,6 @@
             android:hint="@string/text_hint"
             android:textStyle="normal"
             android:capitalize="none"
-            android:focusableInTouchMode="true"
             android:paddingBottom="10dp"/>
 
         <LinearLayout
@@ -86,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_start"
-                android:id="@+id/button_send"
+                android:id="@+id/ButtonSend"
                 android:textAlignment="center"
                 android:clickable="true"
                 android:enabled="true"

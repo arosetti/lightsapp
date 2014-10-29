@@ -206,9 +206,9 @@ public class FrameAnalyzer extends MyRunnable {
         signalToGui(ldata);
     }
 
-    protected final void signalToGui(List<Long> ldata) {
-        // TODO use a single message
-        signalStr(mCtx.mHandlerRecv, "data_message_text", mMorse.getText(ListToPrimitiveArray(ldata)));
+    protected final void signalToGui(List<Long> ldata) {     // TODO use a single message
+        long[] pdata = ListToPrimitiveArray(ldata);
+        signalStr(mCtx.mHandlerRecv, "data_message_text", mMorse.getText(pdata));
         signalStr(mCtx.mHandlerRecv, "data_message_morse", ldata.toString());
     }
 
