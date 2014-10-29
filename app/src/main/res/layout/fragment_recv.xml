@@ -9,28 +9,66 @@
                 android:id="@+id/fragment_recv"
                 tools:context=".Main$PlaceholderFragment">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <HorizontalScrollView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="bottom">
-
-        <FrameLayout
-            android:id="@+id/camera_preview"
-            android:layout_width="fill_parent"
-            android:layout_height="250dp"
-            android:layout_weight="1"
-            />
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView_text"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
+        android:paddingTop="5dp"
+        android:textAlignment="textEnd"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="false">
 
         <TextView
             android:id="@+id/txt_rx"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
+            android:gravity="top|center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/idle"
+            android:textSize="20sp"
+            android:lines="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAlignment="textEnd"
+            />
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView_morse"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
+        android:paddingTop="5dp"
+        android:textAlignment="textEnd"
+        android:layout_alignParentTop="false"
+        android:layout_above="@+id/layout_ctl"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_below="@+id/scrollView_text">
+
+        <TextView
+            android:id="@+id/txt_morse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
             android:gravity="top|left"
             android:layout_gravity="center_horizontal"
             android:text="@string/idle"
-            android:textSize="@dimen/small_text_size"/>
+            android:textSize="15sp"/>
+    </ScrollView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:id="@+id/layout_ctl"
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
             android:orientation="horizontal"
