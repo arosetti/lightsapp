@@ -8,11 +8,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -24,8 +22,9 @@ public class RecvFragment extends Fragment {
     private MainActivity mCtx;
 
     private ScrollView mScrollViewMorse;
-    private TextView mTextViewMessageData;
-    private TextView mTextViewMessageMorse;
+    private TextView mTextViewData;
+    private TextView mTextViewMorse;
+    private TextView mTextViewSensitivity;
     private SeekBar mSeekBarSensitivity;
     private Button mButtonRecv;
 
@@ -43,6 +42,17 @@ public class RecvFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
+    public void resetText() {
+        mTextViewMorse.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
+                               "lower the sensibility if needed"  );
+        mTextViewData.setText("press start");
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        resetText();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,15 +60,10 @@ public class RecvFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-
-
-        mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
-        mTextViewMessageData.setText("press start");// TODO string res
-
-        mScrollViewMorse = (ScrollView) v.findViewById(R.id.scrollView_morse);
-        mTextViewMessageMorse = (TextView) v.findViewById(R.id.txt_morse);
-        mTextViewMessageMorse.setText("...");
-        mTextViewMessageMorse.addTextChangedListener(new TextWatcher() {
+        mTextViewData = (TextView) v.findViewById(R.id.TextViewRecv);
+        mScrollViewMorse = (ScrollView) v.findViewById(R.id.scrollViewMorse);
+        mTextViewMorse = (TextView) v.findViewById(R.id.TextViewMorse);
+        mTextViewMorse.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable arg0) {
                 mScrollViewMorse.fullScroll(ScrollView.FOCUS_DOWN);
@@ -73,38 +78,37 @@ public class RecvFragment extends Fragment {
             }
         });
 
-            mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
+        mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
         mSeekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                // TODO Auto-generated method stub
                 mCtx.mCameraController.setSensitivity(progress);
+                mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
+                                             ": " + progress);
             }
         });
+        mTextViewSensitivity = (TextView) v.findViewById(R.id.textViewSensitivity);
+        mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
+                ": " + mSeekBarSensitivity.getProgress());
 
-        Button mButton = (Button) v.findViewById(R.id.button_reset);
+        Button mButton = (Button) v.findViewById(R.id.ButtonReset);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         mCtx.mCameraController.reset();
-                        mTextViewMessageData.setText("***");
-                        mTextViewMessageMorse.setText("");
+                        resetText();
                     }
                 });
 
-
-        mButtonRecv = (Button) v.findViewById(R.id.button_recv);
+        mButtonRecv = (Button) v.findViewById(R.id.ButtonRecv);
         mButtonRecv.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
@@ -121,21 +125,23 @@ public class RecvFragment extends Fragment {
                     }
                 });
 
-
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                if (mTextViewMessageData != null && msg.getData().containsKey("data_message_text")) {
-                    mTextViewMessageData.setText((String) msg.getData().get("data_message_text"));
+                if (mTextViewData != null && msg.getData().containsKey("data_message_text")) {
+                    mTextViewData.setText((String) msg.getData().get("data_message_text"));
                 }
 
-                if (mTextViewMessageMorse != null && msg.getData().containsKey("data_message_morse")) {
-                    mTextViewMessageMorse.setText((String) msg.getData().get("data_message_morse"));
+                if (mTextViewMorse != null && msg.getData().containsKey("data_message_morse")) {
+                    mTextViewMorse.setText((String) msg.getData().get("data_message_morse"));
                 }
 
                 if ( msg.getData().containsKey("set_sensitivity")) {
-                    mCtx.mCameraController.setSensitivity(mSeekBarSensitivity.getProgress());
+                    int progress = mSeekBarSensitivity.getProgress();
+                    mCtx.mCameraController.setSensitivity(progress);
+                    mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
+                                                 ": " + progress);
                 }
             }
         };

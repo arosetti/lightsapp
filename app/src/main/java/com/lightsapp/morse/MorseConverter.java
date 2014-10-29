@@ -126,23 +126,33 @@ public class MorseConverter {
 
     public String getMorse(String str) {
         long[] l = pattern(str);
-        String tmpStr = new String();
-        for (int i = 0; i < l.length; i++) {
+        return getMorse(l);
+    }
+
+    public String getMorse(long[] data) {
+        String str = "";
+        for (int i = 0; i < data.length; i++) {
             if (i % 2 != 0) {
-                if (l[i] == DOT) {
-                    tmpStr = tmpStr.concat(".");
-                } else if (l[i] == DASH) {
-                    tmpStr = tmpStr.concat("-");
+                if (Math.abs(data[i]) == DOT) {
+                    str = str.concat(".");
                 }
-            } else {
-                if (l[i] == LETTER_GAP) {
-                    tmpStr = tmpStr.concat(" ");
-                } else if (l[i] == WORD_GAP) {
-                    tmpStr = tmpStr.concat("   ");
+                else if (Math.abs(data[i]) == DASH) {
+                    str = str.concat("-");
+                }
+                else {
+                    str = str.concat("?");
+                }
+            }
+            else {
+                if (-Math.abs(data[i]) == LETTER_GAP) {
+                    str = str.concat(" ");
+                }
+                else if (-Math.abs(data[i]) == WORD_GAP) {
+                    str = str.concat("   ");
                 }
             }
         }
-        return tmpStr;
+        return str;
     }
 
     public String getText(long data[]) {

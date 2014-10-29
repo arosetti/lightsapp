@@ -118,6 +118,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if (mCamera == null) {
             setup();
         }
+        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("interval", "500")));
     }
 
     @Override
@@ -173,7 +174,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("interval", "500")));
     }
 
     @Override
