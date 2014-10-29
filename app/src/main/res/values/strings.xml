@@ -15,5 +15,6 @@
     <string name="title_activity_about">About</string>
     <string name="action_about">About</string>
     <string name="sensitivity">Sensitivity</string>
+    <string name="lightbulb_desc">lightbulb image</string>
 
 </resources>

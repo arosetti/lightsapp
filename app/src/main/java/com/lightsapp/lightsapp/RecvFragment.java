@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -20,7 +23,9 @@ public class RecvFragment extends Fragment {
 
     private MainActivity mCtx;
 
+    private ScrollView mScrollViewMorse;
     private TextView mTextViewMessageData;
+    private TextView mTextViewMessageMorse;
     private SeekBar mSeekBarSensitivity;
     private Button mButtonRecv;
 
@@ -45,10 +50,30 @@ public class RecvFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-        mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
-        mTextViewMessageData.setText("***");
 
-        mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
+
+        mTextViewMessageData = (TextView) v.findViewById(R.id.txt_rx);
+        mTextViewMessageData.setText("press start");// TODO string res
+
+        mScrollViewMorse = (ScrollView) v.findViewById(R.id.scrollView_morse);
+        mTextViewMessageMorse = (TextView) v.findViewById(R.id.txt_morse);
+        mTextViewMessageMorse.setText("...");
+        mTextViewMessageMorse.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                mScrollViewMorse.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+        });
+
+            mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
         mSeekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -99,8 +124,12 @@ public class RecvFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                if (mTextViewMessageData != null && msg.getData().containsKey("data_message")) {
-                    mTextViewMessageData.setText((String) msg.getData().get("data_message"));
+                if (mTextViewMessageData != null && msg.getData().containsKey("data_message_text")) {
+                    mTextViewMessageData.setText((String) msg.getData().get("data_message_text"));
+                }
+
+                if (mTextViewMessageData != null && msg.getData().containsKey("data_message_morse")) {
+                    mTextViewMessageMorse.setText((String) msg.getData().get("data_message_morse"));
                 }
 
                 if ( msg.getData().containsKey("set_sensitivity")) {
