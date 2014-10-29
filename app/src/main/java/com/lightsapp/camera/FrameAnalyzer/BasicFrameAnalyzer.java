@@ -14,7 +14,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message", "<basic algorithm>");
+            signalStr(mCtx.mHandlerRecv, "data_message_text", "<basic algorithm>");
             return;
         }
 
@@ -24,7 +24,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
                 if ( ((float) lframes.get(i).luminance *
                      ((float) sensitivity / 25f)) < lframes.get(i + 1).luminance ) {
                     start_frame = i;
-                    signalStr(mCtx.mHandlerRecv, "data_message", "start_frame: " + start_frame);
+                    signalStr(mCtx.mHandlerRecv, "data_message_text", "start_frame: " + start_frame);
                 }
             }
             return;
