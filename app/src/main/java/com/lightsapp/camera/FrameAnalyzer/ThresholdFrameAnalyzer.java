@@ -18,7 +18,7 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message", "<threshold algorithm>");
+            signalStr(mCtx.mHandlerRecv, "data_message_text", "<threshold algorithm>");
             return;
         }
 

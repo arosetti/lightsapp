@@ -98,6 +98,8 @@ public class RecvFragment extends Fragment {
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         mCtx.mCameraController.reset();
+                        mTextViewMessageData.setText("***");
+                        mTextViewMessageMorse.setText("");
                     }
                 });
 
@@ -128,7 +130,7 @@ public class RecvFragment extends Fragment {
                     mTextViewMessageData.setText((String) msg.getData().get("data_message_text"));
                 }
 
-                if (mTextViewMessageData != null && msg.getData().containsKey("data_message_morse")) {
+                if (mTextViewMessageMorse != null && msg.getData().containsKey("data_message_morse")) {
                     mTextViewMessageMorse.setText((String) msg.getData().get("data_message_morse"));
                 }
 

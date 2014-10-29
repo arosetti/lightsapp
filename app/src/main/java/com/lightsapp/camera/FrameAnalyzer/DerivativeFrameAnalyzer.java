@@ -17,7 +17,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message", "<derivative algorithm>");
+            signalStr(mCtx.mHandlerRecv, "data_message_text", "<derivative algorithm>");
             return;
         }
 
@@ -37,7 +37,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
 
         for (int i = 0; i < (lframes_d.size() - 1); i++) {
             // TODO use the avg/max/min values to adjust the thresholds
-            if ( (tstop == 0) && (tstart == 0) && (lframes_d.get(i) > sensitivity)) { //(((float) sensitivity / (float) 100) * avg)) ) {
+            if ( (tstop == 0) && (tstart == 0) && (lframes_d.get(i) > sensitivity)) {
                 tstart = lframes.get(i + start_frame).timestamp;
                 Log.w(TAG, "1) up");
                 continue;
@@ -49,6 +49,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                 if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long high signal");
                     tstart = 0;
+                    ldata.add(new Long(-7 * speed_base));
                     continue;
                 }
 
@@ -71,6 +72,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                 if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long low signal");
                     tstop = 0;
+                    ldata.add(new Long(-7 * speed_base));
                     continue;
                 }
 

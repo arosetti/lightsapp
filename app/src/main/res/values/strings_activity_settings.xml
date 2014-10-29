@@ -20,7 +20,7 @@
         <item>800ms</item>
         <item>700ms</item>
         <item>600ms</item>
-        <item>500ms</item>
+        <item>500ms (default)</item>
         <item>400ms</item>
         <item>300ms</item>
         <item>200ms</item>
@@ -46,9 +46,9 @@
 
     <string name="pref_title_algorithm">Frame analyzer algorithm</string>
     <string-array name="pref_algorithm_titles">
-        <item>basic</item>
+        <item>basic (deprecated)</item>
         <item>threshold</item>
-        <item>derivative</item>
+        <item>derivative (default)</item>
     </string-array>
     <string-array name="pref_algorithm_values">
         <item>0</item>
