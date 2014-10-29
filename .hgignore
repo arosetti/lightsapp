@@ -4,4 +4,7 @@ syntax: glob
 build/
 local.properties
 lightsapp.iml
+app/app.iml
+.idea/misc.xml
+.idea/inspectionProfiles/Project_Default.xml
 syntax: regexp
