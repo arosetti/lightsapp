@@ -10,6 +10,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -45,6 +49,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
     public Handler mHandlerGraph = null;
+
+    public float light = 0;
 
     private SetupHandler mThreadSetup = null;
 
@@ -144,6 +150,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 toast.show();
             }
         }
+        setupLightSensor();
     }
 
     @Override
@@ -240,4 +247,31 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public boolean hasFlash() {
         return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
+
+    // TODO make a class for the following statements.
+    public void setupLightSensor() {
+        SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        if (lightSensor != null) {
+            sensorManager.registerListener(lightSensorEventListener,
+                    lightSensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    private SensorEventListener lightSensorEventListener = new SensorEventListener() {
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
+                light = event.values[0]; // TODO atomic access
+                //Log.v(TAG, "Sensor Light: " + light);
+            }
+        }
+    };
 }
