@@ -1,6 +1,7 @@
 package com.lightsapp.camera;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
@@ -16,6 +17,7 @@ import java.util.List;
 public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private final String TAG = CameraController.class.getSimpleName();
 
+    private MainActivity mCtx;
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private FrameAnalyzer mFrameA;
@@ -25,24 +27,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public CameraController(Context context) {
         super(context);
 
-        MainActivity mCtx = (MainActivity) context;
-        mCamera = mCtx.mCamera;
-        mHolder = getHolder();
-        mHolder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-        int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "0"));
-        switch (algorithm) {
-            case 1:
-                mFrameA = new ThresholdFrameAnalyzer(context);
-                break;
-            case 2:
-                mFrameA = new DerivativeFrameAnalyzer(context);
-                break;
-            default:
-                mFrameA = new BasicFrameAnalyzer(context);
-        }
+        mCtx = (MainActivity) context;
     }
 
     public final List<Frame> getFrames() {
@@ -64,6 +49,51 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void setSensitivity(int sensitivity) { mFrameA.setSensitivity(sensitivity); }
+
+    public Camera setup() {
+        boolean err = false;
+        boolean hasCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        boolean hasFrontCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+
+        try {
+            if (hasCamera) {
+                mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+            }
+            else if (hasFrontCamera) {
+                mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+            }
+        }
+        catch(Exception e) {
+            err = true;
+        }
+
+        if(err) {
+            try {
+                mCamera = Camera.open(0);
+            }
+            catch(Exception e) {
+            }
+        }
+
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        // deprecated setting, but required on Android versions prior to 3.0
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
+        switch (algorithm) {
+            case 1:
+                mFrameA = new ThresholdFrameAnalyzer(mCtx);
+                break;
+            case 2:
+                mFrameA = new DerivativeFrameAnalyzer(mCtx);
+                break;
+            default:
+                mFrameA = new BasicFrameAnalyzer(mCtx);
+        }
+
+        return mCamera;
+    }
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {

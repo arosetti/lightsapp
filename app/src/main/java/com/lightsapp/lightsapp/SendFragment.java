@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static com.lightsapp.utils.Utils.*;
 
@@ -94,19 +95,27 @@ public class SendFragment extends Fragment {
         mButtonSend.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        if (!mCtx.hasFlash()) {
+                            Toast toast = Toast.makeText(mCtx,
+                                                         "You need a flash to send morse code.",
+                                                         Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+
                         if (mButtonSend.getText() == getResources().getString(R.string.btn_start) ) {
                             if (mCtx.mMorse != null) {
-                                mCtx.mMorse.updateValues(Integer.valueOf(mCtx.mPrefs.getString("interval", "500")));
+                                mCtx.mMorse.updateValues(Integer.valueOf(
+                                                         mCtx.mPrefs.getString("interval", "500")));
                             }
-                            if (mCtx.mLight != null) {
-                                mCtx.mLight.setString(CleanString(mEdit.getText().toString()));
-                                mCtx.mLight.activate();
+                            if (mCtx.mLightController != null) {
+                                mCtx.mLightController.setString(CleanString(mEdit.getText().toString()));
+                                mCtx.mLightController.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
-                            if (mCtx.mLight != null) {
-                                mCtx.mLight.setStatus(false);
+                            if (mCtx.mLightController != null) {
+                                mCtx.mLightController.setStatus(false);
                             }
                             mImageView_lightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);
@@ -162,9 +171,9 @@ public class SendFragment extends Fragment {
                     mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
 
                     if (((float)cut / (float)len) == 1) {
-                        mButtonSend.setText(R.string.btn_start);
                         ForcedSleep(500);
                         resetText();
+                        mButtonSend.setText(R.string.btn_start);
                     }
 
                     Log.v(TAG, "handler gui");

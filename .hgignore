@@ -5,6 +5,7 @@ build/
 local.properties
 lightsapp.iml
 app/app.iml
+app/build/generated/source/buildConfig/test/debug/com/lightsapp/lightsapp/test/BuildConfig.java
 .idea/misc.xml
 .idea/inspectionProfiles/Project_Default.xml
 syntax: regexp

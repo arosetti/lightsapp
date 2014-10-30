@@ -132,7 +132,7 @@ public class MorseConverter {
     public String getMorse(long[] data) {
         String str = "";
         for (int i = 0; i < data.length; i++) {
-            if (i % 2 != 0) {
+            if ((i % 2) != 0) {
                 if (Math.abs(data[i]) == DOT) {
                     str = str.concat(".");
                 }

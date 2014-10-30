@@ -207,9 +207,10 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     protected final void signalToGui(List<Long> ldata) {     // TODO use a single message
-        long[] pdata = ListToPrimitiveArray(ldata);
-        signalStr(mCtx.mHandlerRecv, "data_message_text", mMorse.getText(pdata));
-        signalStr(mCtx.mHandlerRecv, "data_message_morse", ldata.toString());
+        String str = mMorse.getText(ListToPrimitiveArray(ldata));
+        signalStr(mCtx.mHandlerRecv, "data_message_text", str);
+        signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) +
+                                                           "\n" + ldata.toString());
     }
 
     public final void setSensitivity(int sensitivity) {

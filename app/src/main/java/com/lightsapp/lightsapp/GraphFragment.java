@@ -1,5 +1,6 @@
 package com.lightsapp.lightsapp;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -50,23 +51,23 @@ public class GraphFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
-/*
+
     public void onResume() {
         super.onResume();
         Log.v(TAG, "RESUME_GRAPH");
-        if (mCtx.mCameraController != null) {
+        /*if (mCtx.mCameraController != null) {
             mPreview.removeAllViews();
             mPreview.addView(mCtx.mCameraController);
-        }
+        }*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE_GRAPH");
-            mPreview.removeAllViews();
+        //mPreview.removeAllViews();
     }
-*/
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,6 +125,12 @@ public class GraphFragment extends Fragment {
                 if (msg.getData().containsKey("setup_done")) {
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
+
+                    float RATIO = 5/3;
+                    ViewGroup.LayoutParams l = mPreview.getLayoutParams();
+                    Log.v(TAG, "WIDTH: " +  mPreview.getWidth());
+                    l.height = (int) RATIO * mPreview.getWidth();
+
                     Log.v(TAG, "init camera preview done");
                 }
 

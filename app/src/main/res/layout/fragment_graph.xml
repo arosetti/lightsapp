@@ -21,7 +21,7 @@
             <FrameLayout
                 android:id="@+id/camera_preview"
                 android:layout_width="fill_parent"
-                android:layout_height="220dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:padding="2dp"/>
 
@@ -38,13 +38,13 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="220dip"
+                android:layout_height="220dp"
                 android:id="@+id/graph1"/>
 
             <LinearLayout
                 android:id="@+id/graph2"
                 android:layout_width="fill_parent"
-                android:layout_height="220dip"
+                android:layout_height="220dp"
                 android:orientation="vertical"/>
 
         </LinearLayout>
