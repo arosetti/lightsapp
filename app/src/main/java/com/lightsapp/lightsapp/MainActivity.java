@@ -31,7 +31,6 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private final String TAG = MainActivity.class.getSimpleName();
-    private Context mContext;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -40,74 +39,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public Camera mCamera;
     public MorseConverter mMorse;
-    public LightController mLight;
+    public LightController mLightController;
     public CameraController mCameraController;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
     public Handler mHandlerGraph = null;
+
     private SetupHandler mThreadSetup = null;
 
-    private void setup() {
+    private void setup(Context context) {
         if (mThreadSetup == null) {
             mThreadSetup = new SetupHandler();
         }
 
         synchronized (mThreadSetup) {
-            mThreadSetup.setupHandler();
-        }
-    }
-
-    private class SetupHandler extends HandlerThread {
-        private final String TAG = SetupHandler.class.getSimpleName();
-        Handler mHandlerSetup = null;
-
-        SetupHandler() {
-            super("SetupHandler");
-            start();
-            mHandlerSetup = new Handler(getLooper());
-        }
-
-        void setupHandler() {
-            mHandlerSetup.post(new Runnable() {
-                @Override
-                public void run() {
-                    boolean done = false;
-
-                    while (!done) {
-                        try {
-                            if (mCamera == null)
-                                mCamera = Camera.open();
-
-                            if (mCamera != null && (mLight == null || mCameraController == null)) {
-                                mLight = new LightController(mContext);
-                                mLight.start();
-                                mCameraController = new CameraController(mContext);
-                            }
-
-                            if (mHandlerGraph != null && mCameraController != null &&
-                                mCamera != null && mLight != null) {
-                                signalStr(mHandlerGraph, "setup_done", "");
-                                done = true;
-                            }
-                        }
-                        catch (RuntimeException e) {
-                            Log.e(TAG, "error: " + e.getMessage());
-                        }
-                        finally {
-                            if (done)
-                                Log.v(TAG, "setup done");
-                        }
-
-                        try {
-                            if (!done)
-                                Thread.sleep(100);
-                        }
-                        catch (InterruptedException e) {
-                        }
-                    }
-                }
-            });
+            mThreadSetup.setupHandler(context);
         }
     }
 
@@ -116,7 +63,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onResume();
         Log.v(TAG, "RESUME");
         if (mCamera == null) {
-            setup();
+            setup(this);
         }
         mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("interval", "500")));
     }
@@ -125,9 +72,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE");
-        if (mLight != null)
-            mLight.stop();
-        mLight = null;
+        if (mLightController != null)
+            mLightController.stop();
+        mLightController = null;
         if (mCameraController != null)
             mCameraController.stopPreviewAndFreeCamera();
         mCamera = null;
@@ -146,8 +93,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.v(TAG, "CREATE");
-
-        mContext = this;
 
         final ActionBar actionBar = getActionBar();
         if (actionBar != null)
@@ -179,16 +124,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onPostResume() {
         super.onPostResume();
-        if (!hasCamera() && !hasFlash()) {
-            Toast toast = Toast.makeText(this, "You can't use this app, you'll need a camera and flash.", Toast.LENGTH_LONG);
+        // TODO display only once
+        if (!(hasCamera() || hasFrontCamera()) && !hasFlash()) {
+            Toast toast = Toast.makeText(this,
+                                         "You can't use this app, you'll need a camera and flash.",
+                                         Toast.LENGTH_LONG);
             toast.show();
         } else {
             if (!hasFlash()) {
-                Toast toast = Toast.makeText(this, "This app need a flash to send morse code.", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(this,
+                                             "You need a flash to send morse code.",
+                                             Toast.LENGTH_LONG);
                 toast.show();
             }
-            if (!hasCamera()) {
-                Toast toast = Toast.makeText(this, "This app need a camera to receive morse code.", Toast.LENGTH_LONG);
+            if (!(hasCamera() || hasFrontCamera())) {
+                Toast toast = Toast.makeText(this,
+                                             "You need a camera to receive morse code.",
+                                             Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -205,14 +157,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            if(mLight != null)
-                mLight.setStatus(false);
+            if(mLightController != null)
+                mLightController.setStatus(false);
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
-            if(mLight != null)
-                mLight.setStatus(false);
+            if(mLightController != null)
+                mLightController.setStatus(false);
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;
@@ -277,11 +229,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
-    private boolean hasCamera() {
+    public boolean hasCamera() {
         return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    private boolean hasFlash() {
+    public boolean hasFrontCamera() {
+        return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+    }
+
+    public boolean hasFlash() {
         return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 }

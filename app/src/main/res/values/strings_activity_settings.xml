@@ -11,6 +11,8 @@
 
     <string name="pref_title_interval">Base morse interval</string>
     <string-array name="pref_interval_titles">
+        <item>3.00s</item>
+        <item>2.50s</item>
         <item>2.00s</item>
         <item>1.75s</item>
         <item>1.50s</item>
@@ -27,6 +29,8 @@
         <item>100ms</item>
     </string-array>
     <string-array name="pref_interval_values">
+        <item>3000</item>
+        <item>2500</item>
         <item>2000</item>
         <item>1750</item>
         <item>1500</item>

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
@@ -112,6 +113,23 @@ public class RecvFragment extends Fragment {
         mButtonRecv.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        if (!(mCtx.hasCamera()  || mCtx.hasFrontCamera())) {
+                            Toast toast = Toast.makeText(mCtx,
+                                    "You need a camera to receive morse code.",
+                                    Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }
+
+                        if (mCtx.mCameraController == null)
+                        {
+                            Toast toast = Toast.makeText(mCtx,
+                                    "Camera init failed! please report.",
+                                    Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }
+
                         if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_start) ) {
                             mCtx.mCameraController.startAnalyzer();
