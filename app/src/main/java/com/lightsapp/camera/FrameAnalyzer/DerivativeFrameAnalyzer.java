@@ -30,7 +30,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         for (int i = start_frame + 1; i < lframes.size(); i++) {
               long dd = lframes.get(i).luminance - lframes.get(i - 1).luminance;
               lframes_d.add(dd);
-              long last = lframes_d.get(lframes_d.size() - 1);
+              //long last = lframes_d.get(lframes_d.size() - 1);
         }
 
         Log.w(TAG, "START!");
