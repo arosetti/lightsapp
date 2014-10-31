@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin_small"
+                android:paddingRight="@dimen/activity_horizontal_margin_small"
+                android:paddingTop="@dimen/activity_vertical_margin_null"
+                android:paddingBottom="@dimen/activity_vertical_margin_null"
+                android:id="@+id/fragment_recv"
+                tools:context=".Main$PlaceholderFragment">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/camera_preview"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="2dp"/>
+
+            <TextView
+                android:id="@+id/textViewStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:gravity="top|center|center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:textSize="@dimen/small_text_size"
+                android:padding="12dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="220dp"
+                android:id="@+id/graph1"/>
+
+            <LinearLayout
+                android:id="@+id/graph2"
+                android:layout_width="fill_parent"
+                android:layout_height="220dp"
+                android:orientation="vertical"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
