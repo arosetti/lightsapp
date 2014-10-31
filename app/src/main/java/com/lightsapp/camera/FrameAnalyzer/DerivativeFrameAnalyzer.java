@@ -27,10 +27,9 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         long tstart = 0, tstop = 0, diff;
 
         // TODO optimize and compute incrementally, use, last_diff and add new frames.
-        for (int i = start_frame + 1; i < lframes.size(); i++) {
+        for (int i = 1; i < lframes.size(); i++) {
               long dd = lframes.get(i).luminance - lframes.get(i - 1).luminance;
               lframes_d.add(dd);
-              //long last = lframes_d.get(lframes_d.size() - 1);
         }
 
         Log.w(TAG, "START!");
@@ -38,13 +37,13 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         for (int i = 0; i < (lframes_d.size() - 1); i++) {
             // TODO use the avg/max/min values to adjust the thresholds
             if ( (tstop == 0) && (tstart == 0) && (lframes_d.get(i) > sensitivity)) {
-                tstart = lframes.get(i + start_frame).timestamp;
+                tstart = lframes.get(i).timestamp;
                 Log.w(TAG, "1) up");
                 continue;
             }
 
             if (tstart != 0 && tstop == 0) {
-                diff = lframes.get(i + start_frame).timestamp - tstart;
+                diff = lframes.get(i).timestamp - tstart;
 
                 if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long high signal");
@@ -57,7 +56,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                     Log.w(TAG, "2) down");
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(diff));
-                        tstop = lframes.get(i + start_frame).timestamp;
+                        tstop = lframes.get(i).timestamp;
                         tstart = 0;
                         continue;
                     }
@@ -67,7 +66,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
             }
 
             if (tstop != 0 && tstart == 0) {
-                diff = lframes.get(i + start_frame).timestamp - tstop;
+                diff = lframes.get(i).timestamp - tstop;
 
                 if (diff > (8 * speed_base)) {
                     Log.w(TAG, "too long low signal");
@@ -81,7 +80,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(-diff));
                         tstop = 0;
-                        tstart = lframes.get(i + start_frame).timestamp;
+                        tstart = lframes.get(i).timestamp;
                     }
                     else
                         Log.w(TAG, "skip short frame");
