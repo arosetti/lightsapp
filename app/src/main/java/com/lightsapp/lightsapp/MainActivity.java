@@ -16,7 +16,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -28,7 +27,6 @@ import android.widget.Toast;
 import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.LightController;
 import com.lightsapp.morse.MorseConverter;
-import static com.lightsapp.utils.HandlerUtils.*;
 
 import java.util.Locale;
 
