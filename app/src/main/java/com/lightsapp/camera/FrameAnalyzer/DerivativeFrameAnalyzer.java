@@ -12,7 +12,7 @@ import static com.lightsapp.camera.FrameAnalyzer.DerivativeFrameAnalyzer.StatusC
 import static com.lightsapp.utils.HandlerUtils.*;
 
 public class DerivativeFrameAnalyzer extends FrameAnalyzer {
-    enum StatusCode{ERROR, INIT, SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
+    enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
 
     public DerivativeFrameAnalyzer(Context context){
         super(context);
@@ -35,7 +35,7 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         for (int i = 0; i < lframes.size(); i++) {
             fdata_lum[i] = (float) lframes.get(i).luminance;
         }
-        dataFilter.apply(fdata_lum);
+        //dataFilter.apply(fdata_lum);
 
         // TODO optimize and compute incrementally, use, last_diff and add new frames.
         for (int i = 1; i < lframes.size(); i++) {
@@ -48,30 +48,25 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         long fmax = Long.MIN_VALUE;
         long fmin = Long.MAX_VALUE;
         int fmax_id = 0, fmin_id = 0;
+        boolean found = false;
 
-        StatusCode statcode = INIT;
+        StatusCode statcode = SEARCH_HIGH;
 
         for (int i = 0; i < (lframes_d.size() - 1); i++) {
             switch (statcode) {
-                case INIT:
-                    if (lframes_d.get(i) > sensitivity) {
-                        statcode = SEARCH_HIGH;
-                        Log.w(TAG, "Searching high front");
-                    }
-                    else
-                        break;
-
                 case SEARCH_HIGH:
                     if ((lframes_d.get(i) > sensitivity)) {
                         if (lframes_d.get(i) > fmax)
                         {
                             fmax = lframes_d.get(i);
                             fmax_id = i;
+                            found = true;
                             Log.w(TAG, "new max");
                         }
                     }
-                    else {
+                    else if (found) {
                         Log.w(TAG, "maxid: " + fmax_id);
+                        found = false;
                         tstart = lframes.get(fmax_id).timestamp;
                         if (tstop == 0) {
                             statcode = SEARCH_LOW;
@@ -90,11 +85,13 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                         {
                             fmin = lframes_d.get(i);
                             fmin_id = i;
+                            found = true;
                             Log.w(TAG, "new min");
                         }
                     }
-                    else {
+                    else if (found) {
                         Log.w(TAG, "minid: " + fmin_id);
+                        found = false;
                         tstop = lframes.get(fmin_id).timestamp;
                         statcode = SET_DATA;
                         Log.w(TAG, "Setting data");
@@ -112,9 +109,11 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                         continue;
                     }
                     */
-                    Log.w(TAG, "diff: " + diff);
+
+                    Log.w(TAG, "data diff: " + diff);
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(diff));
+                        tstart = 0;
                         statcode = SEARCH_HIGH;
                         Log.w(TAG, "Searching high front for the gap end");
                     }
@@ -136,9 +135,9 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                     }
                     */
 
+                    Log.w(TAG, "gap diff: " + diff);
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(-diff));
-                        tstart = lframes.get(i).timestamp;
                         statcode = SEARCH_LOW;
                         Log.w(TAG, "Searching low front for the data end");
                     }
@@ -146,11 +145,6 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                         statcode = SEARCH_HIGH;
                         Log.w(TAG, "Skip short gap frame, go back to search the real high front");
                     }
-                    break;
-
-                case ERROR:
-                    statcode = INIT;
-                    Log.w(TAG, "GO TO INIT");
                     break;
             }
         }
