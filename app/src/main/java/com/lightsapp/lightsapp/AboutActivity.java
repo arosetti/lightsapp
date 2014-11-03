@@ -16,6 +16,7 @@ public class AboutActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_about);
@@ -32,12 +33,14 @@ public class AboutActivity extends Activity {
 
         TextView mTextViewInfo = (TextView) findViewById(R.id.TextViewInfo);
 
+        String video = "320x240@30fps";
+
         mTextViewInfo.setText(Html.fromHtml(
                 "<h3>app: " + appname + ", version: " + version + "</h3>" +
                 "<b>Authors:</b> <br/>" +
                 "<a href=\"mailto:alessandro.rosetti@gmail.com\">Alessandro Rosetti</a><br/>" +
                 "<a href=\"mailto:lazzalf@yahoo.com\">Daniele Lazzarini</a><br/><br/>" +
-                "<b>System Info:</b><br/> Camera -> [w]x[h]@30fps<br/><br/>" +
+                "<b>System Info:</b><br/> Camera: " + video + "<br/><br/>" +
                 "<b>Tips:</b><br/>"));
     }
 

@@ -11,6 +11,7 @@ import static com.lightsapp.utils.HandlerUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,6 +37,8 @@ public class FrameAnalyzer extends MyRunnable {
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
 
+    protected AtomicReference<Boolean> enable_analyze;
+
     protected FrameAnalyzer(Context context) {
         super(true);
 
@@ -49,6 +52,8 @@ public class FrameAnalyzer extends MyRunnable {
 
         mMorse = new MorseConverter(Integer.parseInt(mCtx.mPrefs.getString("interval", "500")));
         speed_base = mMorse.get("SPEED_BASE");
+
+        enable_analyze = new AtomicReference<Boolean>(false);
     }
 
     @Override
@@ -58,12 +63,12 @@ public class FrameAnalyzer extends MyRunnable {
                 signalStr(mCtx.mHandlerRecv, "set_sensitivity", "");
             }
 
+            Thread.sleep(350);
             update();
 
-            Thread.sleep(200);
-            analyze();
-
-            Thread.sleep(200);
+            Thread.sleep(350);
+            if (enable_analyze.get())
+                analyze();
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -84,6 +89,10 @@ public class FrameAnalyzer extends MyRunnable {
 
     public final List<Frame> getFrames() {
         return lframes;
+    }
+
+    public void setAnalyzer(boolean val) {
+        enable_analyze.getAndSet(val);
     }
 
     public final void reset() {
@@ -115,17 +124,22 @@ public class FrameAnalyzer extends MyRunnable {
         lock_frames_tmp.lock();
         try {
             lframes_swap = lframes_tmp;
-            lframes_tmp = new ArrayList<Frame>();
+            if (!lframes_swap.isEmpty())
+                lframes_tmp = new ArrayList<Frame>();
         }
         finally {
             lock_frames_tmp.unlock();
         }
 
+        if (lframes_swap.isEmpty())
+            return;
+
         lock_frames.lock();
         try {
+            Log.v(TAG, "Swapping " + lframes_swap.size() +
+                    " frames to lframes which is big " + lframes.size() + " frames.");
             for (int i = 0; i < lframes_swap.size(); i++) {
-                lframes_swap.get(i).analyze();
-                lframes.add(lframes_swap.get(i));
+                lframes.add(lframes_swap.get(i).analyze());
             }
             lframes_swap = null;
             last_frame_analyzed = lframes.size() - 1;
@@ -138,7 +152,6 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     protected final void frameStats() {
-
         lock_frames.lock();
         try {
             if (lframes.isEmpty())
@@ -222,17 +235,13 @@ public class FrameAnalyzer extends MyRunnable {
         long timestamp_now = System.currentTimeMillis() ;
         long delta = (timestamp == 0)? 0 : (timestamp_now - timestamp);
 
-        if (!getStatus())
-            return;
-
         lock_frames_tmp.lock();
         try {
-            lframes_tmp.add(new Frame(data, width, height, timestamp_now, delta));
+            lframes_tmp.add(new Frame(data, width, height, timestamp_now, delta)); // TODO recycle frames.
         }
         finally {
             lock_frames_tmp.unlock();
         }
-
         timestamp = System.currentTimeMillis();
     }
 }
