@@ -22,11 +22,12 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private Camera mCamera;
     private FrameAnalyzer mFrameA;
 
-    private int format, width, height;
+    private int format, width, height, fps;
 
     public CameraController(Context context) {
         super(context);
-
+        width = 320;
+        height = 240;
         mCtx = (MainActivity) context;
     }
 
@@ -39,13 +40,12 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void startAnalyzer() {
-        mFrameA.setLoop(true);
-        mFrameA.start();
-        mFrameA.activate();
+        mFrameA.reset();
+        mFrameA.setAnalyzer(true);
     }
 
     public void stopAnalyzer() {
-        mFrameA.stop();
+        mFrameA.setAnalyzer(false);
     }
 
     public void setSensitivity(int sensitivity) { mFrameA.setSensitivity(sensitivity); }
@@ -92,7 +92,14 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
                 mFrameA = new BasicFrameAnalyzer(mCtx);
         }
 
+        mFrameA.start();
+        mFrameA.activate();
+
         return mCamera;
+    }
+
+    public String getInfo() {
+        return width + "x" + height + "@" + fps/1000 + "fps";
     }
 
     @Override
@@ -136,29 +143,38 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
         try {
             mCamera.stopPreview();
-        } catch (Exception e) {
-
+        }
+        catch (Exception e) {
         }
 
         try {
             mCamera.setDisplayOrientation(90);
             Camera.Parameters params = mCamera.getParameters();
-            width = params.getPreviewSize().width;
-            height = params.getPreviewSize().height;
-            params.setPreviewFormat(ImageFormat.NV21);
+
             this.format = params.getPreviewFormat();
+
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
+
+            width = params.getPreviewSize().width;
+            height = params.getPreviewSize().height;
+
+            params.setPictureSize(width,height);
+            params.setPreviewFormat(ImageFormat.NV21);
             params.setRecordingHint(true);
             params.setAutoExposureLock(false);
             params.setAutoWhiteBalanceLock(true);
-            params.setPreviewFrameRate(30);
-            params.setPreviewFpsRange(15000, 30000);
-            //params.setPreviewSize(width, height);
+
+            List<int[]>  fpsRange = params.getSupportedPreviewFpsRange();
+            fps =  fpsRange.get(0)[params.PREVIEW_FPS_MAX_INDEX];
+            params.setPreviewFpsRange(15000, fps);
+
+            params.setPreviewSize(width, height);
             mCamera.setParameters(params);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
         }
 
@@ -167,7 +183,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }

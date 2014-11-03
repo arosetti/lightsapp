@@ -124,7 +124,7 @@ public class GraphFragment extends Fragment {
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
 
-                    float RATIO = 5/3;
+                    float RATIO = 4/3;
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
                     Log.v(TAG, "WIDTH: " +  mPreview.getWidth());
                     l.height = (int) RATIO * mPreview.getWidth();
