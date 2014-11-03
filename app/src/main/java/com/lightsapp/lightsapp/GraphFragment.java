@@ -1,6 +1,5 @@
 package com.lightsapp.lightsapp;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.lightsapp.camera.CameraController;
 import com.lightsapp.camera.FrameAnalyzer.Frame;
 import com.lightsapp.utils.LinearFilter;
 
@@ -126,7 +124,7 @@ public class GraphFragment extends Fragment {
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
 
-                    float RATIO = 5/3;
+                    float RATIO = 4/3;
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
                     Log.v(TAG, "WIDTH: " +  mPreview.getWidth());
                     l.height = (int) RATIO * mPreview.getWidth();
@@ -185,7 +183,6 @@ public class GraphFragment extends Fragment {
                         for (int i = first, j = 0; i < last; i++ , j++) {
                             fdata_delay[j] = (float) lframes.get(i).delta;
                             fdata_lum[j] = (float) lframes.get(i).luminance;
-                            fdata_lum[j] = (float) lframes.get(i).luminance;
                         }
                         dataFilter.apply(fdata_lum);
                         dataFilter.apply(fdata_delay);
@@ -195,8 +192,6 @@ public class GraphFragment extends Fragment {
                             data_lum[j] = new GraphView.GraphViewData(i, lframes.get(i).luminance);
                             data_delay_f[j] = new GraphView.GraphViewData(i, fdata_delay[j]);
                             data_lum_f[j] = new GraphView.GraphViewData(i, fdata_lum[j]);
-
-
                         }
 
                         // derivative of smoothed luminance
