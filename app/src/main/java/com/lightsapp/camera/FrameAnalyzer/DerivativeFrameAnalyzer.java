@@ -31,10 +31,12 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
         long tstart = 0, tstop = 0, diff;
 
         float fdata_lum[] = new float[lframes.size()];
-        LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
         for (int i = 0; i < lframes.size(); i++) {
             fdata_lum[i] = (float) lframes.get(i).luminance;
         }
+
+        // smooth
+        //LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
         //dataFilter.apply(fdata_lum);
 
         // TODO optimize and compute incrementally, use, last_diff and add new frames.
@@ -63,10 +65,13 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                             found = true;
                             Log.w(TAG, "new max");
                         }
+                        continue;
                     }
-                    else if (found) {
+
+                    if (found) {
                         Log.w(TAG, "maxid: " + fmax_id);
                         found = false;
+                        fmax = Long.MIN_VALUE;
                         tstart = lframes.get(fmax_id).timestamp;
                         if (tstop == 0) {
                             statcode = SEARCH_LOW;
@@ -88,10 +93,13 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                             found = true;
                             Log.w(TAG, "new min");
                         }
+                        continue;
                     }
-                    else if (found) {
+
+                    if (found) {
                         Log.w(TAG, "minid: " + fmin_id);
                         found = false;
+                        fmin = Long.MAX_VALUE;
                         tstop = lframes.get(fmin_id).timestamp;
                         statcode = SET_DATA;
                         Log.w(TAG, "Setting data");
@@ -113,7 +121,6 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                     Log.w(TAG, "data diff: " + diff);
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(diff));
-                        tstart = 0;
                         statcode = SEARCH_HIGH;
                         Log.w(TAG, "Searching high front for the gap end");
                     }
