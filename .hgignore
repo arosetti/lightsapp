@@ -8,4 +8,7 @@ app/app.iml
 app/build/generated/source/buildConfig/test/debug/com/lightsapp/lightsapp/test/BuildConfig.java
 .idea/misc.xml
 .idea/inspectionProfiles/Project_Default.xml
+build.gradle
+gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.jar
 syntax: regexp
