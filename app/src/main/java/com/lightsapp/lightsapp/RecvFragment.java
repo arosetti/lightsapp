@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,15 +43,9 @@ public class RecvFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
-    public void resetText() {
-        mTextViewMorse.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
-                               "lower the sensibility if needed"  );
-        mTextViewData.setText("press start");
-    }
     @Override
     public void onResume() {
         super.onResume();
-        resetText();
     }
 
     @Override
@@ -90,9 +85,11 @@ public class RecvFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                mCtx.mCameraController.setSensitivity(progress);
+                mCtx.mFrameA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
+                mTextViewMorse.setText("");
+                mTextViewData.setText("");
             }
         });
         mTextViewSensitivity = (TextView) v.findViewById(R.id.textViewSensitivity);
@@ -103,8 +100,12 @@ public class RecvFragment extends Fragment {
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mCtx.mCameraController.reset();
-                        resetText();
+                        mCtx.mFrameA.reset();
+                        if (!mCtx.mFrameA.getAnalyzer())
+                            setDefaultText();
+                        else {
+                            setEmptyText();
+                        }
                     }
                 });
 
@@ -131,16 +132,25 @@ public class RecvFragment extends Fragment {
 
                         if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_start) ) {
-                            mCtx.mCameraController.startAnalyzer();
+                            mCtx.mFrameA.reset();
+                            mCtx.mFrameA.setAnalyzer(true);
                             mButtonRecv.setText(R.string.btn_stop);
+                            setInitText();
                         }
                         else if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_stop) ) {
-                            mCtx.mCameraController.stopAnalyzer();
+                            mCtx.mFrameA.reset();
+                            mCtx.mFrameA.setAnalyzer(false);
                             mButtonRecv.setText(R.string.btn_start);
+
+                            if (((String) mTextViewData.getText()).equals(analyzerInfoText())) {
+                                setDefaultText();
+                            }
                         }
                     }
                 });
+
+        setDefaultText();
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -154,11 +164,14 @@ public class RecvFragment extends Fragment {
                     mTextViewMorse.setText((String) msg.getData().get("data_message_morse"));
                 }
 
-                if ( msg.getData().containsKey("set_sensitivity")) {
+                if (msg.getData().containsKey("setup_done")) {
                     int progress = mSeekBarSensitivity.getProgress();
-                    mCtx.mCameraController.setSensitivity(progress);
+                    mCtx.mFrameA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                                  ": " + progress);
+                    // now we can start  the analyzer
+                    mCtx.mFrameA.start();
+                    mCtx.mFrameA.activate();
                 }
             }
         };
@@ -167,4 +180,25 @@ public class RecvFragment extends Fragment {
 
         return v;
     }
+
+    public void setDefaultText() {
+        mTextViewMorse.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
+                "lower the sensibility if needed");
+        mTextViewData.setText("press start!");
+    }
+
+    private String analyzerInfoText() {
+        return "using " + mCtx.mFrameA.getName() + " analyzer"; // TODO use string with format
+    }
+
+    public void setInitText() {
+        mTextViewData.setText(analyzerInfoText());
+        mTextViewMorse.setText("");
+    }
+
+    public void setEmptyText() {
+        mTextViewMorse.setText("");
+        mTextViewData.setText("");
+    }
 }
+

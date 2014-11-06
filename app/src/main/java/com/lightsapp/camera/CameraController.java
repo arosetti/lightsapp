@@ -3,6 +3,7 @@ package com.lightsapp.camera;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -20,7 +21,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private MainActivity mCtx;
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private FrameAnalyzer mFrameA;
 
     private int format, width, height, fps;
 
@@ -30,25 +30,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         height = 240;
         mCtx = (MainActivity) context;
     }
-
-    public final List<Frame> getFrames() {
-        return mFrameA.getFrames();
-    }
-
-    public void reset() {
-        mFrameA.reset();
-    }
-
-    public void startAnalyzer() {
-        mFrameA.reset();
-        mFrameA.setAnalyzer(true);
-    }
-
-    public void stopAnalyzer() {
-        mFrameA.setAnalyzer(false);
-    }
-
-    public void setSensitivity(int sensitivity) { mFrameA.setSensitivity(sensitivity); }
 
     public Camera setup() {
         boolean err = false;
@@ -83,17 +64,14 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
         switch (algorithm) {
             case 1:
-                mFrameA = new ThresholdFrameAnalyzer(mCtx);
+                mCtx.mFrameA = new ThresholdFrameAnalyzer(mCtx);
                 break;
             case 2:
-                mFrameA = new DerivativeFrameAnalyzer(mCtx);
+                mCtx.mFrameA = new DerivativeFrameAnalyzer(mCtx);
                 break;
             default:
-                mFrameA = new BasicFrameAnalyzer(mCtx);
+                mCtx.mFrameA = new BasicFrameAnalyzer(mCtx);
         }
-
-        mFrameA.start();
-        mFrameA.activate();
 
         return mCamera;
     }
@@ -105,7 +83,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (format == ImageFormat.NV21) {
-            mFrameA.addFrame(data, width, height);
+            mCtx.mFrameA.addFrame(data, width, height);
         }
     }
 
@@ -157,11 +135,11 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
+            params.setPictureSize(width,height);
 
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
 
-            params.setPictureSize(width,height);
             params.setPreviewFormat(ImageFormat.NV21);
             params.setRecordingHint(true);
             params.setAutoExposureLock(false);

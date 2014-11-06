@@ -13,40 +13,31 @@ import static com.lightsapp.utils.HandlerUtils.*;
 
 public class DerivativeFrameAnalyzer extends FrameAnalyzer {
     enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
+    boolean smooth = false;
 
     public DerivativeFrameAnalyzer(Context context){
         super(context);
+        NAME = "derivative";
     }
 
     @Override
     public void analyze() {
         if ((lframes.size()) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message_text", "<derivative algorithm>");
             return;
         }
 
         List<Long> ldata = new ArrayList<Long>();
+
+        // TODO optimize and compute incrementally.
         List<Long> lframes_d = new ArrayList<Long>();
-
-        long tstart = 0, tstop = 0, diff;
-
-        float fdata_lum[] = new float[lframes.size()];
-        for (int i = 0; i < lframes.size(); i++) {
-            fdata_lum[i] = (float) lframes.get(i).luminance;
-        }
-
-        // smooth
-        //LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
-        //dataFilter.apply(fdata_lum);
-
-        // TODO optimize and compute incrementally, use, last_diff and add new frames.
         for (int i = 1; i < lframes.size(); i++) {
-              long dd = (long) (fdata_lum[i] - fdata_lum[i-1]);
+              long dd = (long) (lframes.get(i).luminance - lframes.get(i - 1).luminance);
               lframes_d.add(dd);
         }
 
         Log.w(TAG, "START!");
 
+        long tstart = 0, tstop = 0, diff;
         long fmax = Long.MIN_VALUE;
         long fmin = Long.MAX_VALUE;
         int fmax_id = 0, fmin_id = 0;
@@ -109,15 +100,6 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
                 case SET_DATA:
                     diff = tstop - tstart;
 
-                    /*
-                    if (diff > (8 * speed_base)) {
-                        Log.w(TAG, "too long high signal");
-                        tstart = 0;
-                        ldata.add(new Long(-7 * speed_base));
-                        continue;
-                    }
-                    */
-
                     Log.w(TAG, "data diff: " + diff);
                     if (diff > (long) (0.6 * (float) speed_base)) {
                         ldata.add(new Long(diff));
@@ -132,15 +114,6 @@ public class DerivativeFrameAnalyzer extends FrameAnalyzer {
 
                 case SET_GAP:
                     diff = tstart - tstop;
-
-                    /*
-                    if (diff > (8 * speed_base)) {
-                        Log.w(TAG, "too long low signal");
-                        tstop = 0;
-                        ldata.add(new Long(-7 * speed_base));
-                        continue;
-                    }
-                    */
 
                     Log.w(TAG, "gap diff: " + diff);
                     if (diff > (long) (0.6 * (float) speed_base)) {

@@ -9,6 +9,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
 
     public BasicFrameAnalyzer(Context context){
         super(context);
+        NAME = "basic";
     }
 
     @Override

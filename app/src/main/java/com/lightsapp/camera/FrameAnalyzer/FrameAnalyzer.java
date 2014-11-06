@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FrameAnalyzer extends MyRunnable {
     protected final String TAG = FrameAnalyzer.class.getSimpleName();
+    protected String NAME = "???";
 
     protected MainActivity mCtx;
 
@@ -26,6 +27,8 @@ public class FrameAnalyzer extends MyRunnable {
     protected final Lock lock_frames_tmp;
     protected final Lock lock_frames;
 
+    protected final int SLEEP_TIME = 200;
+
     protected int start_frame = 0,
                   last_frame_analyzed = 0,
                   sensitivity = -1;
@@ -33,7 +36,7 @@ public class FrameAnalyzer extends MyRunnable {
     protected final MorseConverter mMorse;
     protected long speed_base;
 
-    private long timestamp;
+    private long timestamp_last;
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
 
@@ -56,17 +59,25 @@ public class FrameAnalyzer extends MyRunnable {
         enable_analyze = new AtomicReference<Boolean>(false);
     }
 
+    public final String getName() {
+        return NAME;
+    }
+
+    public void setAnalyzer(boolean val) {
+        enable_analyze.getAndSet(val);
+    }
+
+    public boolean getAnalyzer() {
+        return enable_analyze.get();
+    }
+
     @Override
     public final void loop() {
         try {
-            if (sensitivity < 0 && mCtx.mHandlerRecv != null) {
-                signalStr(mCtx.mHandlerRecv, "set_sensitivity", "");
-            }
-
-            Thread.sleep(350);
+            Thread.sleep(SLEEP_TIME);
             update();
 
-            Thread.sleep(350);
+            Thread.sleep(SLEEP_TIME);
             if (enable_analyze.get())
                 analyze();
         }
@@ -77,13 +88,7 @@ public class FrameAnalyzer extends MyRunnable {
             Log.e(TAG, "error analyzing frames: " + e.getMessage());
         }
         finally {
-            signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
-                    "\ncur / min / max / avg" +
-                    "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
-                    d_min + " / " + d_max + " / " + d_avg + ") ms " +
-                    "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
-                    " / " + l_min + " / " + l_max + " / " + l_avg + ")");
-            signalStr(mCtx.mHandlerGraph, "update", "");
+            signalGraph();
         }
     }
 
@@ -91,13 +96,7 @@ public class FrameAnalyzer extends MyRunnable {
         return lframes;
     }
 
-    public void setAnalyzer(boolean val) {
-        enable_analyze.getAndSet(val);
-    }
-
     public final void reset() {
-        signalStr(mCtx.mHandlerRecv, "data_message", "***");
-
         lock_frames_tmp.lock();
         try {
             lframes_tmp.clear();
@@ -140,6 +139,16 @@ public class FrameAnalyzer extends MyRunnable {
                     " frames to lframes which is big " + lframes.size() + " frames.");
             for (int i = 0; i < lframes_swap.size(); i++) {
                 lframes.add(lframes_swap.get(i).analyze());
+
+                //error analyzing data, maybe error allocating memory for the frame.
+                // we use the previous frame's luminance.
+                if (lframes_swap.get(i).luminance < 0) {
+                    Log.v(TAG, "couldn't allocate memory for frame, using prev value if available");
+                    if (i > 0)
+                        lframes_swap.get(i).setLuminance(lframes_swap.get(i - 1).luminance);
+                    else
+                        lframes_swap.get(i).setLuminance(0);
+                }
             }
             lframes_swap = null;
             last_frame_analyzed = lframes.size() - 1;
@@ -187,6 +196,7 @@ public class FrameAnalyzer extends MyRunnable {
         }
     }
 
+    // to be overridden
     protected void analyze() {
 
     }
@@ -216,24 +226,47 @@ public class FrameAnalyzer extends MyRunnable {
             }
         }
 
-        signalToGui(ldata);
+        signalData(ldata);
     }
 
-    protected final void signalToGui(List<Long> ldata) {     // TODO use a single message
+    protected final void signalData(List<Long> ldata) {
         String str = mMorse.getText(ListToPrimitiveArray(ldata));
         signalStr(mCtx.mHandlerRecv, "data_message_text", str);
         signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) +
                                                            "\n" + ldata.toString());
     }
 
+    private void signalReset() {
+        signalStr(mCtx.mHandlerRecv, "data_message_text", "");
+        signalStr(mCtx.mHandlerRecv, "data_message_morse", "");
+    }
+
+    private void signalGraph() {
+        lock_frames.lock();
+        try {
+            if(lframes.size() > 0) {
+                signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
+                        "\ncur / min / max / avg" +
+                        "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
+                        d_min + " / " + d_max + " / " + d_avg + ") ms " +
+                        "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
+                        " / " + l_min + " / " + l_max + " / " + l_avg + ")");
+                signalStr(mCtx.mHandlerGraph, "update", "");
+            }
+        }
+        finally {
+            lock_frames.unlock();
+        }
+    }
+
     public final void setSensitivity(int sensitivity) {
         Log.v(TAG, "Sensitivity set to " + sensitivity);
-        this.sensitivity=sensitivity;
+        this.sensitivity = sensitivity;
     }
 
     public final void addFrame(byte[] data, int width, int height) {
         long timestamp_now = System.currentTimeMillis() ;
-        long delta = (timestamp == 0)? 0 : (timestamp_now - timestamp);
+        long delta = (timestamp_last == 0)? 0 : (timestamp_now - timestamp_last);
 
         lock_frames_tmp.lock();
         try {
@@ -242,6 +275,6 @@ public class FrameAnalyzer extends MyRunnable {
         finally {
             lock_frames_tmp.unlock();
         }
-        timestamp = System.currentTimeMillis();
+        timestamp_last = System.currentTimeMillis();
     }
 }

@@ -29,6 +29,10 @@ public class Frame {
         return this;
     }
 
+    public void setLuminance(long l) {
+        luminance = (l >= -1) ? l : -1;
+    }
+
     private long getLuminance(byte[] data, int width, int height) {
         final int frameSize = width * height;
         long ysum = 0;

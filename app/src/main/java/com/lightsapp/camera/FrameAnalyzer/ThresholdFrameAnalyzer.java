@@ -13,12 +13,12 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
 
     public ThresholdFrameAnalyzer(Context context){
         super(context);
+        NAME = "threshold";
     }
 
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message_text", "<threshold algorithm>");
             return;
         }
 
