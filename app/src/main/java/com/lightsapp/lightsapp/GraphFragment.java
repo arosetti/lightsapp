@@ -26,7 +26,9 @@ import java.util.List;
 public class GraphFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
     private static final String TAG = SendFragment.class.getSimpleName();
+
     private static final int GRAPH_SIZE = 300;
+    private static float CAMERA_RATIO = 4/3;
 
     private MainActivity mCtx;
 
@@ -34,7 +36,7 @@ public class GraphFragment extends Fragment {
 
     FrameLayout mPreview;
     private TextView mTextViewMessageStatus;
-    private GraphView graphView_delay, graphView_lum;
+    private GraphView graphView_delay, graphView_lum, graphView_dlum;
     private GraphViewSeries series;
 
     public static GraphFragment newInstance(int sectionNumber) {
@@ -49,23 +51,23 @@ public class GraphFragment extends Fragment {
         mCtx = (MainActivity) getActivity();
     }
 
-
+    /*
     public void onResume() {
         super.onResume();
         Log.v(TAG, "RESUME_GRAPH");
-        /*if (mCtx.mCameraController != null) {
+        if (mCtx.mCameraController != null) {
             mPreview.removeAllViews();
             mPreview.addView(mCtx.mCameraController);
-        }*/
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE_GRAPH");
-        //mPreview.removeAllViews();
+        mPreview.removeAllViews();
     }
-
+    */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,9 +103,6 @@ public class GraphFragment extends Fragment {
         graphView_lum.setViewPort(2, GRAPH_SIZE);
         graphView_lum.setScrollable(true);
         graphView_lum.setScalable(true);
-        /*graphView_lum.setShowLegend(true);
-        graphView_lum.setLegendAlign(GraphView.LegendAlign.BOTTOM);
-        graphView_lum.setLegendWidth(200);*/
         graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
         graphView_lum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
         graphView_lum.getGraphViewStyle().setTextSize(10);
@@ -111,6 +110,20 @@ public class GraphFragment extends Fragment {
 
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(graphView_lum);
+
+
+        graphView_dlum = new LineGraphView(mCtx, "Luminance first derivative");
+
+        graphView_dlum.setViewPort(2, GRAPH_SIZE);
+        graphView_dlum.setScrollable(true);
+        graphView_dlum.setScalable(true);
+        graphView_dlum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
+        graphView_dlum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
+        graphView_dlum.getGraphViewStyle().setTextSize(10);
+        graphView_dlum.getGraphViewStyle().setNumHorizontalLabels(0);
+
+        layout = (LinearLayout) v.findViewById(R.id.graph3);
+        layout.addView(graphView_dlum);
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -124,10 +137,8 @@ public class GraphFragment extends Fragment {
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
 
-                    float RATIO = 4/3;
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
-                    Log.v(TAG, "WIDTH: " +  mPreview.getWidth());
-                    l.height = (int) RATIO * mPreview.getWidth();
+                    l.height = (int) CAMERA_RATIO * mPreview.getWidth();
 
                     Log.v(TAG, "init camera preview done");
                 }
@@ -135,7 +146,7 @@ public class GraphFragment extends Fragment {
                 if (msg.getData().containsKey("update")) {
                     List<Frame> lframes;
                     try {
-                        lframes = mCtx.mCameraController.getFrames();
+                        lframes = mCtx.mFrameA.getFrames();
                     } catch (Exception e) {
                         return;
                     }
@@ -195,8 +206,9 @@ public class GraphFragment extends Fragment {
                         }
 
                         // derivative of smoothed luminance
-                        for (int i = first, j = 1; i < (last - 1); i++, j++) {
-                            data_lum_d[j - 1] = new GraphView.GraphViewData(i, (fdata_lum[j] - fdata_lum[j - 1]));
+                        for (int i = first + 1, j = 1; i < last; i++, j++) {
+                            //data_lum_d[j - 1] = new GraphView.GraphViewData(i, (fdata_lum[j] - fdata_lum[j - 1]));
+                            data_lum_d[j - 1] = new GraphView.GraphViewData(i, (lframes.get(i).luminance - lframes.get(i - 1).luminance));
                         }
                     }
                     catch (IndexOutOfBoundsException e) {
@@ -220,27 +232,24 @@ public class GraphFragment extends Fragment {
                         graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("luminance_raw",
-                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
+                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 0), 3),
                                 data_lum);
                         graphView_lum.removeAllSeries();
                         graphView_lum.addSeries(series);
 
-                        //derivative of smoothed lum
                         series = new GraphViewSeries("luminance_d",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(170, 80, 255), 3),
                                 data_lum_d);
-                        graphView_lum.addSeries(series);
-
-                        series = new GraphViewSeries("luminance_f",
-                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 0), 3),
-                                data_lum_f);
-                        graphView_lum.addSeries(series);
-                    } catch (Exception e) {
+                        graphView_dlum.removeAllSeries();
+                        graphView_dlum.addSeries(series);
+                    }
+                    catch (Exception e) {
                         Log.d(TAG, "" + e.getMessage());
                     }
 
                     graphView_delay.scrollToEnd();
                     graphView_lum.scrollToEnd();
+                    graphView_dlum.scrollToEnd();
                 }
             }
         };

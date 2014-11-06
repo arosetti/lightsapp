@@ -196,7 +196,8 @@ public class MorseConverter {
                     if (sequence[j] != LETTERS[i][j]) {
                         found = false;
                         break;
-                    } else {
+                    }
+                    else {
                         found = true;
                     }
                 }
@@ -215,7 +216,8 @@ public class MorseConverter {
                     if (sequence[j] != NUMBERS[i][j]) {
                         found = false;
                         break;
-                    } else {
+                    }
+                    else {
                         found = true;
                     }
                 }
