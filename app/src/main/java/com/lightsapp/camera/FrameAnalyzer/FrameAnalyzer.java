@@ -27,7 +27,7 @@ public class FrameAnalyzer extends MyRunnable {
     protected final Lock lock_frames_tmp;
     protected final Lock lock_frames;
 
-    protected final int SLEEP_TIME = 200;
+    protected final int SLEEP_TIME = 100;
 
     protected int start_frame = 0,
                   last_frame_analyzed = 0,
@@ -118,19 +118,22 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     protected void update() {
-        List<Frame> lframes_swap;
+        int size;
+        List<Frame> lframes_swap = null;
 
         lock_frames_tmp.lock();
         try {
-            lframes_swap = lframes_tmp;
-            if (!lframes_swap.isEmpty())
+            size = lframes_tmp.size();
+            if (size != 0) {
+                lframes_swap = lframes_tmp;
                 lframes_tmp = new ArrayList<Frame>();
+            }
         }
         finally {
             lock_frames_tmp.unlock();
         }
 
-        if (lframes_swap.isEmpty())
+        if (size == 0)
             return;
 
         lock_frames.lock();
@@ -151,7 +154,6 @@ public class FrameAnalyzer extends MyRunnable {
                 }
             }
             lframes_swap = null;
-            last_frame_analyzed = lframes.size() - 1;
         }
         finally {
             lock_frames.unlock();
@@ -165,9 +167,6 @@ public class FrameAnalyzer extends MyRunnable {
         try {
             if (lframes.isEmpty())
                 return;
-
-            l_sum = 0;
-            d_sum = 0;
 
             for (int i = last_frame_analyzed; i < lframes.size(); i++) {
 
@@ -184,12 +183,14 @@ public class FrameAnalyzer extends MyRunnable {
 
                 if (lframes.get(i).delta > d_max)
                     d_max = lframes.get(i).delta;
-                if (lframes.get(i).delta < d_min)
+                if ((lframes.get(i).delta > 0) && (lframes.get(i).delta < d_min))
                     d_min = lframes.get(i).delta;
             }
 
             l_avg = l_sum / lframes.size();
             d_avg = d_sum / lframes.size();
+
+            last_frame_analyzed = lframes.size() - 1;
         }
         finally {
             lock_frames.unlock();
@@ -247,7 +248,7 @@ public class FrameAnalyzer extends MyRunnable {
             if(lframes.size() > 0) {
                 signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
                         "\ncur / min / max / avg" +
-                        "\ndelta: (" + lframes.get(last_frame_analyzed).delta + " / " +
+                        "\ndelay: (" + lframes.get(last_frame_analyzed).delta + " / " +
                         d_min + " / " + d_max + " / " + d_avg + ") ms " +
                         "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
                         " / " + l_min + " / " + l_max + " / " + l_avg + ")");
@@ -265,16 +266,24 @@ public class FrameAnalyzer extends MyRunnable {
     }
 
     public final void addFrame(byte[] data, int width, int height) {
+        Frame frame = null;
         long timestamp_now = System.currentTimeMillis() ;
         long delta = (timestamp_last == 0)? 0 : (timestamp_now - timestamp_last);
 
         lock_frames_tmp.lock();
         try {
-            lframes_tmp.add(new Frame(data, width, height, timestamp_now, delta)); // TODO recycle frames.
+            frame = new Frame(data, width, height, timestamp_now, delta);
+            if (frame != null) {
+                lframes_tmp.add(frame);
+                timestamp_last = System.currentTimeMillis();
+                //Log.i(TAG, "FRAME SIZE: " + data.length / 1000 + " KByte");
+            }
+            else {
+                Log.w(TAG, "can't allocate frame!!");
+            }
         }
         finally {
             lock_frames_tmp.unlock();
         }
-        timestamp_last = System.currentTimeMillis();
     }
 }

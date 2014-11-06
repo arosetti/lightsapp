@@ -22,7 +22,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
-    private int format, width, height, fps;
+    private int format, width, height, fps_min, fps_max;
 
     public CameraController(Context context) {
         super(context);
@@ -77,13 +77,16 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public String getInfo() {
-        return width + "x" + height + "@" + fps/1000 + "fps";
+        return width + "x" + height + "@" + fps_max/1000 + "fps";
     }
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (format == ImageFormat.NV21) {
             mCtx.mFrameA.addFrame(data, width, height);
+        }
+        else {
+            Log.e(TAG, "wrong image format");
         }
     }
 
@@ -135,20 +138,27 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
-            params.setPictureSize(width,height);
 
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
 
+            params.setPictureSize(width, height);
             params.setPreviewFormat(ImageFormat.NV21);
             params.setRecordingHint(true);
-            params.setAutoExposureLock(false);
+            params.setAutoExposureLock(true);
             params.setAutoWhiteBalanceLock(true);
 
             List<int[]>  fpsRange = params.getSupportedPreviewFpsRange();
-            fps =  fpsRange.get(0)[params.PREVIEW_FPS_MAX_INDEX];
-            params.setPreviewFpsRange(15000, fps);
+            if (fpsRange != null && !fpsRange.isEmpty()) {
+                fps_min = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MIN_INDEX];
+                fps_max = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MAX_INDEX];
 
+            }
+            else {
+                fps_min = 29000;
+                fps_max = 29000;
+            }
+            params.setPreviewFpsRange(fps_min, fps_max);
             params.setPreviewSize(width, height);
             mCamera.setParameters(params);
         }
@@ -165,5 +175,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
+
+        Log.i(TAG, getInfo());
     }
 }
