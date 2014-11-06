@@ -40,9 +40,11 @@ public class SetupHandler extends HandlerThread {
                             mContext.mLightController.start();
                         }
 
-                        if (mContext.mHandlerGraph != null && mContext.mCameraController != null &&
-                                mContext.mCamera != null && mContext.mLightController != null) {
+                        if (mContext.mHandlerGraph != null && mContext.mHandlerRecv != null &&
+                            mContext.mCamera != null && mContext.mLightController != null &&
+                            mContext.mCameraController != null) {
                             signalStr(mContext.mHandlerGraph, "setup_done", "");
+                            signalStr(mContext.mHandlerRecv, "setup_done", "");
                             done = true;
                         }
                     }

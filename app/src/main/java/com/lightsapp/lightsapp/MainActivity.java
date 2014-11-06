@@ -22,9 +22,11 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.lightsapp.camera.CameraController;
+import com.lightsapp.camera.FrameAnalyzer.FrameAnalyzer;
 import com.lightsapp.camera.LightController;
 import com.lightsapp.morse.MorseConverter;
 
@@ -43,6 +45,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public MorseConverter mMorse;
     public LightController mLightController;
     public CameraController mCameraController;
+    public FrameAnalyzer mFrameA;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
@@ -97,6 +100,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.v(TAG, "CREATE");
+
+        // prevent screen going off
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         final ActionBar actionBar = getActionBar();
         if (actionBar != null)
