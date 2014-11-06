@@ -88,8 +88,9 @@ public class RecvFragment extends Fragment {
                 mCtx.mFrameA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
-                mTextViewMorse.setText("");
-                mTextViewData.setText("");
+                if (mCtx.mFrameA.getAnalyzer()) {
+                    setEmptyText();
+                }
             }
         });
         mTextViewSensitivity = (TextView) v.findViewById(R.id.textViewSensitivity);

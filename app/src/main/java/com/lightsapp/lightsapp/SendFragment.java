@@ -158,12 +158,15 @@ public class SendFragment extends Fragment {
 
                     try {
                         str1 = mstr.substring(0, cut);
-                    } catch (IndexOutOfBoundsException e) {
+                    }
+                    catch (IndexOutOfBoundsException e) {
                     }
                     try {
                         str2 = mstr.substring(cut);
-                    } catch (IndexOutOfBoundsException e) {
                     }
+                    catch (IndexOutOfBoundsException e) {
+                    }
+
                     String text = "<font color='green'>" + str + "</font>" +
                                   "<font color='grey'> | </font>" +
                                   "<font color='red'>" + str1 + "</font>" +
