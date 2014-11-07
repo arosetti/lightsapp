@@ -93,7 +93,7 @@ public class LightController extends MyRunnable {
     public void ondie() {
         setLight(false);
         signalStr(mCtx.mHandlerSend, "light", "off");
-        signalInt(mCtx.mHandlerSend, "progress", 100);
+        signalInt(mCtx.mHandlerSend, "progress", 0);
     }
 
     @Override

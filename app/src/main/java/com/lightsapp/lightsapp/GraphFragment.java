@@ -29,6 +29,7 @@ public class GraphFragment extends Fragment {
 
     private static final int GRAPH_SIZE = 300;
     private static float CAMERA_RATIO = 4/3;
+    private static int scale = 2;
 
     private MainActivity mCtx;
 
@@ -95,7 +96,7 @@ public class GraphFragment extends Fragment {
         graphView_delay.getGraphViewStyle().setTextSize(10);
         graphView_delay.getGraphViewStyle().setNumHorizontalLabels(0);
 
-        LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph1);
+        LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph3);
         layout.addView(graphView_delay);
 
         graphView_lum = new LineGraphView(mCtx, "Luminance");
@@ -108,7 +109,7 @@ public class GraphFragment extends Fragment {
         graphView_lum.getGraphViewStyle().setTextSize(10);
         graphView_lum.getGraphViewStyle().setNumHorizontalLabels(0);
 
-        layout = (LinearLayout) v.findViewById(R.id.graph2);
+        layout = (LinearLayout) v.findViewById(R.id.graph1);
         layout.addView(graphView_lum);
 
 
@@ -122,7 +123,7 @@ public class GraphFragment extends Fragment {
         graphView_dlum.getGraphViewStyle().setTextSize(10);
         graphView_dlum.getGraphViewStyle().setNumHorizontalLabels(0);
 
-        layout = (LinearLayout) v.findViewById(R.id.graph3);
+        layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(graphView_dlum);
 
         mHandler = new Handler() {
@@ -138,8 +139,9 @@ public class GraphFragment extends Fragment {
                     mPreview.addView(mCtx.mCameraController);
 
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
-                    l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / 2);
-                    l.width = mPreview.getWidth() / 2;
+                    l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
+                    l.width = mPreview.getWidth() / scale;
+                    scale = 1;
                     Log.v(TAG, "init camera preview done");
                 }
 

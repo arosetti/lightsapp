@@ -77,7 +77,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public String getInfo() {
-        return width + "x" + height + "@" + fps_max/1000 + "fps";
+        return width + "x" + height + "@[" + fps_min /1000 + "-" + fps_max/1000 + "]fps";
     }
 
     @Override

@@ -33,7 +33,12 @@ public class AboutActivity extends Activity {
 
         TextView mTextViewInfo = (TextView) findViewById(R.id.TextViewInfo);
 
-        String video = "320x240@30fps";
+        String video = "???";
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            video = extras.getString("info");
+        }
+
 
         mTextViewInfo.setText(Html.fromHtml(
                 "<h3>app: " + appname + ", version: " + version + "</h3>" +
@@ -41,12 +46,13 @@ public class AboutActivity extends Activity {
                 "<a href=\"mailto:alessandro.rosetti@gmail.com\">Alessandro Rosetti</a><br/>" +
                 "<a href=\"mailto:lazzalf@yahoo.com\">Daniele Lazzarini</a><br/><br/>" +
                 "<b>System Info:</b><br/> Camera: " + video + "<br/><br/>" +
-                "<b>Open Source: <br/>Android's examples morse class has been modified to our needs.<br/>graphview:3.1.3</b><br/><br/>" +
+                "<b>Open Source components: <br/>Android's example morse class has been modified to our needs.<br/>graphview</b><br/><br/>" +
                 "<b>Tips:</b><br/>These tips may help you having a better experience.<br/>" +
                 "[1] You can't successfully use this program if the external light is too high or if there are too much interferences.<br/>" +
                 "[2] Use the graph section to check if there is a good variation of luminance while transmitting or receiving.<br/>" +
                 "[3] Try to lower the sensitivity, it will dynamically adjust the thresholds and it may successfully translate the signal to text.<br/>" +
-                "[4] Try to use higher base morse interval time. It depends on the camera that can't deliver a good frame rate or the flash led that can't switch on and off quickly."));
+                "[4] Try to use higher base morse interval time. It depends on the camera that can't deliver a good frame rate or the flash led that can't switch on and off quickly.<br/>" +
+                "<br/> Special thanks to stackoverflow.com"));
     }
 
     @Override
