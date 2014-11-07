@@ -27,7 +27,7 @@ public class SendFragment extends Fragment {
 
     private MainActivity mCtx;
 
-    private ImageView mImageView_lightbulb;
+    private ImageView mImageViewLightbulb;
     private Drawable lightbulb_on, lightbulb_off;
 
     private TextView mTextViewMessage;
@@ -66,7 +66,7 @@ public class SendFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-        mImageView_lightbulb = (ImageView) v.findViewById(R.id.ImageViewLightbulb);
+        mImageViewLightbulb = (ImageView) v.findViewById(R.id.ImageViewLightbulb);
         lightbulb_off = getResources().getDrawable(R.drawable.lightbulb_off);
         lightbulb_on = getResources().getDrawable(R.drawable.lightbulb_on);
 
@@ -109,15 +109,16 @@ public class SendFragment extends Fragment {
                             }
                             if (mCtx.mLightController != null) {
                                 mCtx.mLightController.setString(CleanString(mEdit.getText().toString()));
+                                mCtx.mLightController.start();
                                 mCtx.mLightController.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
                             if (mCtx.mLightController != null) {
-                                mCtx.mLightController.setStatus(false);
+                                mCtx.mLightController.stop();
                             }
-                            mImageView_lightbulb.setImageDrawable(lightbulb_off);
+                            mImageViewLightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);
                             resetText();
                         }
@@ -132,13 +133,13 @@ public class SendFragment extends Fragment {
                     mTextViewMessage.setText((String) msg.getData().get("message"));
                 }
 
-                if (mImageView_lightbulb != null && msg.getData().containsKey("light")) {
+                if (mImageViewLightbulb != null && msg.getData().containsKey("light")) {
                     String str = msg.getData().getString("light");
 
                     if (str == "on") {
-                        mImageView_lightbulb.setImageDrawable(lightbulb_on);
+                        mImageViewLightbulb.setImageDrawable(lightbulb_on);
                     } else {
-                        mImageView_lightbulb.setImageDrawable(lightbulb_off);
+                        mImageViewLightbulb.setImageDrawable(lightbulb_off);
                     }
                 }
 

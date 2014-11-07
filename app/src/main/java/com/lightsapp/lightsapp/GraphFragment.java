@@ -138,13 +138,14 @@ public class GraphFragment extends Fragment {
                     mPreview.addView(mCtx.mCameraController);
 
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
-                    l.height = (int) CAMERA_RATIO * mPreview.getWidth();
-
+                    l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / 2);
+                    l.width = mPreview.getWidth() / 2;
                     Log.v(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {
                     List<Frame> lframes;
+
                     try {
                         lframes = mCtx.mFrameA.getFrames();
                     } catch (Exception e) {

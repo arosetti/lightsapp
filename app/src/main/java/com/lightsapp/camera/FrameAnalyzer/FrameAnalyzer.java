@@ -29,8 +29,7 @@ public class FrameAnalyzer extends MyRunnable {
 
     protected final int SLEEP_TIME = 100;
 
-    protected int start_frame = 0,
-                  last_frame_analyzed = 0,
+    protected int last_frame_analyzed = 0,
                   sensitivity = -1;
 
     protected final MorseConverter mMorse;
@@ -96,7 +95,7 @@ public class FrameAnalyzer extends MyRunnable {
         return lframes;
     }
 
-    public final void reset() {
+    public void reset() {
         lock_frames_tmp.lock();
         try {
             lframes_tmp.clear();
@@ -113,7 +112,6 @@ public class FrameAnalyzer extends MyRunnable {
             lock_frames.unlock();
         }
 
-        start_frame = 0;
         last_frame_analyzed = 0;
     }
 
@@ -172,9 +170,6 @@ public class FrameAnalyzer extends MyRunnable {
 
                 l_sum += lframes.get(i).luminance;
                 d_sum += lframes.get(i).delta;
-
-                if (i < start_frame)
-                    return;
 
                 if (lframes.get(i).luminance > l_max)
                     l_max = lframes.get(i).luminance;

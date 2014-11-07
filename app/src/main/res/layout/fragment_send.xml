@@ -20,17 +20,22 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"/>
+        android:layout_alignParentStart="false"
+        android:maxLines="2"
+        android:minLines="2"/>
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:id="@+id/ImageViewLightbulb"
         android:src="@drawable/lightbulb_off"
         android:layout_gravity="top|center"
         android:contentDescription="@string/lightbulb_desc"
         android:layout_below="@+id/TextViewStatus"
-        android:layout_above="@+id/LayoutCtl"/>
+        android:layout_above="@+id/LayoutCtl"
+        android:scaleType="fitCenter"
+        android:layout_centerInParent="true"
+        android:maxHeight="220dp"/>
 
     <LinearLayout
         android:orientation="vertical"

@@ -57,8 +57,10 @@ public class SetupHandler extends HandlerThread {
                     }
 
                     try {
-                        if (!done)
-                            Thread.sleep(100);
+                        if (!done) {
+                            Log.v(TAG, "setup failed, retrying... ");
+                            Thread.sleep(50);
+                        }
                     }
                     catch (InterruptedException e) {
                     }
