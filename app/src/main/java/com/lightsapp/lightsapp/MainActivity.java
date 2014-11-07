@@ -169,20 +169,21 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         if (id == R.id.action_settings) {
             if(mLightController != null)
-                mLightController.setStatus(false);
+                mLightController.stop();
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
             if(mLightController != null)
-                mLightController.setStatus(false);
+                mLightController.stop();
             Intent intent = new Intent(this, AboutActivity.class);
+            intent.putExtra("info", mCameraController.getInfo());
             startActivity(intent);
             return true;
         }
         else if (id == R.id.action_exit) {
             android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
+            System.exit(0);
         }
 
         return super.onOptionsItemSelected(item);
