@@ -18,7 +18,7 @@ public class ThresholdFrameAnalyzer extends FrameAnalyzer {
 
     @Override
     public void analyze() {
-        if ((lframes.size() - start_frame) < 2) {
+        if (lframes.size() < 2) {
             return;
         }
 

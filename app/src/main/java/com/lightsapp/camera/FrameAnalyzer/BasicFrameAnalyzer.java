@@ -6,10 +6,17 @@ import java.util.List;
 import static com.lightsapp.utils.HandlerUtils.*;
 
 public class BasicFrameAnalyzer extends FrameAnalyzer {
+    private int start_frame = 0;
 
     public BasicFrameAnalyzer(Context context){
         super(context);
         NAME = "basic";
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        start_frame = 0;
     }
 
     @Override
@@ -58,7 +65,7 @@ public class BasicFrameAnalyzer extends FrameAnalyzer {
                     ldata.add(new Long(sign * dsum));
                     n++;
                 }
-                dsum = 0; // oppure non lo azzero?
+                dsum = 0;
             }
         }
 

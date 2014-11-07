@@ -45,12 +45,28 @@ public class LightController extends MyRunnable {
         return (System.currentTimeMillis() - timestamp);
     }
 
+    private void setLight(boolean b) {
+        Camera.Parameters p;
+
+        try {
+            p = mCamera.getParameters();
+            if (b) {
+                p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            }
+            else {
+                p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            }
+            mCamera.setParameters(p);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "error setting led flash " + (b ? "on" : "off"));
+        }
+    }
+
     private void flash(int t) {
         long ret = 0;
 
-        Camera.Parameters p = mCamera.getParameters();
-        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-        mCamera.setParameters(p);
+        setLight(true);
 
         if (sound)
             ret = sound(t);
@@ -58,11 +74,9 @@ public class LightController extends MyRunnable {
         if ((t - ret) > 0)
             ForcedSleep((int) (t - ret));
         else
-            Log.v(TAG, "disable sound output please...");
+            Log.v(TAG, "please, disable sound output...");
 
-        p = mCamera.getParameters();
-        p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-        mCamera.setParameters(p);
+        setLight(false);
     }
 
     public void setString(String str) {
@@ -73,6 +87,13 @@ public class LightController extends MyRunnable {
 
     public void setCamera(Camera camera) {
         mCamera = camera;
+    }
+
+    @Override
+    public void ondie() {
+        setLight(false);
+        signalStr(mCtx.mHandlerSend, "light", "off");
+        signalInt(mCtx.mHandlerSend, "progress", 100);
     }
 
     @Override

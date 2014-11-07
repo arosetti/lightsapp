@@ -36,12 +36,10 @@ public abstract class MyRunnable implements Runnable {
     }
 
     public final boolean getStatus() {
-
         return status.get();
     }
 
     public final void setStatus(boolean s) {
-
         status.getAndSet(s);
     }
 
@@ -53,9 +51,8 @@ public abstract class MyRunnable implements Runnable {
     }
 
     public final void stop() {
-        setLoop(false);
-        setStatus(false);
-        //tid.interrupt();
+        tid.interrupt();
+        status.getAndSet(false);
     }
 
     public final void activate() {
@@ -87,9 +84,15 @@ public abstract class MyRunnable implements Runnable {
     public void afterloop() {
     }
 
+    public void ondie() {
+
+    }
+
     public final void run() {
+        boolean run = true;
         setup();
-        while (true) {
+
+        while (run) {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     lock.lock();
@@ -108,6 +111,8 @@ public abstract class MyRunnable implements Runnable {
             catch (InterruptedException e) {
                 Log.d(TAG, "Thread Interrupted");
                 Thread.currentThread().interrupt();
+                run = false;
+                ondie();
             }
             catch (Exception e) {
                 Log.e(TAG, "loop exception -> " + e.toString() + " " + e.getMessage());
