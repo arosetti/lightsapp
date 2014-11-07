@@ -148,6 +148,12 @@ public class SendFragment extends Fragment {
                            mstr = mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString()));
                     int len, cut = (Integer) msg.getData().get("progress");
 
+                    if (cut < 0) {
+                        resetText();
+                        mButtonSend.setText(R.string.btn_start);
+                        return;
+                    }
+
                     len = mstr.length();
 
                     if (len == 0)

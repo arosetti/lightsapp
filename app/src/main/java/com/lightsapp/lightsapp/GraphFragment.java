@@ -28,6 +28,7 @@ public class GraphFragment extends Fragment {
     private static final String TAG = SendFragment.class.getSimpleName();
 
     private static final int GRAPH_SIZE = 300;
+    private static final int MAX_LUM = 250;
     private static float CAMERA_RATIO = 4/3;
     private static int scale = 2;
 
@@ -87,7 +88,7 @@ public class GraphFragment extends Fragment {
 
         graphView_delay.setViewPort(2, GRAPH_SIZE);
         graphView_delay.setScrollable(true);
-        graphView_delay.setScalable(true);
+        graphView_delay.setScalable(false);
         /*graphView_delay.setShowLegend(true);
         graphView_delay.setLegendAlign(GraphView.LegendAlign.BOTTOM);
         graphView_delay.setLegendWidth(200);*/
@@ -103,7 +104,8 @@ public class GraphFragment extends Fragment {
 
         graphView_lum.setViewPort(2, GRAPH_SIZE);
         graphView_lum.setScrollable(true);
-        graphView_lum.setScalable(true);
+        graphView_lum.setScalable(false);
+        graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
         graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
         graphView_lum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
         graphView_lum.getGraphViewStyle().setTextSize(10);
@@ -117,7 +119,8 @@ public class GraphFragment extends Fragment {
 
         graphView_dlum.setViewPort(2, GRAPH_SIZE);
         graphView_dlum.setScrollable(true);
-        graphView_dlum.setScalable(true);
+        graphView_dlum.setScalable(false);
+        graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
         graphView_dlum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
         graphView_dlum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
         graphView_dlum.getGraphViewStyle().setTextSize(10);
