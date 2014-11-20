@@ -242,11 +242,11 @@ public class FrameAnalyzer extends MyRunnable {
         try {
             if(lframes.size() > 0) {
                 signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
-                        "\ncur / min / max / avg" +
-                        "\ndelay: (" + lframes.get(last_frame_analyzed).delta + " / " +
-                        d_min + " / " + d_max + " / " + d_avg + ") ms " +
-                        "\nluminance: (" + lframes.get(last_frame_analyzed).luminance +
-                        " / " + l_min + " / " + l_max + " / " + l_avg + ")");
+                        "\ncur, min, max, avg" +
+                        "\ndelay: (" + lframes.get(last_frame_analyzed).delta + ", " +
+                        d_min + ", " + d_max + ", " + d_avg + ") ms " +
+                        "\nlum: (" + lframes.get(last_frame_analyzed).luminance +
+                        ", " + l_min + ", " + l_max + ", " + l_avg + ")");
                 signalStr(mCtx.mHandlerGraph, "update", "");
             }
         }
