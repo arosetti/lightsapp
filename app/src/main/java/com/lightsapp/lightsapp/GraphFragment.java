@@ -199,9 +199,9 @@ public class GraphFragment extends Fragment {
                         LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
                         for (int i = first, j = 0; i < last; i++ , j++) {
                             fdata_delay[j] = (float) lframes.get(i).delta;
-                            fdata_lum[j] = (float) lframes.get(i).luminance;
+                            //fdata_lum[j] = (float) lframes.get(i).luminance;
                         }
-                        dataFilter.apply(fdata_lum);
+                        //dataFilter.apply(fdata_lum);
                         dataFilter.apply(fdata_delay);
 
                         for (int i = first, j = 0; i < last; i++, j++) {
@@ -211,9 +211,7 @@ public class GraphFragment extends Fragment {
                             data_lum_f[j] = new GraphView.GraphViewData(i, fdata_lum[j]);
                         }
 
-                        // derivative of smoothed luminance
                         for (int i = first + 1, j = 1; i < last; i++, j++) {
-                            //data_lum_d[j - 1] = new GraphView.GraphViewData(i, (fdata_lum[j] - fdata_lum[j - 1]));
                             data_lum_d[j - 1] = new GraphView.GraphViewData(i, (lframes.get(i).luminance - lframes.get(i - 1).luminance));
                         }
                     }
