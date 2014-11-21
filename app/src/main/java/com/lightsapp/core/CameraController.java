@@ -1,15 +1,14 @@
-package com.lightsapp.camera;
+package com.lightsapp.core;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.lightsapp.camera.FrameAnalyzer.*;
+import com.lightsapp.core.lightanalyzer.*;
 import com.lightsapp.lightsapp.MainActivity;
 
 import java.io.IOException;
@@ -64,13 +63,13 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
         switch (algorithm) {
             case 1:
-                mCtx.mFrameA = new ThresholdFrameAnalyzer(mCtx);
+                mCtx.mLightA = new ThresholdLightAnalyzer(mCtx);
                 break;
             case 2:
-                mCtx.mFrameA = new DerivativeFrameAnalyzer(mCtx);
+                mCtx.mLightA = new DerivativeLightAnalyzer(mCtx);
                 break;
             default:
-                mCtx.mFrameA = new BasicFrameAnalyzer(mCtx);
+                mCtx.mLightA = new BasicLightAnalyzer(mCtx);
         }
 
         return mCamera;
@@ -83,7 +82,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (format == ImageFormat.NV21) {
-            mCtx.mFrameA.addFrame(data, width, height);
+            mCtx.mLightA.addFrame(data, width, height);
         }
         else {
             Log.e(TAG, "wrong image format");

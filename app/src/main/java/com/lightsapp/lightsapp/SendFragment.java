@@ -103,6 +103,9 @@ public class SendFragment extends Fragment {
                             mCtx.mPrefs.edit().putBoolean("enable_light",
                                     !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
                             mCheckBoxLight.setChecked(true);
+                            Toast toast = Toast.makeText(mCtx,
+                                    "You have to keep one option enabled. light enabled.",
+                                    Toast.LENGTH_SHORT);
                         }
 
                         mCtx.mPrefs.edit().putBoolean("enable_sound",
@@ -121,6 +124,10 @@ public class SendFragment extends Fragment {
                             mCtx.mPrefs.edit().putBoolean("enable_sound",
                                     !mCtx.mPrefs.getBoolean("enable_sound", true)).commit();
                             mCheckBoxSound.setChecked(true);
+                            Toast toast = Toast.makeText(mCtx,
+                                    "You have to keep one option enabled. enable sound.",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
                         }
 
                         mCtx.mPrefs.edit().putBoolean("enable_light",
@@ -145,16 +152,16 @@ public class SendFragment extends Fragment {
                                 mCtx.mMorse.updateValues(Integer.valueOf(
                                                          mCtx.mPrefs.getString("interval", "500")));
                             }
-                            if (mCtx.mLightController != null) {
-                                mCtx.mLightController.setString(CleanString(mEdit.getText().toString()));
-                                mCtx.mLightController.start();
-                                mCtx.mLightController.activate();
+                            if (mCtx.mOutputController != null) {
+                                mCtx.mOutputController.setString(CleanString(mEdit.getText().toString()));
+                                mCtx.mOutputController.start();
+                                mCtx.mOutputController.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
-                            if (mCtx.mLightController != null) {
-                                mCtx.mLightController.stop();
+                            if (mCtx.mOutputController != null) {
+                                mCtx.mOutputController.stop();
                             }
                             mImageViewLightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);

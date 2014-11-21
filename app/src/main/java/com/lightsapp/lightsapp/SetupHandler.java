@@ -5,8 +5,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.lightsapp.camera.CameraController;
-import com.lightsapp.camera.LightController;
+import com.lightsapp.core.CameraController;
+import com.lightsapp.core.OutputController;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 
@@ -38,9 +38,9 @@ public class SetupHandler extends HandlerThread {
                         if (mContext.mHandlerGraph != null && mContext.mHandlerRecv != null &&
                             mContext.mCamera != null && mContext.mCameraController != null) {
 
-                            mContext.mLightController = new LightController(mContext);
-                            if (mContext.mLightController != null)
-                                mContext.mLightController.start();
+                            mContext.mOutputController = new OutputController(mContext);
+                            if (mContext.mOutputController != null)
+                                mContext.mOutputController.start();
                             else
                                 continue;
 

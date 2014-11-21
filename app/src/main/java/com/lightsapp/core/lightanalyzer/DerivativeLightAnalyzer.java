@@ -1,21 +1,18 @@
-package com.lightsapp.camera.FrameAnalyzer;
+package com.lightsapp.core.lightanalyzer;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.utils.LinearFilter;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.lightsapp.camera.FrameAnalyzer.DerivativeFrameAnalyzer.StatusCode.*;
-import static com.lightsapp.utils.HandlerUtils.*;
+import static com.lightsapp.core.lightanalyzer.DerivativeLightAnalyzer.StatusCode.*;
 
-public class DerivativeFrameAnalyzer extends FrameAnalyzer {
+public class DerivativeLightAnalyzer extends LightAnalyzer {
     enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
     boolean smooth = false;
 
-    public DerivativeFrameAnalyzer(Context context){
+    public DerivativeLightAnalyzer(Context context){
         super(context);
         NAME = "derivative";
     }

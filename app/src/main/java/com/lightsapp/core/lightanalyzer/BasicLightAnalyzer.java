@@ -1,14 +1,14 @@
-package com.lightsapp.camera.FrameAnalyzer;
+package com.lightsapp.core.lightanalyzer;
 
 import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 import static com.lightsapp.utils.HandlerUtils.*;
 
-public class BasicFrameAnalyzer extends FrameAnalyzer {
+public class BasicLightAnalyzer extends LightAnalyzer {
     private int start_frame = 0;
 
-    public BasicFrameAnalyzer(Context context){
+    public BasicLightAnalyzer(Context context){
         super(context);
         NAME = "basic";
     }

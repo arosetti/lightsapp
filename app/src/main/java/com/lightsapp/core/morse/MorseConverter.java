@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lightsapp.morse;
+package com.lightsapp.core.morse;
 
 import android.util.Log;
 

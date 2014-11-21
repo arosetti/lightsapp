@@ -25,10 +25,11 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.lightsapp.camera.CameraController;
-import com.lightsapp.camera.FrameAnalyzer.FrameAnalyzer;
-import com.lightsapp.camera.LightController;
-import com.lightsapp.morse.MorseConverter;
+import com.lightsapp.core.CameraController;
+import com.lightsapp.core.lightanalyzer.LightAnalyzer;
+import com.lightsapp.core.OutputController;
+import com.lightsapp.core.soundanalyzer.SoundAnalyzer;
+import com.lightsapp.core.morse.MorseConverter;
 
 import java.util.Locale;
 
@@ -43,9 +44,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public Camera mCamera;
     public MorseConverter mMorse;
-    public LightController mLightController;
+    public OutputController mOutputController;
     public CameraController mCameraController;
-    public FrameAnalyzer mFrameA;
+    public LightAnalyzer mLightA;
+    public SoundAnalyzer mSoundA;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
@@ -79,9 +81,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onPause() {
         super.onPause();
         Log.v(TAG, "PAUSE");
-        if (mLightController != null)
-            mLightController.stop();
-        mLightController = null;
+        if (mOutputController != null)
+            mOutputController.stop();
+        mOutputController = null;
         if (mCameraController != null)
             mCameraController.stopPreviewAndFreeCamera();
         mCamera = null;
@@ -101,7 +103,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
         Log.v(TAG, "CREATE");
 
-        // prevent screen going off
+        // prevent screen switching off
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         final ActionBar actionBar = getActionBar();
@@ -137,19 +139,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // TODO display only once
         if (!(hasCamera() || hasFrontCamera()) && !hasFlash()) {
             Toast toast = Toast.makeText(this,
-                                         "You can't use this app, you'll need a camera and flash.",
+                                         "You need a camera and flash to send-receive using light.",
                                          Toast.LENGTH_LONG);
             toast.show();
         } else {
             if (!hasFlash()) {
                 Toast toast = Toast.makeText(this,
-                                             "You need a flash to send morse code.",
+                                             "You need a camera flash to send morse code with light.",
                                              Toast.LENGTH_LONG);
                 toast.show();
             }
             if (!(hasCamera() || hasFrontCamera())) {
                 Toast toast = Toast.makeText(this,
-                                             "You need a camera to receive morse code.",
+                                             "You need a camera to receive light emitted morse code.",
                                              Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -168,14 +170,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            if(mLightController != null)
-                mLightController.stop();
+            if(mOutputController != null)
+                mOutputController.stop();
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
-            if(mLightController != null)
-                mLightController.stop();
+            if(mOutputController != null)
+                mOutputController.stop();
             Intent intent = new Intent(this, AboutActivity.class);
             intent.putExtra("info", mCameraController.getInfo());
             startActivity(intent);
@@ -275,7 +277,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
                 light = event.values[0]; // TODO atomic access
-                //Log.v(TAG, "Sensor Light: " + light);
+                //Log.v(TAG, "Sensor LightOutput: " + light);
             }
         }
     };
