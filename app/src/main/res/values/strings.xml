@@ -16,5 +16,7 @@
     <string name="action_about">About</string>
     <string name="sensitivity">Sensitivity</string>
     <string name="lightbulb_desc">lightbulb image</string>
+    <string name="Sound">Sound</string>
+    <string name="Light">Light</string>
 
 </resources>

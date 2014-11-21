@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,10 +31,10 @@ public class SendFragment extends Fragment {
     private ImageView mImageViewLightbulb;
     private Drawable lightbulb_on, lightbulb_off;
 
-    private TextView mTextViewMessage;
-    private TextView mTextViewMorse;
     private EditText mEdit;
     private Button mButtonSend;
+    private TextView mTextViewMessage, mTextViewMorse;
+    private CheckBox mCheckBoxSound, mCheckBoxLight;
 
     public Handler mHandler;
 
@@ -53,6 +54,7 @@ public class SendFragment extends Fragment {
         mTextViewMessage.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms");
         mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -90,6 +92,28 @@ public class SendFragment extends Fragment {
                 mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
             }
         });
+
+        mCheckBoxSound = (CheckBox) v.findViewById(R.id.CheckBoxSound);
+        mCheckBoxSound.setChecked(mCtx.mPrefs.getBoolean("enable_sound", false));
+        mCheckBoxSound.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mCtx.mPrefs.edit().putBoolean("enable_sound",
+                                           !mCtx.mPrefs.getBoolean("enable_sound", false)).commit();
+                    }
+                }
+        );
+
+        mCheckBoxLight = (CheckBox) v.findViewById(R.id.CheckBoxLight);
+        mCheckBoxLight.setChecked(mCtx.mPrefs.getBoolean("enable_light", true));
+        mCheckBoxLight.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mCtx.mPrefs.edit().putBoolean("enable_light",
+                                !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
+                    }
+                }
+        );
 
         mButtonSend = (Button) v.findViewById(R.id.ButtonSend);
         mButtonSend.setOnClickListener(

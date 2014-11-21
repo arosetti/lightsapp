@@ -6,6 +6,9 @@
     <string name="pref_title_enable_sound">Enable sound</string>
     <string name="pref_description_enable_sound">Enable sound output while sending morse code</string>
 
+    <string name="pref_title_enable_light">Enable sound</string>
+    <string name="pref_description_enable_light">Enable sound output while sending morse code</string>
+
     <string name="pref_title_default_text">Default morse text</string>
     <string name="pref_default_default_text"></string>
 
