@@ -98,6 +98,13 @@ public class SendFragment extends Fragment {
         mCheckBoxSound.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        if (!mCtx.mPrefs.getBoolean("enable_light", false) &&
+                             mCtx.mPrefs.getBoolean("enable_sound", false)) {
+                            mCtx.mPrefs.edit().putBoolean("enable_light",
+                                    !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
+                            mCheckBoxLight.setChecked(true);
+                        }
+
                         mCtx.mPrefs.edit().putBoolean("enable_sound",
                                            !mCtx.mPrefs.getBoolean("enable_sound", false)).commit();
                     }
@@ -109,6 +116,13 @@ public class SendFragment extends Fragment {
         mCheckBoxLight.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        if (!mCtx.mPrefs.getBoolean("enable_sound", false) &&
+                                mCtx.mPrefs.getBoolean("enable_light", true)) {
+                            mCtx.mPrefs.edit().putBoolean("enable_sound",
+                                    !mCtx.mPrefs.getBoolean("enable_sound", true)).commit();
+                            mCheckBoxSound.setChecked(true);
+                        }
+
                         mCtx.mPrefs.edit().putBoolean("enable_light",
                                 !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
                     }
