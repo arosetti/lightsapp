@@ -1,73 +1,51 @@
-package com.lightsapp.camera;
+package com.lightsapp.core;
 
 import android.content.Context;
-import android.hardware.Camera;
 import android.util.Log;
 
-import com.lightsapp.utils.Beep;
 import com.lightsapp.utils.MyRunnable;
 import com.lightsapp.lightsapp.MainActivity;
-import com.lightsapp.morse.MorseConverter;
+import com.lightsapp.core.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
 import static com.lightsapp.utils.HandlerUtils.*;
 
-public class LightController extends MyRunnable {
-    private final String TAG = LightController.class.getSimpleName();
+public class OutputController extends MyRunnable {
+    private final String TAG = OutputController.class.getSimpleName();
 
     private MainActivity mCtx;
 
-    private Camera mCamera;
-    private volatile String data;
+    private volatile String data = "";
     private long[] pattern;
     private int progress;
     private boolean enable_sound, enable_light;
 
     private MorseConverter mMorse;
-    private Beep mBeep;
+    private BeepOutput mBeepOutput;
+    private LightOutput mLightOutput;
     private final int beepFreq = 850;
 
-    public LightController(Context context) {
+    public OutputController(Context context) {
         super(false);
 
         mCtx = (MainActivity) context;
 
-        mCamera = mCtx.mCamera;
         mMorse = mCtx.mMorse;
-        mBeep = new Beep();
-        //enable_sound = mCtx.mPrefs.getBoolean("enable_sound", false);
-        data = "";
+        mBeepOutput = new BeepOutput();
+        mLightOutput = new LightOutput(mCtx.mCamera);
     }
 
     private long sound(int t) { // TODO optimize this
         final long timestamp = System.currentTimeMillis();
-        mBeep.genTone(t / 1000f, beepFreq);
-        mBeep.playSound();
+        mBeepOutput.genTone(t / 1000f, beepFreq);
+        mBeepOutput.playSound();
         return (System.currentTimeMillis() - timestamp);
-    }
-
-    private void setLight(boolean b) {
-        Camera.Parameters p;
-
-        try {
-            p = mCamera.getParameters();
-            if (b) {
-                p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            }
-            else {
-                p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            }
-            mCamera.setParameters(p);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "error setting led flash " + (b ? "on" : "off"));
-        }
     }
 
     private void flash(int t) {
         long ret = 0;
 
         if (enable_light)
-            setLight(true);
+            mLightOutput.setLight(true);
 
         if (enable_sound)
             ret = sound(t);
@@ -78,7 +56,7 @@ public class LightController extends MyRunnable {
             Log.v(TAG, "please, disable enable_sound output...");
 
         if (enable_light)
-            setLight(false);
+            mLightOutput.setLight(false);
     }
 
     public void setString(String str) {
@@ -87,13 +65,9 @@ public class LightController extends MyRunnable {
             pattern = mMorse.pattern(data);
     }
 
-    public void setCamera(Camera camera) {
-        mCamera = camera;
-    }
-
     @Override
     public void ondie() {
-        setLight(false);
+        mLightOutput.setLight(false);
         signalStr(mCtx.mHandlerSend, "light", "off");
         signalInt(mCtx.mHandlerSend, "progress", -1);
     }

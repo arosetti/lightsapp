@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,10 +84,10 @@ public class RecvFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                mCtx.mFrameA.setSensitivity(progress);
+                mCtx.mLightA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
-                if (mCtx.mFrameA.getAnalyzer()) {
+                if (mCtx.mLightA.getAnalyzer()) {
                     setEmptyText();
                 }
             }
@@ -101,8 +100,8 @@ public class RecvFragment extends Fragment {
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mCtx.mFrameA.reset();
-                        if (!mCtx.mFrameA.getAnalyzer())
+                        mCtx.mLightA.reset();
+                        if (!mCtx.mLightA.getAnalyzer())
                             setDefaultText();
                         else {
                             setEmptyText();
@@ -133,15 +132,15 @@ public class RecvFragment extends Fragment {
 
                         if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_start) ) {
-                            mCtx.mFrameA.reset();
-                            mCtx.mFrameA.setAnalyzer(true);
+                            mCtx.mLightA.reset();
+                            mCtx.mLightA.setAnalyzer(true);
                             mButtonRecv.setText(R.string.btn_stop);
                             setInitText();
                         }
                         else if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_stop) ) {
-                            mCtx.mFrameA.reset();
-                            mCtx.mFrameA.setAnalyzer(false);
+                            mCtx.mLightA.reset();
+                            mCtx.mLightA.setAnalyzer(false);
                             mButtonRecv.setText(R.string.btn_start);
 
                             if (((String) mTextViewData.getText()).equals(analyzerInfoText())) {
@@ -167,12 +166,12 @@ public class RecvFragment extends Fragment {
 
                 if (msg.getData().containsKey("setup_done")) {
                     int progress = mSeekBarSensitivity.getProgress();
-                    mCtx.mFrameA.setSensitivity(progress);
+                    mCtx.mLightA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                                  ": " + progress);
                     // now we can start  the analyzer
-                    mCtx.mFrameA.start();
-                    mCtx.mFrameA.activate();
+                    mCtx.mLightA.start();
+                    mCtx.mLightA.activate();
                 }
             }
         };
@@ -189,7 +188,7 @@ public class RecvFragment extends Fragment {
     }
 
     private String analyzerInfoText() {
-        return "using " + mCtx.mFrameA.getName() + " analyzer"; // TODO use string with format
+        return "using " + mCtx.mLightA.getName() + " analyzer"; // TODO use string with format
     }
 
     public void setInitText() {

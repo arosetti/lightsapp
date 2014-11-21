@@ -1,12 +1,12 @@
-package com.lightsapp.utils;
+package com.lightsapp.core;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.Log;
 
-public class Beep {
-    private final String TAG = Beep.class.getSimpleName();
+public class BeepOutput {
+    private final String TAG = BeepOutput.class.getSimpleName();
     AudioTrack audioTrack = null;
     private byte sound_data[];
     private int sample_rate = 8000;

@@ -1,4 +1,4 @@
-package com.lightsapp.camera.FrameAnalyzer;
+package com.lightsapp.core.lightanalyzer;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,12 +6,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.lightsapp.utils.HandlerUtils.*;
 
+public class ThresholdLightAnalyzer extends LightAnalyzer {
 
-public class ThresholdFrameAnalyzer extends FrameAnalyzer {
-
-    public ThresholdFrameAnalyzer(Context context){
+    public ThresholdLightAnalyzer(Context context){
         super(context);
         NAME = "threshold";
     }

@@ -1,11 +1,11 @@
-package com.lightsapp.camera.FrameAnalyzer;
+package com.lightsapp.core.lightanalyzer;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.lightsapp.utils.MyRunnable;
 import com.lightsapp.lightsapp.MainActivity;
-import com.lightsapp.morse.MorseConverter;
+import com.lightsapp.core.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
 import static com.lightsapp.utils.HandlerUtils.*;
 
@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class FrameAnalyzer extends MyRunnable {
-    protected final String TAG = FrameAnalyzer.class.getSimpleName();
+public class LightAnalyzer extends MyRunnable {
+    protected final String TAG = LightAnalyzer.class.getSimpleName();
     protected String NAME = "???";
 
     protected MainActivity mCtx;
@@ -41,7 +41,7 @@ public class FrameAnalyzer extends MyRunnable {
 
     protected AtomicReference<Boolean> enable_analyze;
 
-    protected FrameAnalyzer(Context context) {
+    protected LightAnalyzer(Context context) {
         super(true);
 
         mCtx = (MainActivity) context;

@@ -18,7 +18,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.lightsapp.camera.FrameAnalyzer.Frame;
+import com.lightsapp.core.lightanalyzer.Frame;
 import com.lightsapp.utils.LinearFilter;
 
 import java.util.List;
@@ -152,7 +152,7 @@ public class GraphFragment extends Fragment {
                     List<Frame> lframes;
 
                     try {
-                        lframes = mCtx.mFrameA.getFrames();
+                        lframes = mCtx.mLightA.getFrames();
                     } catch (Exception e) {
                         return;
                     }

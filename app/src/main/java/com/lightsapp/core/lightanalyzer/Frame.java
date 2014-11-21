@@ -1,4 +1,4 @@
-package com.lightsapp.camera.FrameAnalyzer;
+package com.lightsapp.core.lightanalyzer;
 
 import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
@@ -6,6 +6,7 @@ import android.util.Log;
 
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();
+
     public long delta, timestamp;
     public long luminance = -1;
     private final int width, height, size;
