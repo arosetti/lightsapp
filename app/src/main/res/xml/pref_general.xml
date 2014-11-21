@@ -6,6 +6,12 @@
         android:summary="@string/pref_description_enable_sound"
         android:defaultValue="false"/>
 
+    <CheckBoxPreference
+        android:key="enable_light"
+        android:title="@string/pref_title_enable_light"
+        android:summary="@string/pref_description_enable_light"
+        android:defaultValue="true"/>
+
     <EditTextPreference
         android:key="default_text"
         android:title="@string/pref_title_default_text"
