@@ -20,7 +20,7 @@ public class LightController extends MyRunnable {
     private volatile String data;
     private long[] pattern;
     private int progress;
-    private boolean sound;
+    private boolean enable_sound, enable_light;
 
     private MorseConverter mMorse;
     private Beep mBeep;
@@ -34,7 +34,7 @@ public class LightController extends MyRunnable {
         mCamera = mCtx.mCamera;
         mMorse = mCtx.mMorse;
         mBeep = new Beep();
-        sound = mCtx.mPrefs.getBoolean("enable_sound", false);
+        //enable_sound = mCtx.mPrefs.getBoolean("enable_sound", false);
         data = "";
     }
 
@@ -66,17 +66,19 @@ public class LightController extends MyRunnable {
     private void flash(int t) {
         long ret = 0;
 
-        setLight(true);
+        if (enable_light)
+            setLight(true);
 
-        if (sound)
+        if (enable_sound)
             ret = sound(t);
 
         if ((t - ret) > 0)
             ForcedSleep((int) (t - ret));
         else
-            Log.v(TAG, "please, disable sound output...");
+            Log.v(TAG, "please, disable enable_sound output...");
 
-        setLight(false);
+        if (enable_light)
+            setLight(false);
     }
 
     public void setString(String str) {
@@ -99,18 +101,20 @@ public class LightController extends MyRunnable {
     @Override
     public void loop() {
         final long DOT = mMorse.get("DOT");
-        final long DASH = mMorse.get("DASH");
-        final long GAP = mMorse.get("GAP");
         final long LETTER_GAP = mMorse.get("LETTER_GAP");
         final long WORD_GAP = mMorse.get("WORD_GAP");
         pattern = mMorse.pattern(data);
         progress = 0;
 
         for (int i = 0; i < pattern.length; i++) {
+            enable_sound = mCtx.mPrefs.getBoolean("enable_sound", false);
+            enable_light = mCtx.mPrefs.getBoolean("enable_light", false);
+
             if (!getStatus()) {
                 Log.v(TAG, "STOPPING LED OUTPUT");
                 break;
             }
+
             if (i % 2 != 0) {
                 signalStr(mCtx.mHandlerSend, "light", "on");
                 if (Math.abs(pattern[i]) > DOT)
@@ -121,7 +125,8 @@ public class LightController extends MyRunnable {
                 signalInt(mCtx.mHandlerSend, "progress", progress);
                 flash((int) Math.abs(pattern[i]));
                 signalStr(mCtx.mHandlerSend, "light", "off");
-            } else {
+            }
+            else {
                 signalStr(mCtx.mHandlerSend, "message", "...\n" + pattern[i] + "ms");
                 if (Math.abs(pattern[i]) == LETTER_GAP)
                     progress++;
