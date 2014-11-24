@@ -2,6 +2,7 @@ package com.lightsapp.core;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.lightsapp.utils.MyRunnable;
 import com.lightsapp.lightsapp.MainActivity;
@@ -33,12 +34,21 @@ public class OutputController extends MyRunnable {
         mBeepOutput = new BeepOutput();
         mLightOutput = new LightOutput(mCtx.mCamera);
 
+        // TODO better beep freq handling.
         try {
             beepFreq = Integer.valueOf(mCtx.mPrefs.getString("beep_freq", "850"));
         }
         catch (Exception e)
         {
-            Log.e(TAG,"BOOM!");
+            beepFreq = 850;
+        }
+
+        if(beepFreq > 12000 || beepFreq < 100) {
+            Toast t = Toast.makeText(mCtx,
+                    "Invalid beep frequency, defaulting to 850Hz, valid range [100,12KHz]",
+                    Toast.LENGTH_SHORT);
+            t.show();
+            beepFreq = 850;
         }
     }
 

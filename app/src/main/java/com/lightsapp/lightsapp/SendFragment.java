@@ -106,6 +106,7 @@ public class SendFragment extends Fragment {
                             Toast toast = Toast.makeText(mCtx,
                                     "You have to keep one option enabled. light enabled.",
                                     Toast.LENGTH_SHORT);
+                            toast.show();
                         }
 
                         mCtx.mPrefs.edit().putBoolean("enable_sound",
