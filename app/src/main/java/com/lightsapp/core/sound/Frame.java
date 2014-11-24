@@ -1,4 +1,4 @@
-package com.lightsapp.core.soundanalyzer;
+package com.lightsapp.core.sound;
 
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();

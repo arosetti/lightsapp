@@ -1,4 +1,4 @@
-package com.lightsapp.core.lightanalyzer;
+package com.lightsapp.core.light;
 
 import android.content.Context;
 import android.util.Log;
@@ -84,7 +84,7 @@ public class LightAnalyzer extends MyRunnable {
             Thread.currentThread().interrupt();
         }
         catch (Exception e) {
-            Log.e(TAG, "error analyzing frames: " + e.getMessage());
+            Log.e(TAG, "error analyzing image frames: " + e.getMessage());
         }
         finally {
             signalGraph();
@@ -137,14 +137,14 @@ public class LightAnalyzer extends MyRunnable {
         lock_frames.lock();
         try {
             Log.v(TAG, "Swapping " + lframes_swap.size() +
-                    " frames to lframes which is big " + lframes.size() + " frames.");
+                    " image frames to lframes which is big " + lframes.size() + " frames.");
             for (int i = 0; i < lframes_swap.size(); i++) {
                 lframes.add(lframes_swap.get(i).analyze());
 
                 //error analyzing data, maybe error allocating memory for the frame.
                 // we use the previous frame's luminance.
                 if (lframes_swap.get(i).luminance < 0) {
-                    Log.v(TAG, "couldn't allocate memory for frame, using prev value if available");
+                    Log.v(TAG, "couldn't allocate memory for image frame, using prev value if available");
                     if (i > 0)
                         lframes_swap.get(i).setLuminance(lframes_swap.get(i - 1).luminance);
                     else
@@ -241,13 +241,13 @@ public class LightAnalyzer extends MyRunnable {
         lock_frames.lock();
         try {
             if(lframes.size() > 0) {
-                signalStr(mCtx.mHandlerGraph ,"info_message", "frames: " + lframes.size() +
+                signalStr(mCtx.mHandlerInfo ,"info_message", "frames: " + lframes.size() +
                         "\ncur, min, max, avg" +
                         "\ndelay: (" + lframes.get(last_frame_analyzed).delta + ", " +
                         d_min + ", " + d_max + ", " + d_avg + ") ms " +
                         "\nlum: (" + lframes.get(last_frame_analyzed).luminance +
                         ", " + l_min + ", " + l_max + ", " + l_avg + ")");
-                signalStr(mCtx.mHandlerGraph, "update", "");
+                signalStr(mCtx.mHandlerInfo, "update", "");
             }
         }
         finally {

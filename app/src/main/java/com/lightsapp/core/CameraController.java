@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.lightsapp.core.lightanalyzer.*;
+import com.lightsapp.core.light.*;
 import com.lightsapp.lightsapp.MainActivity;
 
 import java.io.IOException;
