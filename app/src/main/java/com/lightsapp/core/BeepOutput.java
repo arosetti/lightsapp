@@ -59,7 +59,8 @@ public class BeepOutput {
                     AudioTrack.MODE_STATIC);
             audioTrack.write(sound_data, 0, sound_data.length);
             audioTrack.play();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.v(TAG, "Error: " + e);
         }
 
