@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
+import com.lightsapp.core.sound.SoundAnalyzer;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 
@@ -21,7 +22,7 @@ public class SetupHandler extends HandlerThread {
         mHandlerSetup = new Handler(getLooper());
     }
 
-    void setupHandler(Context context) {
+    void setupHandler(final Context context) {
         mContext = (MainActivity) context;
         mHandlerSetup.post(new Runnable() {
             @Override
@@ -35,7 +36,7 @@ public class SetupHandler extends HandlerThread {
                             mContext.mCamera = mContext.mCameraController.setup();
                         }
 
-                        if (mContext.mHandlerGraph != null && mContext.mHandlerRecv != null &&
+                        if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
                             mContext.mCamera != null && mContext.mCameraController != null) {
 
                             mContext.mOutputController = new OutputController(mContext);
@@ -44,7 +45,13 @@ public class SetupHandler extends HandlerThread {
                             else
                                 continue;
 
-                            signalStr(mContext.mHandlerGraph, "setup_done", "");
+                            mContext.mSoundA = new SoundAnalyzer(context);
+                            if (mContext.mSoundA != null)
+                                mContext.mSoundA.start();
+                            else
+                                continue;
+
+                            signalStr(mContext.mHandlerInfo, "setup_done", "");
                             signalStr(mContext.mHandlerRecv, "setup_done", "");
                             done = true;
                         }

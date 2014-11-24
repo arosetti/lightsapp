@@ -18,12 +18,12 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.lightsapp.core.lightanalyzer.Frame;
+import com.lightsapp.core.light.Frame;
 import com.lightsapp.utils.LinearFilter;
 
 import java.util.List;
 
-public class GraphFragment extends Fragment {
+public class InfoFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
     private static final String TAG = SendFragment.class.getSimpleName();
 
@@ -41,22 +41,22 @@ public class GraphFragment extends Fragment {
     private GraphView graphView_delay, graphView_lum, graphView_dlum;
     private GraphViewSeries series;
 
-    public static GraphFragment newInstance(int sectionNumber) {
-        GraphFragment fragment = new GraphFragment();
+    public static InfoFragment newInstance(int sectionNumber) {
+        InfoFragment fragment = new InfoFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public GraphFragment() {
+    public InfoFragment() {
         mCtx = (MainActivity) getActivity();
     }
 
     /*
     public void onResume() {
         super.onResume();
-        Log.v(TAG, "RESUME_GRAPH");
+        Log.v(TAG, "RESUME_INFO");
         if (mCtx.mCameraController != null) {
             mPreview.removeAllViews();
             mPreview.addView(mCtx.mCameraController);
@@ -66,7 +66,7 @@ public class GraphFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.v(TAG, "PAUSE_GRAPH");
+        Log.v(TAG, "PAUSE_INFO");
         mPreview.removeAllViews();
     }
     */
@@ -74,7 +74,7 @@ public class GraphFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_graph, container, false);
+        View v = inflater.inflate(R.layout.fragment_info, container, false);
 
         mCtx = (MainActivity) getActivity();
 
@@ -258,7 +258,7 @@ public class GraphFragment extends Fragment {
             }
         };
 
-        mCtx.mHandlerGraph = mHandler;
+        mCtx.mHandlerInfo = mHandler;
 
         return v;
     }

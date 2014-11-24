@@ -26,9 +26,9 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.lightsapp.core.CameraController;
-import com.lightsapp.core.lightanalyzer.LightAnalyzer;
+import com.lightsapp.core.light.LightAnalyzer;
 import com.lightsapp.core.OutputController;
-import com.lightsapp.core.soundanalyzer.SoundAnalyzer;
+import com.lightsapp.core.sound.SoundAnalyzer;
 import com.lightsapp.core.morse.MorseConverter;
 
 import java.util.Locale;
@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
-    public Handler mHandlerGraph = null;
+    public Handler mHandlerInfo = null;
 
     public float light = 0;
 
@@ -218,7 +218,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return RecvFragment.newInstance(position + 1);
                 case 2:
-                    return GraphFragment.newInstance(position + 1);
+                    return InfoFragment.newInstance(position + 1);
             }
             return null;
         }
@@ -237,7 +237,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return getString(R.string.title_section_recv).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section_graph).toUpperCase();
+                    return getString(R.string.title_section_info).toUpperCase();
             }
             return null;
         }

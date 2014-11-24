@@ -1,4 +1,4 @@
-package com.lightsapp.core.lightanalyzer;
+package com.lightsapp.core.light;
 
 import android.content.Context;
 import android.util.Log;
