@@ -9,7 +9,7 @@
     <string name="pref_default_default_text"></string>
 
     <string name="pref_title_beep_freq">Beep Frequency</string>
-    <integer name="pref_default_beep_freq">850</integer>
+    <string name="pref_default_beep_freq">850</string>
 
     <string name="pref_title_enable_sound">Enable sound</string>
     <string name="pref_description_enable_sound">Enable sound output to send morse code</string>

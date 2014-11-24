@@ -34,7 +34,7 @@
         <EditTextPreference
             android:key="beep_freq"
             android:title="@string/pref_title_beep_freq"
-            android:defaultValue="@integer/pref_default_beep_freq"
+            android:defaultValue="@string/pref_default_beep_freq"
             android:selectAllOnFocus="true"
             android:inputType="numberDecimal"
             android:capitalize="none"
@@ -50,6 +50,7 @@
             android:title="@string/pref_title_enable_light"
             android:summary="@string/pref_description_enable_light"
             android:defaultValue="true"/>
+
         <ListPreference
             android:key="algorithm"
             android:title="@string/pref_title_light_algorithm"
