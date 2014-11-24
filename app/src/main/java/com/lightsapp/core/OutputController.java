@@ -22,7 +22,7 @@ public class OutputController extends MyRunnable {
     private MorseConverter mMorse;
     private BeepOutput mBeepOutput;
     private LightOutput mLightOutput;
-    private final int beepFreq = 850;
+    private int beepFreq;
 
     public OutputController(Context context) {
         super(false);
@@ -32,6 +32,14 @@ public class OutputController extends MyRunnable {
         mMorse = mCtx.mMorse;
         mBeepOutput = new BeepOutput();
         mLightOutput = new LightOutput(mCtx.mCamera);
+
+        try {
+            beepFreq = Integer.valueOf(mCtx.mPrefs.getString("beep_freq", "850"));
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG,"BOOM!");
+        }
     }
 
     private long sound(int t) { // TODO optimize this

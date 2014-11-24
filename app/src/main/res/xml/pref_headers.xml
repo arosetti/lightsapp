@@ -6,4 +6,12 @@
         android:fragment="com.lightsapp.lightsapp.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general"/>
 
+    <header
+        android:fragment="com.lightsapp.lightsapp.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_audio"/>
+
+    <header
+        android:fragment="com.lightsapp.lightsapp.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_video"/>
+
 </preference-headers>

@@ -2,9 +2,14 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
+    <string name="pref_header_audio">Audio</string>
+    <string name="pref_header_video">Video</string>
 
     <string name="pref_title_default_text">Default morse text</string>
     <string name="pref_default_default_text"></string>
+
+    <string name="pref_title_beep_freq">Beep Frequency</string>
+    <integer name="pref_default_beep_freq">850</integer>
 
     <string name="pref_title_enable_sound">Enable sound</string>
     <string name="pref_description_enable_sound">Enable sound output to send morse code</string>
@@ -51,13 +56,13 @@
         <item>-1</item>
     </string-array>
 
-    <string name="pref_title_algorithm">Frame analyzer algorithm</string>
-    <string-array name="pref_algorithm_titles">
+    <string name="pref_title_light_algorithm">Frame analyzer algorithm</string>
+    <string-array name="pref_light_algorithm_titles">
         <item>basic (deprecated)</item>
         <item>threshold</item>
         <item>derivative (default)</item>
     </string-array>
-    <string-array name="pref_algorithm_values">
+    <string-array name="pref_light_algorithm_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
