@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
+import com.lightsapp.core.SoundController;
 import com.lightsapp.core.sound.SoundAnalyzer;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
@@ -45,6 +46,8 @@ public class SetupHandler extends HandlerThread {
                             else
                                 continue;
 
+                            mContext.mSoundController = new SoundController(mContext);
+                            mContext.mSoundController.setup();
                             mContext.mSoundA = new SoundAnalyzer(context);
                             if (mContext.mSoundA != null)
                                 mContext.mSoundA.start();

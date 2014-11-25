@@ -26,6 +26,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.lightsapp.core.CameraController;
+import com.lightsapp.core.SoundController;
 import com.lightsapp.core.light.LightAnalyzer;
 import com.lightsapp.core.OutputController;
 import com.lightsapp.core.sound.SoundAnalyzer;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public MorseConverter mMorse;
     public OutputController mOutputController;
     public CameraController mCameraController;
+    public SoundController mSoundController;
     public LightAnalyzer mLightA;
     public SoundAnalyzer mSoundA;
 
