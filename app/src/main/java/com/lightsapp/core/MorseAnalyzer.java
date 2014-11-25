@@ -87,6 +87,7 @@ public class MorseAnalyzer {
         if (ldata.size() == 0)
             return;
 
+        auto_interval = mCtx.mPrefs.getBoolean("auto_interval", false);
         if (auto_interval) {
             long avg_gap = getAvgGap(ldata);
             long s = getClosestMorseInterval(avg_gap);
