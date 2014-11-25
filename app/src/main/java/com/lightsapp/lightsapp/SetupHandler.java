@@ -49,8 +49,10 @@ public class SetupHandler extends HandlerThread {
                             mContext.mSoundController = new SoundController(mContext);
                             mContext.mSoundController.setup();
                             mContext.mSoundA = new SoundAnalyzer(context);
-                            if (mContext.mSoundA != null)
+                            if (mContext.mSoundA != null) {
                                 mContext.mSoundA.start();
+                                mContext.mSoundA.activate();
+                            }
                             else
                                 continue;
 
