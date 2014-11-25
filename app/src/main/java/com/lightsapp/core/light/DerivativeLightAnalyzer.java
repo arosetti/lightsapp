@@ -11,6 +11,8 @@ import static com.lightsapp.core.light.DerivativeLightAnalyzer.StatusCode.*;
 public class DerivativeLightAnalyzer extends LightAnalyzer {
     enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
     boolean smooth = false;
+    float min_fraction = 0.6f;
+    long  min_time = 100;
 
     public DerivativeLightAnalyzer(Context context){
         super(context);
@@ -98,7 +100,8 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
                     diff = tstop - tstart;
 
                     Log.w(TAG, "data diff: " + diff);
-                    if (diff > (long) (0.6 * (float) speed_base)) {
+                    if (mMorseAnalyzer.getAutoInterval() ? (diff > (min_time)):
+                        (diff > (long) (min_fraction * (float) mMorseAnalyzer.getSpeedBase())) ) {
                         ldata.add(new Long(diff));
                         statcode = SEARCH_HIGH;
                         Log.w(TAG, "Searching high front for the gap end");
@@ -113,7 +116,8 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
                     diff = tstart - tstop;
 
                     Log.w(TAG, "gap diff: " + diff);
-                    if (diff > (long) (0.6 * (float) speed_base)) {
+                    if (mMorseAnalyzer.getAutoInterval() ? (diff > (min_time)):
+                        (diff > (long) (min_fraction * (float) mMorseAnalyzer.getSpeedBase())) ) {
                         ldata.add(new Long(-diff));
                         statcode = SEARCH_LOW;
                         Log.w(TAG, "Searching low front for the data end");
@@ -127,6 +131,6 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
         }
 
         if (ldata.size() > 0)
-            endAnalyze(ldata);
+            mMorseAnalyzer.analyze(ldata);
     }
 }

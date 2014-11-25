@@ -57,6 +57,6 @@ public class ThresholdLightAnalyzer extends LightAnalyzer {
             }
         }
 
-        endAnalyze(ldata);
+        mMorseAnalyzer.analyze(ldata);
     }
 }

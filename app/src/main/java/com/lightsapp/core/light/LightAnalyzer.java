@@ -3,17 +3,17 @@ package com.lightsapp.core.light;
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.utils.MyRunnable;
+import com.lightsapp.core.MorseAnalyzer;
 import com.lightsapp.lightsapp.MainActivity;
-import com.lightsapp.core.morse.MorseConverter;
-import static com.lightsapp.utils.Utils.*;
-import static com.lightsapp.utils.HandlerUtils.*;
+import com.lightsapp.utils.MyRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.lightsapp.utils.HandlerUtils.signalStr;
 
 public class LightAnalyzer extends MyRunnable {
     protected final String TAG = LightAnalyzer.class.getSimpleName();
@@ -27,19 +27,17 @@ public class LightAnalyzer extends MyRunnable {
     protected final Lock lock_frames_tmp;
     protected final Lock lock_frames;
 
+    protected AtomicReference<Boolean> enable_analyze;
     protected final int SLEEP_TIME = 100;
 
     protected int last_frame_analyzed = 0,
                   sensitivity = -1;
 
-    protected final MorseConverter mMorse;
-    protected long speed_base;
-
     private long timestamp_last;
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
 
-    protected AtomicReference<Boolean> enable_analyze;
+    protected MorseAnalyzer mMorseAnalyzer;
 
     protected LightAnalyzer(Context context) {
         super(true);
@@ -52,10 +50,9 @@ public class LightAnalyzer extends MyRunnable {
         lframes = new ArrayList<Frame>();
         lframes_tmp = new ArrayList<Frame>();
 
-        mMorse = new MorseConverter(Integer.parseInt(mCtx.mPrefs.getString("interval", "500")));
-        speed_base = mMorse.get("SPEED_BASE");
-
         enable_analyze = new AtomicReference<Boolean>(false);
+
+        mMorseAnalyzer = new MorseAnalyzer(context);
     }
 
     public final String getName() {
@@ -65,6 +62,7 @@ public class LightAnalyzer extends MyRunnable {
     public void setAnalyzer(boolean val) {
         enable_analyze.getAndSet(val);
     }
+
 
     public boolean getAnalyzer() {
         return enable_analyze.get();
@@ -195,41 +193,6 @@ public class LightAnalyzer extends MyRunnable {
     // to be overridden
     protected void analyze() {
 
-    }
-
-    // approximate to morse values and generate long[]
-    protected final void endAnalyze(List<Long> ldata) {
-        long dbase, dlong, dvlong, sign, closest;
-
-        if (ldata.size() == 0)
-            return;
-
-        for (int i = 0; i < ldata.size(); i++) {
-            dbase = Math.abs(Math.abs(ldata.get(i)) - speed_base);
-            dlong = Math.abs(Math.abs(ldata.get(i)) - 3 * speed_base);
-            dvlong = Math.abs(Math.abs(ldata.get(i)) - 7 * speed_base);
-
-            // approximate to the closest value
-            closest = Math.min(Math.min(dbase, dlong), dvlong);
-            sign = (ldata.get(i) > 0)? 1:-1;
-
-            if (closest == dbase) {
-                ldata.set(i, sign * speed_base);
-            } else if (closest == dlong) {
-                ldata.set(i, 3 * sign * speed_base);
-            } else if (closest == dvlong) {
-                ldata.set(i, 7 * sign * speed_base);
-            }
-        }
-
-        signalData(ldata);
-    }
-
-    protected final void signalData(List<Long> ldata) {
-        String str = mMorse.getText(ListToPrimitiveArray(ldata));
-        signalStr(mCtx.mHandlerRecv, "data_message_text", str);
-        signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) +
-                                                           "\n" + ldata.toString());
     }
 
     private void signalReset() {

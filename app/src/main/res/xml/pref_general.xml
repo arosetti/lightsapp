@@ -20,6 +20,13 @@
             android:defaultValue="500"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"/>
+
+        <CheckBoxPreference
+            android:key="auto_interval"
+            android:title="@string/pref_title_auto_interval"
+            android:summary="@string/pref_description_auto_interval"
+            android:defaultValue="false"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.SoundController;
 import com.lightsapp.core.light.LightAnalyzer;
@@ -50,6 +51,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public SoundController mSoundController;
     public LightAnalyzer mLightA;
     public SoundAnalyzer mSoundA;
+
+    public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
