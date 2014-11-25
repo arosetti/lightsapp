@@ -17,6 +17,9 @@
     <string name="pref_title_enable_light">Enable light</string>
     <string name="pref_description_enable_light">Enable light output to send morse code</string>
 
+    <string name="pref_title_auto_interval">Auto Interval</string>
+    <string name="pref_description_auto_interval">Enable automatic interval selection in receive mode</string>
+
     <string name="pref_title_interval">Base morse interval</string>
     <string-array name="pref_interval_titles">
         <item>3.00s</item>

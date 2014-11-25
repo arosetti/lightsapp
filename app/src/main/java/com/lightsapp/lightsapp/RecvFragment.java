@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ public class RecvFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_recv, container, false);
+        final View v = inflater.inflate(R.layout.fragment_recv, container, false);
 
         mCtx = (MainActivity) getActivity();
 
@@ -172,6 +173,11 @@ public class RecvFragment extends Fragment {
                     // now we can start  the analyzer
                     mCtx.mLightA.start();
                     mCtx.mLightA.activate();
+                }
+
+                if (msg.getData().containsKey("graph_setup_done")) {
+                    LinearLayout layout = (LinearLayout) v.findViewById(R.id.linearLayoutGraph);
+                    layout.addView(mCtx.graphView_lum2);
                 }
             }
         };

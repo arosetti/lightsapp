@@ -56,12 +56,12 @@ public class BasicLightAnalyzer extends LightAnalyzer {
                 dsum += lframes.get(i).delta;
                 long sign = ((n % 2) == 0) ? 1:-1;
 
-                if (dsum > 8 * speed_base) {
+                if (dsum > 8 * mMorseAnalyzer.getSpeedBase()) {
                     reset();
                     return;
                 }
 
-                if (dsum > (speed_base / 3)) {
+                if (dsum > (mMorseAnalyzer.getSpeedBase() / 3)) {
                     ldata.add(new Long(sign * dsum));
                     n++;
                 }
@@ -69,6 +69,6 @@ public class BasicLightAnalyzer extends LightAnalyzer {
             }
         }
 
-        endAnalyze(ldata);
+        mMorseAnalyzer.analyze(ldata);
     }
 }

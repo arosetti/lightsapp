@@ -47,9 +47,9 @@
         android:paddingTop="5dp"
         android:textAlignment="textEnd"
         android:layout_alignParentTop="false"
-        android:layout_above="@+id/LayoutCtl"
+        android:layout_below="@+id/scrollViewText"
         android:layout_alignWithParentIfMissing="false"
-        android:layout_below="@+id/scrollViewText">
+        android:layout_above="@+id/linearLayoutGraph">
 
         <TextView
             android:id="@+id/TextViewMorse"
@@ -61,6 +61,15 @@
             android:text="@string/idle"
             android:textSize="15sp"/>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutGraph"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:layout_alignParentTop="false"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_above="@+id/LayoutCtl"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -116,7 +125,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="light"
+                android:text="Light"
                 android:id="@+id/radioButtonLight"
                 android:enabled="true"
                 android:focusable="true"
@@ -127,7 +136,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="sound"
+                android:text="Sound"
                 android:id="@+id/radioButtonSound"
                 android:enabled="true"
                 android:focusable="true"

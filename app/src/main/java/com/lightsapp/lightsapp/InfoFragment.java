@@ -23,6 +23,8 @@ import com.lightsapp.utils.LinearFilter;
 
 import java.util.List;
 
+import static com.lightsapp.utils.HandlerUtils.signalStr;
+
 public class InfoFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
     private static final String TAG = SendFragment.class.getSimpleName();
@@ -38,7 +40,6 @@ public class InfoFragment extends Fragment {
 
     FrameLayout mPreview;
     private TextView mTextViewMessageStatus;
-    private GraphView graphView_delay, graphView_lum, graphView_dlum;
     private GraphViewSeries series;
 
     public static InfoFragment newInstance(int sectionNumber) {
@@ -84,50 +85,60 @@ public class InfoFragment extends Fragment {
         mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
         mTextViewMessageStatus.setText("idle");
 
-        graphView_delay = new LineGraphView(mCtx, "Delay");
+        mCtx.graphView_delay = new LineGraphView(mCtx, "Delay");
 
-        graphView_delay.setViewPort(2, GRAPH_SIZE);
-        graphView_delay.setScrollable(true);
-        graphView_delay.setScalable(false);
-        /*graphView_delay.setShowLegend(true);
-        graphView_delay.setLegendAlign(GraphView.LegendAlign.BOTTOM);
-        graphView_delay.setLegendWidth(200);*/
-        graphView_delay.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
-        graphView_delay.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
-        graphView_delay.getGraphViewStyle().setTextSize(10);
-        graphView_delay.getGraphViewStyle().setNumHorizontalLabels(0);
+        mCtx.graphView_delay.setViewPort(2, GRAPH_SIZE);
+        mCtx.graphView_delay.setScrollable(true);
+        mCtx.graphView_delay.setScalable(false);
+        /*mCtx.graphView_delay.setShowLegend(true);
+        mCtx.graphView_delay.setLegendAlign(GraphView.LegendAlign.BOTTOM);
+        mCtx.graphView_delay.setLegendWidth(200);*/
+        mCtx.graphView_delay.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
+        mCtx.graphView_delay.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
+        mCtx.graphView_delay.getGraphViewStyle().setTextSize(10);
+        mCtx.graphView_delay.getGraphViewStyle().setNumHorizontalLabels(0);
 
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph3);
-        layout.addView(graphView_delay);
+        layout.addView(mCtx.graphView_delay);
 
-        graphView_lum = new LineGraphView(mCtx, "Luminance");
+        mCtx.graphView_lum = new LineGraphView(mCtx, "Luminance");
 
-        graphView_lum.setViewPort(2, GRAPH_SIZE);
-        graphView_lum.setScrollable(true);
-        graphView_lum.setScalable(false);
-        graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
-        graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
-        graphView_lum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
-        graphView_lum.getGraphViewStyle().setTextSize(10);
-        graphView_lum.getGraphViewStyle().setNumHorizontalLabels(0);
+        mCtx.graphView_lum.setViewPort(2, GRAPH_SIZE);
+        mCtx.graphView_lum.setScrollable(true);
+        mCtx.graphView_lum.setScalable(false);
+        mCtx.graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
+        mCtx.graphView_lum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
+        mCtx.graphView_lum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
+        mCtx.graphView_lum.getGraphViewStyle().setTextSize(10);
+        mCtx.graphView_lum.getGraphViewStyle().setNumHorizontalLabels(0);
 
         layout = (LinearLayout) v.findViewById(R.id.graph1);
-        layout.addView(graphView_lum);
+        layout.addView(mCtx.graphView_lum);
 
+        mCtx.graphView_lum2 = new LineGraphView(mCtx, "Luminance");
 
-        graphView_dlum = new LineGraphView(mCtx, "Luminance first derivative");
+        mCtx.graphView_lum2.setViewPort(2, GRAPH_SIZE);
+        mCtx.graphView_lum2.setScrollable(true);
+        mCtx.graphView_lum2.setScalable(false);
+        mCtx.graphView_lum2.setManualYAxisBounds(MAX_LUM, 0);
+        mCtx.graphView_lum2.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
+        mCtx.graphView_lum2.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
+        mCtx.graphView_lum2.getGraphViewStyle().setTextSize(10);
+        mCtx.graphView_lum2.getGraphViewStyle().setNumHorizontalLabels(0);
 
-        graphView_dlum.setViewPort(2, GRAPH_SIZE);
-        graphView_dlum.setScrollable(true);
-        graphView_dlum.setScalable(false);
-        graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
-        graphView_dlum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
-        graphView_dlum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
-        graphView_dlum.getGraphViewStyle().setTextSize(10);
-        graphView_dlum.getGraphViewStyle().setNumHorizontalLabels(0);
+        mCtx.graphView_dlum = new LineGraphView(mCtx, "Luminance first derivative");
+
+        mCtx.graphView_dlum.setViewPort(2, GRAPH_SIZE);
+        mCtx.graphView_dlum.setScrollable(true);
+        mCtx.graphView_dlum.setScalable(false);
+        mCtx.graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
+        mCtx.graphView_dlum.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
+        mCtx.graphView_dlum.getGraphViewStyle().setGridColor(Color.rgb(30, 30, 30));
+        mCtx.graphView_dlum.getGraphViewStyle().setTextSize(10);
+        mCtx.graphView_dlum.getGraphViewStyle().setNumHorizontalLabels(0);
 
         layout = (LinearLayout) v.findViewById(R.id.graph2);
-        layout.addView(graphView_dlum);
+        layout.addView(mCtx.graphView_dlum);
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -227,38 +238,49 @@ public class InfoFragment extends Fragment {
                         series = new GraphViewSeries("delay_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
                                 data_delay);
-                        graphView_delay.removeAllSeries();
-                        graphView_delay.addSeries(series);
+                        mCtx.graphView_delay.removeAllSeries();
+                        mCtx.graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("delay_f",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(20, 200, 0), 3),
                                 data_delay_f);
-                        graphView_delay.addSeries(series);
+                        mCtx.graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("luminance_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 0), 3),
                                 data_lum);
-                        graphView_lum.removeAllSeries();
-                        graphView_lum.addSeries(series);
+                        mCtx.graphView_lum.removeAllSeries();
+                        mCtx.graphView_lum.addSeries(series);
+                        mCtx.graphView_lum2.removeAllSeries();
+                        mCtx.graphView_lum2.addSeries(series);
 
                         series = new GraphViewSeries("luminance_d",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(170, 80, 255), 3),
                                 data_lum_d);
-                        graphView_dlum.removeAllSeries();
-                        graphView_dlum.addSeries(series);
+                        mCtx.graphView_dlum.removeAllSeries();
+                        mCtx.graphView_dlum.addSeries(series);
                     }
                     catch (Exception e) {
                         Log.d(TAG, "" + e.getMessage());
                     }
 
-                    graphView_delay.scrollToEnd();
-                    graphView_lum.scrollToEnd();
-                    graphView_dlum.scrollToEnd();
+                    mCtx.graphView_delay.scrollToEnd();
+                    mCtx.graphView_lum.scrollToEnd();
+                    mCtx.graphView_lum2.scrollToEnd();
+                    mCtx.graphView_dlum.scrollToEnd();
                 }
             }
         };
 
         mCtx.mHandlerInfo = mHandler;
+
+        boolean done = false;
+        do {
+            if (mCtx.mHandlerRecv != null) {
+                signalStr(mCtx.mHandlerRecv, "graph_setup_done", "");
+                done = true;
+            }
+        } while (!done);
 
         return v;
     }
