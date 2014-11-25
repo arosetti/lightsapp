@@ -13,7 +13,7 @@ public class SoundController {
     private MainActivity mCtx;
     public AudioRecord mAudioRec;
 
-    int frequency = 8000;
+    int sampleRate = 8000;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -23,12 +23,13 @@ public class SoundController {
 
     public AudioRecord setup() {
         try {
-            int bufferSize = AudioRecord.getMinBufferSize(frequency,
+            int bufferSize = AudioRecord.getMinBufferSize(sampleRate,
                     channelConfiguration, audioEncoding);
             mAudioRec = new AudioRecord(
-                    MediaRecorder.AudioSource.DEFAULT, frequency,
+                    MediaRecorder.AudioSource.DEFAULT, sampleRate,
                     channelConfiguration, audioEncoding, bufferSize);
             mAudioRec.startRecording();
+            Log.v(TAG, "Start Recording");
         } catch (Throwable t) {
             Log.e(TAG, "Recording Failed");
         }

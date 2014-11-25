@@ -45,7 +45,7 @@ public class OutputController extends MyRunnable {
 
         if(beepFreq > 12000 || beepFreq < 100) {
             Toast t = Toast.makeText(mCtx,
-                    "Invalid beep frequency, defaulting to 850Hz, valid range [100,12KHz]",
+                    "Invalid beep sampleRate, defaulting to 850Hz, valid range [100,12KHz]",
                     Toast.LENGTH_SHORT);
             t.show();
             beepFreq = 850;
