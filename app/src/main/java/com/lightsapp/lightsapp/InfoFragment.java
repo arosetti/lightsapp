@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
@@ -31,16 +30,14 @@ public class InfoFragment extends Fragment {
 
     private static final int GRAPH_SIZE = 300;
     private static final int MAX_LUM = 250;
-    private static float CAMERA_RATIO = 4/3;
-    private static int scale = 2;
+    private static float CAMERA_RATIO = 7/5;
+    private static float scale = 1.5f;
 
     private MainActivity mCtx;
 
     public Handler mHandler;
 
     FrameLayout mPreview;
-    private TextView mTextViewMessageStatus;
-    private GraphViewSeries series;
 
     public static InfoFragment newInstance(int sectionNumber) {
         InfoFragment fragment = new InfoFragment();
@@ -81,9 +78,6 @@ public class InfoFragment extends Fragment {
 
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
-
-        mTextViewMessageStatus = (TextView) v.findViewById(R.id.textViewStatus);
-        mTextViewMessageStatus.setText("idle");
 
         mCtx.graphView_delay = new LineGraphView(mCtx, "Delay");
 
@@ -144,23 +138,21 @@ public class InfoFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                if (mTextViewMessageStatus != null && msg.getData().containsKey("info_message")) {
-                    mTextViewMessageStatus.setText((String) msg.getData().get("info_message"));
-                }
-
                 if (msg.getData().containsKey("setup_done")) {
                     mPreview.removeAllViews();
                     mPreview.addView(mCtx.mCameraController);
 
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
                     l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
-                    l.width = mPreview.getWidth() / scale;
+                    l.width = (int)(mPreview.getWidth() / scale);
                     scale = 1;
                     Log.v(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {
                     List<Frame> lframes;
+
+                    mCtx.mCameraController.update();
 
                     try {
                         lframes = mCtx.mLightA.getFrames();
