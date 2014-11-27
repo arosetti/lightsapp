@@ -175,7 +175,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.setPreviewCallback(this);
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
-
         }
         catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
@@ -190,10 +189,9 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         drawUI(canvas);
     }
 
-    @Override
-    public void onDraw(Canvas canvas){
-        super.onDraw(canvas);
-        drawUI(canvas);
+    public void update()
+    {
+        postInvalidate();
     }
 
     public void drawUI(Canvas canvas) {
@@ -218,7 +216,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
                 canvas.drawText(line, canvas.getWidth()/2, 12 + i * 12, paint);
                 i++;
             }
-            Log.e(TAG, "DRAW DONE");
         }
         catch (Exception e) {
             Log.e(TAG, "DRAW ERROR");
