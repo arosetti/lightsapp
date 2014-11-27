@@ -36,6 +36,7 @@ public class LightAnalyzer extends MyRunnable {
     private long timestamp_last;
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
+    protected String statusInfo;
 
     protected MorseAnalyzer mMorseAnalyzer;
 
@@ -204,18 +205,26 @@ public class LightAnalyzer extends MyRunnable {
         lock_frames.lock();
         try {
             if(lframes.size() > 0) {
-                signalStr(mCtx.mHandlerInfo ,"info_message", "frames: " + lframes.size() +
-                        "\ncur, min, max, avg" +
-                        "\ndelay: (" + lframes.get(last_frame_analyzed).delta + ", " +
-                        d_min + ", " + d_max + ", " + d_avg + ") ms " +
-                        "\nlum: (" + lframes.get(last_frame_analyzed).luminance +
-                        ", " + l_min + ", " + l_max + ", " + l_avg + ")");
+                setStatusInfo("frames: " + lframes.size() +
+                              "\ncur, min, max, avg" +
+                              "\ndelay: (" + lframes.get(last_frame_analyzed).delta + ", " +
+                              d_min + ", " + d_max + ", " + d_avg + ") ms " +
+                              "\nlum: (" + lframes.get(last_frame_analyzed).luminance +
+                              ", " + l_min + ", " + l_max + ", " + l_avg + ")");
                 signalStr(mCtx.mHandlerInfo, "update", "");
             }
         }
         finally {
             lock_frames.unlock();
         }
+    }
+
+    public synchronized  void setStatusInfo(String str) {
+        statusInfo = str;
+    }
+
+    public synchronized String getStatusInfo() {
+        return statusInfo;
     }
 
     public final void setSensitivity(int sensitivity) {
