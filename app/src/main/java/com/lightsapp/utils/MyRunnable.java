@@ -50,7 +50,13 @@ public abstract class MyRunnable implements Runnable {
         }
     }
 
+    public final void repeat() {
+        setLoop(true);
+        start();
+    }
+
     public final void stop() {
+        setLoop(false);
         tid.interrupt();
         status.getAndSet(false);
     }

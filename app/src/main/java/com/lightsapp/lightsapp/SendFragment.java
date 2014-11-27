@@ -34,7 +34,7 @@ public class SendFragment extends Fragment {
     private EditText mEdit;
     private Button mButtonSend;
     private TextView mTextViewMessage, mTextViewMorse;
-    private CheckBox mCheckBoxSound, mCheckBoxLight;
+    private CheckBox mCheckBoxSound, mCheckBoxLight, mCheckBoxRepeat;
 
     public Handler mHandler;
 
@@ -92,6 +92,17 @@ public class SendFragment extends Fragment {
                 mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
             }
         });
+
+        mCheckBoxRepeat = (CheckBox) v.findViewById(R.id.CheckBoxRepeat);
+        mCheckBoxRepeat.setChecked(mCtx.mPrefs.getBoolean("repeat_send", false));
+        mCheckBoxRepeat.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mCtx.mPrefs.edit().putBoolean("repeat_send",
+                                !mCtx.mPrefs.getBoolean("repeat_send", false)).commit();
+                    }
+                }
+        );
 
         mCheckBoxSound = (CheckBox) v.findViewById(R.id.CheckBoxSound);
         mCheckBoxSound.setChecked(mCtx.mPrefs.getBoolean("enable_sound", false));
@@ -155,7 +166,12 @@ public class SendFragment extends Fragment {
                             }
                             if (mCtx.mOutputController != null) {
                                 mCtx.mOutputController.setString(CleanString(mEdit.getText().toString()));
-                                mCtx.mOutputController.start();
+
+                                if (mCheckBoxRepeat.isChecked())
+                                    mCtx.mOutputController.repeat();
+                                else
+                                    mCtx.mOutputController.start();
+
                                 mCtx.mOutputController.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
@@ -228,8 +244,11 @@ public class SendFragment extends Fragment {
 
                     if (((float)cut / (float)len) == 1) {
                         ForcedSleep(500);
-                        resetText();
-                        mButtonSend.setText(R.string.btn_start);
+
+                        if (!mCheckBoxRepeat.isChecked()) {
+                            resetText();
+                            mButtonSend.setText(R.string.btn_start);
+                        }
                     }
 
                     Log.v(TAG, "handler gui");

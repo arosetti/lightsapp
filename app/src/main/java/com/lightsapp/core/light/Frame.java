@@ -51,8 +51,9 @@ public class Frame {
                     if (y < 0)
                         y = 0;
                     if ((i & 1) == 0) {
-                        v = (0xff & data[uvp++]) - 128;
-                        u = (0xff & data[uvp++]) - 128;
+                        //v = (0xff & data[uvp++]) - 128;
+                        //u = (0xff & data[uvp++]) - 128;
+                        uvp += 2;
                     }
                     ysum += (long) y;
                 }

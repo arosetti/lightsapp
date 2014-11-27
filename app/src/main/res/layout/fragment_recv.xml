@@ -12,55 +12,85 @@
     <HorizontalScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollViewText"
+        android:id="@+id/horizontalScrollViewRecv"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
-        android:paddingTop="5dp"
-        android:textAlignment="textEnd"
         android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="false">
+        android:layout_alignWithParentIfMissing="false"
+        android:scrollbars="none"
+        >
 
         <TextView
             android:id="@+id/TextViewRecv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
-            android:gravity="top|center_horizontal"
             android:layout_gravity="center_horizontal"
-            android:text="@string/idle"
-            android:textSize="20sp"
+            android:text=""
+            android:textSize="18sp"
             android:lines="1"
             android:maxLines="1"
-            android:ellipsize="end"
             android:textAlignment="textEnd"
-            />
+            android:singleLine="true"
+            android:minLines="2"
+            android:gravity="center_vertical|center|center_horizontal"/>
     </HorizontalScrollView>
 
-    <ScrollView
+    <HorizontalScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollViewMorse"
+        android:id="@+id/horizontalScrollViewRecvM"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
         android:paddingTop="5dp"
-        android:textAlignment="textEnd"
         android:layout_alignParentTop="false"
-        android:layout_below="@+id/scrollViewText"
         android:layout_alignWithParentIfMissing="false"
-        android:layout_above="@+id/linearLayoutGraph">
+        android:layout_below="@+id/horizontalScrollViewRecv"
+        android:scrollbars="none">
 
         <TextView
-            android:id="@+id/TextViewMorse"
+            android:id="@+id/TextViewRecvM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:textSize="15sp"
+            android:lines="1"
+            android:maxLines="1"
+            android:textAlignment="textEnd"
+            android:singleLine="true"
+            android:minLines="1"
+            android:gravity="center_vertical|center|center_horizontal"/>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollViewRecvMT"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
+        android:paddingTop="5dp"
+        android:layout_alignParentTop="false"
+        android:layout_below="@+id/horizontalScrollViewRecvM"
+        android:layout_alignWithParentIfMissing="false"
+        android:scrollbars="none">
+
+        <TextView
+            android:id="@+id/TextViewRecvMT"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
             android:gravity="top|left"
             android:layout_gravity="center_horizontal"
-            android:text="@string/idle"
-            android:textSize="15sp"/>
-    </ScrollView>
+            android:text=""
+            android:maxLines="1"
+            android:textSize="12sp"
+            android:textAlignment="textEnd"/>
+    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/linearLayoutGraph"
