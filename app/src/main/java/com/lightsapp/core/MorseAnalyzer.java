@@ -120,9 +120,9 @@ public class MorseAnalyzer {
 
     protected final void signalData(List<Long> ldata) {
         String str = mMorse.getText(ListToPrimitiveArray(ldata));
-        signalStr(mCtx.mHandlerRecv, "data_message_text", str);
-        signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) +
-                "\n" + ldata.toString());
+        signalStr(mCtx.mHandlerRecv, "data_message_text", str + "   ");
+        signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) + "   ");
+        signalStr(mCtx.mHandlerRecv, "data_message_morse_times", ldata.toString().substring(1, ldata.size() - 1) + "   ");
     }
 
 }

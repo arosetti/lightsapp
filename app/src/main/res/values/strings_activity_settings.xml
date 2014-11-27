@@ -2,22 +2,23 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
-    <string name="pref_header_audio">Audio</string>
-    <string name="pref_header_video">Video</string>
 
     <string name="pref_title_default_text">Default morse text</string>
     <string name="pref_default_default_text"></string>
 
-    <string name="pref_title_beep_freq">Beep Frequency</string>
+    <string name="pref_title_beep_freq">Beep Frequency (Hz)</string>
     <string name="pref_default_beep_freq">850</string>
 
-    <string name="pref_title_enable_sound">Enable sound</string>
-    <string name="pref_description_enable_sound">Enable sound output to send morse code</string>
+    <string name="pref_title_enable_sound">Enable sound output</string>
+    <string name="pref_description_enable_sound">Use beep sounds to transmit morse code</string>
 
-    <string name="pref_title_enable_light">Enable light</string>
-    <string name="pref_description_enable_light">Enable light output to send morse code</string>
+    <string name="pref_title_enable_light">Enable light output</string>
+    <string name="pref_description_enable_light">Use camera\'s LED flashlight to transmit morse code</string>
 
-    <string name="pref_title_auto_interval">Auto Interval</string>
+    <string name="pref_title_repeat_send">Enable Repeat</string>
+    <string name="pref_description_repeat_send">Repeat broadcasting message in a loop while stop button is pressed</string>
+
+    <string name="pref_title_auto_interval">Enable Auto Interval</string>
     <string name="pref_description_auto_interval">Enable automatic interval selection in receive mode</string>
 
     <string name="pref_title_interval">Base morse interval</string>
@@ -59,7 +60,7 @@
         <item>-1</item>
     </string-array>
 
-    <string name="pref_title_light_algorithm">Frame analyzer algorithm</string>
+    <string name="pref_title_light_algorithm">Image analyzer algorithm</string>
     <string-array name="pref_light_algorithm_titles">
         <item>basic (deprecated)</item>
         <item>threshold</item>

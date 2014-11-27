@@ -22,6 +22,12 @@
             android:positiveButtonText="@null"/>
 
         <CheckBoxPreference
+            android:key="repeat_send"
+            android:title="@string/pref_title_repeat_send"
+            android:summary="@string/pref_description_repeat_send"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
             android:key="auto_interval"
             android:title="@string/pref_title_auto_interval"
             android:summary="@string/pref_description_auto_interval"

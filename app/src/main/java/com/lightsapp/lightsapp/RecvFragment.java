@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -22,9 +23,8 @@ public class RecvFragment extends Fragment {
 
     private MainActivity mCtx;
 
-    private ScrollView mScrollViewMorse;
-    private TextView mTextViewData;
-    private TextView mTextViewMorse;
+    private HorizontalScrollView mHScrollViewRecv, mHScrollViewRecvM, mHScrollViewRecvMT;
+    private TextView mTextViewRecv, mTextViewRecvM, mTextViewRecvMT;
     private TextView mTextViewSensitivity;
     private SeekBar mSeekBarSensitivity;
     private Button mButtonRecv;
@@ -55,13 +55,23 @@ public class RecvFragment extends Fragment {
 
         mCtx = (MainActivity) getActivity();
 
-        mTextViewData = (TextView) v.findViewById(R.id.TextViewRecv);
-        mScrollViewMorse = (ScrollView) v.findViewById(R.id.scrollViewMorse);
-        mTextViewMorse = (TextView) v.findViewById(R.id.TextViewMorse);
-        mTextViewMorse.addTextChangedListener(new TextWatcher() {
+        mTextViewRecv = (TextView) v.findViewById(R.id.TextViewRecv);
+        mTextViewRecvM = (TextView) v.findViewById(R.id.TextViewRecvM);
+        mTextViewRecvMT = (TextView) v.findViewById(R.id.TextViewRecvMT);
+
+        mHScrollViewRecv = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollViewRecv);
+        //mHScrollViewRecv.setSmoothScrollingEnabled(false);
+        mHScrollViewRecvM = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollViewRecvM);
+        //mHScrollViewRecvM.setSmoothScrollingEnabled(false);
+        mHScrollViewRecvMT = (HorizontalScrollView) v.findViewById(R.id.horizontalScrollViewRecvMT);
+        //mHScrollViewRecvMT.setSmoothScrollingEnabled(false);
+
+        mTextViewRecv.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable arg0) {
-                mScrollViewMorse.fullScroll(ScrollView.FOCUS_DOWN);
+                mHScrollViewRecv.fullScroll(HorizontalScrollView.FOCUS_RIGHT); //scrollTo(mTextViewRecv.getWidth(), 0);
+                mHScrollViewRecvM.fullScroll(HorizontalScrollView.FOCUS_RIGHT); //scrollTo(mTextViewRecvM.getWidth(), 0);
+                mHScrollViewRecvMT.fullScroll(HorizontalScrollView.FOCUS_RIGHT); //scrollTo(mTextViewRecvMT.getWidth(), 0);
             }
 
             @Override
@@ -72,6 +82,7 @@ public class RecvFragment extends Fragment {
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
             }
         });
+
 
         mSeekBarSensitivity = (SeekBar) v.findViewById(R.id.seekBarSensitivity);
         mSeekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -122,8 +133,7 @@ public class RecvFragment extends Fragment {
                             return;
                         }
 
-                        if (mCtx.mCameraController == null)
-                        {
+                        if (mCtx.mCameraController == null) {
                             Toast toast = Toast.makeText(mCtx,
                                     "Camera init failed! please report.",
                                     Toast.LENGTH_LONG);
@@ -144,7 +154,7 @@ public class RecvFragment extends Fragment {
                             mCtx.mLightA.setAnalyzer(false);
                             mButtonRecv.setText(R.string.btn_start);
 
-                            if (((String) mTextViewData.getText()).equals(analyzerInfoText())) {
+                            if (((String) mTextViewRecv.getText()).equals(analyzerInfoText())) { // TODO BUGFIX crash!!! syncronized ?!
                                 setDefaultText();
                             }
                         }
@@ -157,12 +167,16 @@ public class RecvFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                if (mTextViewData != null && msg.getData().containsKey("data_message_text")) {
-                    mTextViewData.setText((String) msg.getData().get("data_message_text"));
+                if (mTextViewRecv != null && msg.getData().containsKey("data_message_text")) {
+                    mTextViewRecv.setText((String) msg.getData().get("data_message_text"));
                 }
 
-                if (mTextViewMorse != null && msg.getData().containsKey("data_message_morse")) {
-                    mTextViewMorse.setText((String) msg.getData().get("data_message_morse"));
+                if (mTextViewRecvM != null && msg.getData().containsKey("data_message_morse")) {
+                    mTextViewRecvM.setText((String) msg.getData().get("data_message_morse"));
+                }
+
+                if (mTextViewRecvMT != null && msg.getData().containsKey("data_message_morse_times")) {
+                    mTextViewRecvMT.setText((String) msg.getData().get("data_message_morse_times"));
                 }
 
                 if (msg.getData().containsKey("setup_done")) {
@@ -188,9 +202,9 @@ public class RecvFragment extends Fragment {
     }
 
     public void setDefaultText() {
-        mTextViewMorse.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
+        mTextViewRecv.setText("press start!");
+        mTextViewRecvM.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
                 "lower the sensibility if needed");
-        mTextViewData.setText("press start!");
     }
 
     private String analyzerInfoText() {
@@ -198,13 +212,15 @@ public class RecvFragment extends Fragment {
     }
 
     public void setInitText() {
-        mTextViewData.setText(analyzerInfoText());
-        mTextViewMorse.setText("");
+        mTextViewRecv.setText(analyzerInfoText());
+        mTextViewRecvM.setText("");
+        mTextViewRecvMT.setText("");
     }
 
     public void setEmptyText() {
-        mTextViewMorse.setText("");
-        mTextViewData.setText("");
+        mTextViewRecv.setText("");
+        mTextViewRecvM.setText("");
+        mTextViewRecvMT.setText("");
     }
 }
 
