@@ -2,7 +2,12 @@ package com.lightsapp.core;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -100,6 +105,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceCreated(SurfaceHolder holder) {
         try {
+            setWillNotDraw(false);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {
@@ -176,5 +182,46 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
 
         Log.i(TAG, getInfo());
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        drawUI(canvas);
+    }
+
+    @Override
+    public void onDraw(Canvas canvas){
+        super.onDraw(canvas);
+        drawUI(canvas);
+    }
+
+    public void drawUI(Canvas canvas) {
+        try {
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2f);
+            paint.setAlpha(200);
+            paint.setAntiAlias(true);
+            paint.setColor(Color.GREEN);
+
+            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 20, paint);
+
+            paint = new Paint();
+            paint.setColor(Color.RED);
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setTextSize(13);
+
+            String lines[] = mCtx.mLightA.getStatusInfo().split("\\r?\\n");
+            int i = 0;
+            for ( String line: lines ) {
+                canvas.drawText(line, canvas.getWidth()/2, 12 + i * 12, paint);
+                i++;
+            }
+            Log.e(TAG, "DRAW DONE");
+        }
+        catch (Exception e) {
+            Log.e(TAG, "DRAW ERROR");
+        }
     }
 }
