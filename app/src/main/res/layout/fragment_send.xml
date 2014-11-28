@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:enabled="true"
             android:gravity="top|left"
-            android:textSize="18dp"/>
+            android:textSize="16dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
