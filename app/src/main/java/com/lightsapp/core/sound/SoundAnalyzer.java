@@ -75,6 +75,7 @@ public class SoundAnalyzer extends MyRunnable {
 
             SoundDataBlock dataBlock = new SoundDataBlock(buffer, blockSize, bufferReadResult);
 
+            blockingQueueSound.clear();
             blockingQueueSound.put(dataBlock);
 
             /*toTransform = new double[blockSize];
