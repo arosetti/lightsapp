@@ -69,10 +69,10 @@ public class InfoFragment extends Fragment {
     }
     */
 
-    private GraphView newGraphView(String name) {
+    private GraphView newGraphView(String name, int size) {
         GraphView gv = new LineGraphView(mCtx, name);
 
-        gv.setViewPort(2, GRAPH_SIZE);
+        gv.setViewPort(2, size);
         gv.setScrollable(true);
         gv.setScalable(false);
         gv.getGraphViewStyle().setGridStyle(GraphViewStyle.GridStyle.HORIZONTAL);
@@ -97,24 +97,24 @@ public class InfoFragment extends Fragment {
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
-        mCtx.graphView_delay = newGraphView("Delay");
+        mCtx.graphView_delay = newGraphView("Delay", GRAPH_SIZE);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph3);
         layout.addView(mCtx.graphView_delay);
 
-        mCtx.graphView_lum = newGraphView("Luminance");
+        mCtx.graphView_lum = newGraphView("Luminance", GRAPH_SIZE);
         mCtx.graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
         layout = (LinearLayout) v.findViewById(R.id.graph1);
         layout.addView(mCtx.graphView_lum);
 
-        mCtx.graphView_lum2 = newGraphView("Luminance");
+        mCtx.graphView_lum2 = newGraphView("Luminance", GRAPH_SIZE);
         mCtx.graphView_lum2.setManualYAxisBounds(MAX_LUM, 0);
 
-        mCtx.graphView_dlum = newGraphView("Luminance first derivative");
+        mCtx.graphView_dlum = newGraphView("Luminance first derivative", GRAPH_SIZE);
         mCtx.graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(mCtx.graphView_dlum);
 
-        mCtx.graphView_snd = newGraphView("Sound");
+        mCtx.graphView_snd = newGraphView("Sound", 255);
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -218,7 +218,7 @@ public class InfoFragment extends Fragment {
                         data_snd = new GraphView.GraphViewData[sframes.length];
 
                         for (int i = 0; i < sframes.length; i++) {
-                            data_snd[i] = new GraphView.GraphViewData(i, (int)(sframes[i]));
+                            data_snd[i] = new GraphView.GraphViewData(i, sframes[i]);
                         }
                     }
 
