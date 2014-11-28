@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +22,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
     private static final String TAG = SendFragment.class.getSimpleName();
 
     private MainActivity mCtx;
+    private Lock lock;
 
     private HorizontalScrollView mHScrollViewRecv, mHScrollViewRecvM, mHScrollViewRecvMT;
     private TextView mTextViewRecv, mTextViewRecvM, mTextViewRecvMT;
@@ -47,6 +53,7 @@ public class RecvFragment extends Fragment {
 
     public RecvFragment() {
         mCtx = (MainActivity) getActivity();
+        lock = new ReentrantLock(true);
     }
 
     @Override
@@ -160,6 +167,10 @@ public class RecvFragment extends Fragment {
         mButtonRecv.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        mRadioGroupMode.setEnabled(true);
+                        mRadioButtonLight.setEnabled(true);
+                        mRadioButtonSound.setEnabled(true);
+
                         if (mRadioButtonLight.isChecked()) {
                             if (!(mCtx.hasCamera()  || mCtx.hasFrontCamera())) {
                                 Toast toast = Toast.makeText(mCtx,
@@ -179,20 +190,28 @@ public class RecvFragment extends Fragment {
 
                             if (mButtonRecv.getText() ==
                                     getResources().getString(R.string.btn_start) ) {
-                                mCtx.mLightA.reset();
+                                //mCtx.mLightA.reset();
                                 mCtx.mLightA.setAnalyzer(true);
                                 mButtonRecv.setText(R.string.btn_stop);
                                 setInitText();
+                                mRadioGroupMode.setEnabled(false);
+                                mRadioButtonLight.setEnabled(false);
+                                mRadioButtonSound.setEnabled(false);
                             }
                             else if (mButtonRecv.getText() ==
                                     getResources().getString(R.string.btn_stop) ) {
-                                mCtx.mLightA.reset();
+                                //mCtx.mLightA.reset();
                                 mCtx.mLightA.setAnalyzer(false);
                                 mButtonRecv.setText(R.string.btn_start);
 
-                                if (((String) mTextViewRecv.getText()).equals(analyzerInfoText())) { // TODO BUGFIX crash!!! syncronized ?!
+                                lock.lock();
+                                SpannableString spstr = new SpannableString(mTextViewRecv.getText());
+                                String str = Html.toHtml(spstr).toString();
+
+                                if (str.equals(analyzerInfoText())) {
                                     setDefaultText();
                                 }
+                                lock.unlock();
                             }
                         }
                         else if (mRadioButtonSound.isChecked())
@@ -209,7 +228,9 @@ public class RecvFragment extends Fragment {
                 super.handleMessage(msg);
 
                 if (mTextViewRecv != null && msg.getData().containsKey("data_message_text")) {
+                    lock.lock();
                     mTextViewRecv.setText((String) msg.getData().get("data_message_text"));
+                    lock.unlock();
                 }
 
                 if (mTextViewRecvM != null && msg.getData().containsKey("data_message_morse")) {
@@ -246,11 +267,13 @@ public class RecvFragment extends Fragment {
     public void setDefaultText() {
         mTextViewRecv.setText("press start!");
         mTextViewRecvM.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
+                "" +
                 "lower the sensibility if needed");
+        mTextViewRecvMT.setText("");
     }
 
     private String analyzerInfoText() {
-        return "using " + mCtx.mLightA.getName() + " analyzer"; // TODO use string with format
+        return "using " + mCtx.mLightA.getName() + " analyzer";
     }
 
     public void setInitText() {

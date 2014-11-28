@@ -28,7 +28,7 @@
             android:enabled="true"
             android:layout_gravity="center_horizontal"
             android:text=""
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:lines="1"
             android:maxLines="1"
             android:textAlignment="textEnd"
@@ -57,7 +57,7 @@
             android:enabled="true"
             android:layout_gravity="center_horizontal"
             android:text=""
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:lines="1"
             android:maxLines="1"
             android:textAlignment="textEnd"
@@ -160,7 +160,7 @@
                 android:enabled="true"
                 android:focusable="true"
                 android:focusableInTouchMode="false"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:checked="true"/>
 
             <RadioButton
@@ -171,8 +171,7 @@
                 android:enabled="true"
                 android:focusable="true"
                 android:focusableInTouchMode="false"
-                android:gravity="center_horizontal"/>
-
+                android:gravity="center"/>
         </RadioGroup>
 
         <LinearLayout

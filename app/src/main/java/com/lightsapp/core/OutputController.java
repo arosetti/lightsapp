@@ -128,7 +128,12 @@ public class OutputController extends MyRunnable {
                 ForcedSleep((int) Math.abs(pattern[i]));
             }
         }
+
         ForcedSleep((int) Math.abs(WORD_GAP));
+        if (mCtx.mPrefs.getBoolean("repeat_send", false))
+            setLoop(true);
+        else
+            setLoop(false);
         Log.v(TAG, "END LED OUTPUT");
     }
 }
