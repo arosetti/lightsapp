@@ -1,4 +1,4 @@
-package com.lightsapp.utils;
+package com.lightsapp.utils.math;
 
 import junit.framework.Assert;
 
