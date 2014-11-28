@@ -37,5 +37,4 @@ public class SoundController {
             return mAudioRec;
         }
     }
-
 }

@@ -213,7 +213,7 @@ public class InfoFragment extends Fragment {
                     double[] sframes = null;
                     GraphView.GraphViewData data_snd[] = null;
                     if (mCtx.mSoundA != null)
-                        sframes = mCtx.mSoundA.GetFrames();
+                        sframes = mCtx.mSoundA.getFrames();
                     if (sframes != null && sframes.length > 0) {
                         data_snd = new GraphView.GraphViewData[sframes.length];
 

@@ -41,13 +41,11 @@ public class SoundAnalyzer extends MyRunnable {
         lfreqblocks = new ArrayList<double[]>();
     }
 
-    public double[] GetFrames()
+    public double[] getFrames()
     {
         try {
-
             // Questa parte va spostata nell'analisi e creato una copia del vettore per il grafico
             SoundDataBlock dataBlock_2 = blockingQueueSound.take();
-
             Spectrum spectrum = dataBlock_2.FFT();
 
             //spectrum.normalize();
