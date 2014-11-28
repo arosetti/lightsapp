@@ -1,0 +1,76 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:summary="Morse"
+        android:title="Morse" >
+        <EditTextPreference
+            android:key="default_text"
+            android:title="@string/pref_title_default_text"
+            android:defaultValue="@string/pref_default_default_text"
+            android:selectAllOnFocus="true"
+            android:inputType="none"
+            android:capitalize="none"
+            android:singleLine="true"
+            android:maxLines="1"/>
+
+        <ListPreference
+            android:key="interval"
+            android:title="@string/pref_title_interval"
+            android:entries="@array/pref_interval_titles"
+            android:entryValues="@array/pref_interval_values"
+            android:defaultValue="500"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"/>
+
+        <CheckBoxPreference
+            android:key="repeat_send"
+            android:title="@string/pref_title_repeat_send"
+            android:summary="@string/pref_description_repeat_send"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="auto_interval"
+            android:title="@string/pref_title_auto_interval"
+            android:summary="@string/pref_description_auto_interval"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Sound"
+        android:title="Sound" >
+        <CheckBoxPreference
+            android:key="enable_sound"
+            android:title="@string/pref_title_enable_sound"
+            android:summary="@string/pref_description_enable_sound"
+            android:defaultValue="false"/>
+
+        <EditTextPreference
+            android:key="beep_freq"
+            android:title="@string/pref_title_beep_freq"
+            android:defaultValue="@string/pref_default_beep_freq"
+            android:selectAllOnFocus="true"
+            android:inputType="numberDecimal"
+            android:capitalize="none"
+            android:singleLine="true"
+            android:maxLines="1"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Light"
+        android:title="Light" >
+        <CheckBoxPreference
+            android:key="enable_light"
+            android:title="@string/pref_title_enable_light"
+            android:summary="@string/pref_description_enable_light"
+            android:defaultValue="true"/>
+
+        <ListPreference
+            android:key="algorithm"
+            android:title="@string/pref_title_light_algorithm"
+            android:entries="@array/pref_light_algorithm_titles"
+            android:entryValues="@array/pref_light_algorithm_values"
+            android:defaultValue="2"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"/>
+    </PreferenceCategory>
+</PreferenceScreen>
