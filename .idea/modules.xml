@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Lightsapp.iml" filepath="$PROJECT_DIR$/Lightsapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lightsapp.iml" filepath="$PROJECT_DIR$/lightsapp.iml" />
     </modules>
   </component>
 </project>
