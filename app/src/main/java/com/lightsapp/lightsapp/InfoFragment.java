@@ -18,7 +18,7 @@ import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 import com.lightsapp.core.light.Frame;
-import com.lightsapp.utils.LinearFilter;
+import com.lightsapp.utils.math.LinearFilter;
 
 import java.util.List;
 
@@ -134,7 +134,8 @@ public class InfoFragment extends Fragment {
                 if (msg.getData().containsKey("update")) {
                     List<Frame> lframes;
 
-                    mCtx.mCameraController.update();
+                    if (mCtx.mCameraController != null)
+                        mCtx.mCameraController.update();
 
                     try {
                         lframes = mCtx.mLightA.getFrames();
