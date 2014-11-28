@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public LightAnalyzer mLightA;
     public SoundAnalyzer mSoundA;
 
-    public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum;
+    public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum, graphView_snd;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
