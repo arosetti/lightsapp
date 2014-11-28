@@ -6,12 +6,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -27,7 +30,10 @@ public class RecvFragment extends Fragment {
     private TextView mTextViewRecv, mTextViewRecvM, mTextViewRecvMT;
     private TextView mTextViewSensitivity;
     private SeekBar mSeekBarSensitivity;
+    private RadioButton mRadioButtonLight, mRadioButtonSound;
+    private RadioGroup mRadioGroupMode;
     private Button mButtonRecv;
+    private LinearLayout layoutGraph;
 
     public Handler mHandler;
 
@@ -54,6 +60,8 @@ public class RecvFragment extends Fragment {
         final View v = inflater.inflate(R.layout.fragment_recv, container, false);
 
         mCtx = (MainActivity) getActivity();
+
+        layoutGraph = (LinearLayout) v.findViewById(R.id.linearLayoutGraph);
 
         mTextViewRecv = (TextView) v.findViewById(R.id.TextViewRecv);
         mTextViewRecvM = (TextView) v.findViewById(R.id.TextViewRecvM);
@@ -108,15 +116,42 @@ public class RecvFragment extends Fragment {
         mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                 ": " + mSeekBarSensitivity.getProgress());
 
+        mRadioGroupMode = (RadioGroup) v.findViewById(R.id.radioGroupMode);
+        mRadioButtonLight = (RadioButton) v.findViewById(R.id.radioButtonLight);
+        mRadioButtonSound = (RadioButton) v.findViewById(R.id.radioButtonSound);
+
+        mRadioGroupMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radioButtonLight) {
+                    Log.d(TAG, "CHK light enabled!");
+                    layoutGraph.removeAllViews();
+                    layoutGraph.addView(mCtx.graphView_lum2);
+                }
+                else if (checkedId == R.id.radioButtonSound) {
+                    Log.d(TAG, "CHK sound enabled!");
+                    layoutGraph.removeAllViews();
+                    layoutGraph.addView(mCtx.graphView_snd);
+                }
+                else
+                    Log.d(TAG, "CHK ERROR");
+            }
+        });
+
         Button mButton = (Button) v.findViewById(R.id.ButtonReset);
         mButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mCtx.mLightA.reset();
-                        if (!mCtx.mLightA.getAnalyzer())
-                            setDefaultText();
-                        else {
-                            setEmptyText();
+                        if (mRadioButtonLight.isChecked()) {
+                            mCtx.mLightA.reset();
+                            if (!mCtx.mLightA.getAnalyzer())
+                                setDefaultText();
+                            else {
+                                setEmptyText();
+                            }
+                        }
+                        else if (mRadioButtonSound.isChecked()) {
+
                         }
                     }
                 });
@@ -125,38 +160,44 @@ public class RecvFragment extends Fragment {
         mButtonRecv.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (!(mCtx.hasCamera()  || mCtx.hasFrontCamera())) {
-                            Toast toast = Toast.makeText(mCtx,
-                                    "You need a camera to receive morse code.",
-                                    Toast.LENGTH_LONG);
-                            toast.show();
-                            return;
-                        }
-
-                        if (mCtx.mCameraController == null) {
-                            Toast toast = Toast.makeText(mCtx,
-                                    "Camera init failed! please report.",
-                                    Toast.LENGTH_LONG);
-                            toast.show();
-                            return;
-                        }
-
-                        if (mButtonRecv.getText() ==
-                                getResources().getString(R.string.btn_start) ) {
-                            mCtx.mLightA.reset();
-                            mCtx.mLightA.setAnalyzer(true);
-                            mButtonRecv.setText(R.string.btn_stop);
-                            setInitText();
-                        }
-                        else if (mButtonRecv.getText() ==
-                                getResources().getString(R.string.btn_stop) ) {
-                            mCtx.mLightA.reset();
-                            mCtx.mLightA.setAnalyzer(false);
-                            mButtonRecv.setText(R.string.btn_start);
-
-                            if (((String) mTextViewRecv.getText()).equals(analyzerInfoText())) { // TODO BUGFIX crash!!! syncronized ?!
-                                setDefaultText();
+                        if (mRadioButtonLight.isChecked()) {
+                            if (!(mCtx.hasCamera()  || mCtx.hasFrontCamera())) {
+                                Toast toast = Toast.makeText(mCtx,
+                                        "You need a camera to receive morse code.",
+                                        Toast.LENGTH_LONG);
+                                toast.show();
+                                return;
                             }
+
+                            if (mCtx.mCameraController == null) {
+                                Toast toast = Toast.makeText(mCtx,
+                                        "Camera init failed! please report.",
+                                        Toast.LENGTH_LONG);
+                                toast.show();
+                                return;
+                            }
+
+                            if (mButtonRecv.getText() ==
+                                    getResources().getString(R.string.btn_start) ) {
+                                mCtx.mLightA.reset();
+                                mCtx.mLightA.setAnalyzer(true);
+                                mButtonRecv.setText(R.string.btn_stop);
+                                setInitText();
+                            }
+                            else if (mButtonRecv.getText() ==
+                                    getResources().getString(R.string.btn_stop) ) {
+                                mCtx.mLightA.reset();
+                                mCtx.mLightA.setAnalyzer(false);
+                                mButtonRecv.setText(R.string.btn_start);
+
+                                if (((String) mTextViewRecv.getText()).equals(analyzerInfoText())) { // TODO BUGFIX crash!!! syncronized ?!
+                                    setDefaultText();
+                                }
+                            }
+                        }
+                        else if (mRadioButtonSound.isChecked())
+                        {
+
                         }
                     }
                 });
@@ -184,14 +225,15 @@ public class RecvFragment extends Fragment {
                     mCtx.mLightA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                                  ": " + progress);
-                    // now we can start  the analyzer
                     mCtx.mLightA.start();
                     mCtx.mLightA.activate();
                 }
 
                 if (msg.getData().containsKey("graph_setup_done")) {
-                    LinearLayout layout = (LinearLayout) v.findViewById(R.id.linearLayoutGraph);
-                    layout.addView(mCtx.graphView_lum2);
+                    if (mRadioButtonLight.isChecked())
+                        layoutGraph.addView(mCtx.graphView_lum2);
+                    else
+                        layoutGraph.addView(mCtx.graphView_snd);
                 }
             }
         };
