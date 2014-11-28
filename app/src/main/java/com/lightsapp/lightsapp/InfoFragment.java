@@ -132,11 +132,12 @@ public class InfoFragment extends Fragment {
                 }
 
                 if (msg.getData().containsKey("update")) {
-                    List<Frame> lframes;
-
+                    /* Update camera preview */
                     if (mCtx.mCameraController != null)
                         mCtx.mCameraController.update();
 
+                    /* Light graphs */
+                    List<Frame> lframes;
                     try {
                         lframes = mCtx.mLightA.getFrames();
                     } catch (Exception e) {
@@ -165,7 +166,6 @@ public class InfoFragment extends Fragment {
                     GraphView.GraphViewData data_lum[];
                     GraphView.GraphViewData data_lum_f[];
                     GraphView.GraphViewData data_lum_d[];
-                    GraphView.GraphViewData data_snd[];
 
                     float fdata_delay[];
                     float fdata_lum[];
@@ -176,7 +176,6 @@ public class InfoFragment extends Fragment {
                         data_lum = new GraphView.GraphViewData[size];
                         data_lum_f = new GraphView.GraphViewData[size];
                         data_lum_d = new GraphView.GraphViewData[size - 1];
-                        data_snd = new GraphView.GraphViewData[GRAPH_SIZE];
 
                         fdata_delay = new float[size];
                         fdata_lum = new float[size];
@@ -202,18 +201,25 @@ public class InfoFragment extends Fragment {
                         for (int i = first + 1, j = 1; i < last; i++, j++) {
                             data_lum_d[j - 1] = new GraphView.GraphViewData(i, (lframes.get(i).luminance - lframes.get(i - 1).luminance));
                         }
-
-                        for (int i = 0 ; i < GRAPH_SIZE; i++)
-                        {
-                            data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.random());
-                        }
-
                     }
                     catch (IndexOutOfBoundsException e) {
                         Log.e(TAG, "out of bounds: " + e.getMessage());
                     }
                     catch (Exception e) {
                         Log.e(TAG, "error while generating graph data: " + e.getMessage());
+                    }
+
+                    /* Sound graphs */
+                    double[] sframes = null;
+                    GraphView.GraphViewData data_snd[] = null;
+                    if (mCtx.mSoundA != null)
+                        sframes = mCtx.mSoundA.GetFrames();
+                    if (sframes != null && sframes.length > 0) {
+                        data_snd = new GraphView.GraphViewData[sframes.length];
+
+                        for (int i = 0; i < sframes.length; i++) {
+                            data_snd[i] = new GraphView.GraphViewData(i, (int)(sframes[i]));
+                        }
                     }
 
                     GraphViewSeries series;
@@ -243,11 +249,13 @@ public class InfoFragment extends Fragment {
                         mCtx.graphView_dlum.removeAllSeries();
                         mCtx.graphView_dlum.addSeries(series);
 
-                        series = new GraphViewSeries("sound",
-                                new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
-                                data_snd);
-                        mCtx.graphView_snd.removeAllSeries();
-                        mCtx.graphView_snd.addSeries(series);
+                        if (data_snd != null) {
+                            series = new GraphViewSeries("sound",
+                                    new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
+                                    data_snd);
+                            mCtx.graphView_snd.removeAllSeries();
+                            mCtx.graphView_snd.addSeries(series);
+                        }
                     }
                     catch (Exception e) {
                         Log.d(TAG, "" + e.getMessage());
