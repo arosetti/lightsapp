@@ -50,7 +50,7 @@ public class SoundAnalyzer extends MyRunnable {
 
             Spectrum spectrum = dataBlock_2.FFT();
 
-            spectrum.normalize();
+            //spectrum.normalize();
 
             double[] toReturn = new double[spectrum.length()];
 
