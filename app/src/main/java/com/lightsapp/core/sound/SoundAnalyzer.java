@@ -8,6 +8,8 @@ import com.lightsapp.utils.MyRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
@@ -22,7 +24,9 @@ public class SoundAnalyzer extends MyRunnable {
     private RealDoubleFFT transformer;
     private int blockSize = 256;
     private short[] buffer;
-    private double[] toTransform;
+    //private double[] toTransform;
+
+    BlockingQueue<SoundDataBlock> blockingQueueSound;
 
     protected List<double[]> lfreqblocks;
 
@@ -31,9 +35,35 @@ public class SoundAnalyzer extends MyRunnable {
 
         mCtx = (MainActivity) context;
         transformer = new RealDoubleFFT(blockSize);
-        buffer = new short[blockSize];
-        toTransform = new double[blockSize];
+
+        blockingQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
+        //toTransform = new double[blockSize];
         lfreqblocks = new ArrayList<double[]>();
+    }
+
+    public double[] GetFrames()
+    {
+        try {
+
+            // Questa parte va spostata nell'analisi e creato una copia del vettore per il grafico
+            SoundDataBlock dataBlock_2 = blockingQueueSound.take();
+
+            Spectrum spectrum = dataBlock_2.FFT();
+
+            spectrum.normalize();
+
+            double[] toReturn = new double[spectrum.length()];
+
+            for (int i = 0; i < spectrum.length(); ++i)
+            {
+                toReturn[i] = spectrum.get(i);
+            }
+            return toReturn;
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
     }
 
     @Override
@@ -41,13 +71,19 @@ public class SoundAnalyzer extends MyRunnable {
         try {
             Thread.sleep(SLEEP_TIME);
 
+            buffer = new short[blockSize];
+
             int bufferReadResult = mCtx.mSoundController.mAudioRec.read(buffer, 0, blockSize);
 
-            toTransform = new double[blockSize];
+            SoundDataBlock dataBlock = new SoundDataBlock(buffer, blockSize, bufferReadResult);
+
+            blockingQueueSound.put(dataBlock);
+
+            /*toTransform = new double[blockSize];
             for (int i = 0; i < blockSize && i < bufferReadResult; i++) {
                 toTransform[i] = (double) buffer[i] / 32768.0; // signed   16bit
             }
-            transformer.ft(toTransform);
+            transformer.ft(toTransform);*/
 
             // Calculate the Real and imaginary and Magnitude
             /*for(int i = 0; i < blockSize; i++){
