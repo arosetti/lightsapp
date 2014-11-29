@@ -10,10 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -27,12 +23,12 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.lightsapp.core.CameraController;
-import com.lightsapp.core.MorseAnalyzer;
+import com.lightsapp.core.analyzer.morse.MorseAnalyzer;
 import com.lightsapp.core.SoundController;
-import com.lightsapp.core.light.LightAnalyzer;
+import com.lightsapp.core.analyzer.light.LightAnalyzer;
 import com.lightsapp.core.OutputController;
-import com.lightsapp.core.sound.SoundAnalyzer;
-import com.lightsapp.core.morse.MorseConverter;
+import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
+import com.lightsapp.core.analyzer.morse.MorseConverter;
 
 import java.util.Locale;
 

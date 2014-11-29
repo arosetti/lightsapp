@@ -1,4 +1,4 @@
-package com.lightsapp.core.beep;
+package com.lightsapp.core.output;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;

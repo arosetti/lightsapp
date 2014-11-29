@@ -6,14 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.lightsapp.core.light.*;
+import com.lightsapp.core.analyzer.light.*;
 import com.lightsapp.lightsapp.MainActivity;
 
 import java.io.IOException;

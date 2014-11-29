@@ -1,4 +1,4 @@
-package com.lightsapp.core.light;
+package com.lightsapp.core.analyzer.light;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,7 +6,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.lightsapp.core.light.DerivativeLightAnalyzer.StatusCode.*;
+import static com.lightsapp.core.analyzer.light.DerivativeLightAnalyzer.StatusCode.*;
 
 public class DerivativeLightAnalyzer extends LightAnalyzer {
     enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}

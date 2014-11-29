@@ -1,9 +1,8 @@
-package com.lightsapp.core;
+package com.lightsapp.core.analyzer.morse;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.core.morse.MorseConverter;
 import com.lightsapp.lightsapp.MainActivity;
 
 import java.util.ArrayList;

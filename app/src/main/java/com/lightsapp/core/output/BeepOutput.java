@@ -1,6 +1,4 @@
-package com.lightsapp.core.beep;
-
-import android.util.Log;
+package com.lightsapp.core.output;
 
 import java.util.ArrayList;
 import java.util.List;

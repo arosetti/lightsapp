@@ -1,4 +1,4 @@
-package com.lightsapp.core.light;
+package com.lightsapp.core.analyzer.light;
 
 import android.graphics.ImageFormat;
 import android.graphics.YuvImage;

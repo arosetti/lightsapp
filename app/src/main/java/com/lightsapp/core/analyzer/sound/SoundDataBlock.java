@@ -1,4 +1,4 @@
-package com.lightsapp.core.sound;
+package com.lightsapp.core.analyzer.sound;
 
 import com.lightsapp.utils.math.FFT;
 
