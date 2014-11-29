@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import ca.uol.aig.fftpack.RealDoubleFFT;
-
 public class SoundAnalyzer extends MyRunnable {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
     protected String NAME = "SoundAnalyzer";
@@ -21,7 +19,7 @@ public class SoundAnalyzer extends MyRunnable {
 
     protected final int SLEEP_TIME = 100;
 
-    private RealDoubleFFT transformer;
+    //private RealDoubleFFT transformer;
     private int blockSize = 256;
     private short[] buffer;
     //private double[] toTransform;
@@ -34,7 +32,7 @@ public class SoundAnalyzer extends MyRunnable {
         super(true);
 
         mCtx = (MainActivity) context;
-        transformer = new RealDoubleFFT(blockSize);
+        //transformer = new RealDoubleFFT(blockSize);
 
         blockingQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
         //toTransform = new double[blockSize];
