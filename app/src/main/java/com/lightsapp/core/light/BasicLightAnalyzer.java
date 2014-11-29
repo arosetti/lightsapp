@@ -22,7 +22,7 @@ public class BasicLightAnalyzer extends LightAnalyzer {
     @Override
     public void analyze() {
         if ((lframes.size() - start_frame) < 2) {
-            signalStr(mCtx.mHandlerRecv, "data_message_text", "<basic algorithm>");
+            signalStr(mContext.mHandlerRecv, "data_message_text", "<basic algorithm>");
             return;
         }
 
@@ -32,7 +32,7 @@ public class BasicLightAnalyzer extends LightAnalyzer {
                 if ( ((float) lframes.get(i).luminance *
                      ((float) sensitivity / 25f)) < lframes.get(i + 1).luminance ) {
                     start_frame = i;
-                    signalStr(mCtx.mHandlerRecv, "data_message_text", "start_frame: " + start_frame);
+                    signalStr(mContext.mHandlerRecv, "data_message_text", "start_frame: " + start_frame);
                 }
             }
             return;
@@ -56,12 +56,12 @@ public class BasicLightAnalyzer extends LightAnalyzer {
                 dsum += lframes.get(i).delta;
                 long sign = ((n % 2) == 0) ? 1:-1;
 
-                if (dsum > 8 * mMorseAnalyzer.getSpeedBase()) {
+                if (dsum > 8 * mContext.mMorseA.getSpeedBase()) {
                     reset();
                     return;
                 }
 
-                if (dsum > (mMorseAnalyzer.getSpeedBase() / 3)) {
+                if (dsum > (mContext.mMorseA.getSpeedBase() / 3)) {
                     ldata.add(new Long(sign * dsum));
                     n++;
                 }
@@ -69,6 +69,6 @@ public class BasicLightAnalyzer extends LightAnalyzer {
             }
         }
 
-        mMorseAnalyzer.analyze(ldata);
+        mContext.mMorseA.analyze(ldata);
     }
 }

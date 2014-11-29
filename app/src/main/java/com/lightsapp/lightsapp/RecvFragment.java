@@ -17,7 +17,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +28,7 @@ public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
     private static final String TAG = SendFragment.class.getSimpleName();
 
-    private MainActivity mCtx;
+    private MainActivity mContext;
     private Lock lock;
 
     private HorizontalScrollView mHScrollViewRecv, mHScrollViewRecvM, mHScrollViewRecvMT;
@@ -52,7 +51,7 @@ public class RecvFragment extends Fragment {
     }
 
     public RecvFragment() {
-        mCtx = (MainActivity) getActivity();
+        mContext = (MainActivity) getActivity();
         lock = new ReentrantLock(true);
     }
 
@@ -66,7 +65,7 @@ public class RecvFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_recv, container, false);
 
-        mCtx = (MainActivity) getActivity();
+        mContext = (MainActivity) getActivity();
 
         layoutGraph = (LinearLayout) v.findViewById(R.id.linearLayoutGraph);
 
@@ -111,10 +110,10 @@ public class RecvFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                mCtx.mLightA.setSensitivity(progress);
+                mContext.mLightA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
-                if (mCtx.mLightA.getAnalyzer()) {
+                if (mContext.mLightA.getAnalyzer()) {
                     setEmptyText();
                 }
             }
@@ -133,12 +132,12 @@ public class RecvFragment extends Fragment {
                 if (checkedId == R.id.radioButtonLight) {
                     Log.d(TAG, "CHK light enabled!");
                     layoutGraph.removeAllViews();
-                    layoutGraph.addView(mCtx.graphView_lum2);
+                    layoutGraph.addView(mContext.graphView_lum2);
                 }
                 else if (checkedId == R.id.radioButtonSound) {
                     Log.d(TAG, "CHK sound enabled!");
                     layoutGraph.removeAllViews();
-                    layoutGraph.addView(mCtx.graphView_snd);
+                    layoutGraph.addView(mContext.graphView_snd);
                 }
                 else
                     Log.d(TAG, "CHK ERROR");
@@ -150,8 +149,8 @@ public class RecvFragment extends Fragment {
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         if (mRadioButtonLight.isChecked()) {
-                            mCtx.mLightA.reset();
-                            if (!mCtx.mLightA.getAnalyzer())
+                            mContext.mLightA.reset();
+                            if (!mContext.mLightA.getAnalyzer())
                                 setDefaultText();
                             else {
                                 setEmptyText();
@@ -172,16 +171,16 @@ public class RecvFragment extends Fragment {
                         mRadioButtonSound.setEnabled(true);
 
                         if (mRadioButtonLight.isChecked()) {
-                            if (!(mCtx.hasCamera()  || mCtx.hasFrontCamera())) {
-                                Toast toast = Toast.makeText(mCtx,
+                            if (!(mContext.hasCamera()  || mContext.hasFrontCamera())) {
+                                Toast toast = Toast.makeText(mContext,
                                         "You need a camera to receive morse code.",
                                         Toast.LENGTH_LONG);
                                 toast.show();
                                 return;
                             }
 
-                            if (mCtx.mCameraController == null) {
-                                Toast toast = Toast.makeText(mCtx,
+                            if (mContext.mCameraController == null) {
+                                Toast toast = Toast.makeText(mContext,
                                         "Camera init failed! please report.",
                                         Toast.LENGTH_LONG);
                                 toast.show();
@@ -190,8 +189,8 @@ public class RecvFragment extends Fragment {
 
                             if (mButtonRecv.getText() ==
                                     getResources().getString(R.string.btn_start) ) {
-                                //mCtx.mLightA.reset();
-                                mCtx.mLightA.setAnalyzer(true);
+                                //mContext.mLightA.reset();
+                                mContext.mLightA.setAnalyzer(true);
                                 mButtonRecv.setText(R.string.btn_stop);
                                 setInitText();
                                 mRadioGroupMode.setEnabled(false);
@@ -200,8 +199,8 @@ public class RecvFragment extends Fragment {
                             }
                             else if (mButtonRecv.getText() ==
                                     getResources().getString(R.string.btn_stop) ) {
-                                //mCtx.mLightA.reset();
-                                mCtx.mLightA.setAnalyzer(false);
+                                //mContext.mLightA.reset();
+                                mContext.mLightA.setAnalyzer(false);
                                 mButtonRecv.setText(R.string.btn_start);
 
                                 lock.lock();
@@ -243,37 +242,37 @@ public class RecvFragment extends Fragment {
 
                 if (msg.getData().containsKey("setup_done")) {
                     int progress = mSeekBarSensitivity.getProgress();
-                    mCtx.mLightA.setSensitivity(progress);
+                    mContext.mLightA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                                  ": " + progress);
-                    mCtx.mLightA.start();
-                    mCtx.mLightA.activate();
+                    mContext.mLightA.start();
+                    mContext.mLightA.activate();
                 }
 
                 if (msg.getData().containsKey("graph_setup_done")) {
                     if (mRadioButtonLight.isChecked())
-                        layoutGraph.addView(mCtx.graphView_lum2);
+                        layoutGraph.addView(mContext.graphView_lum2);
                     else
-                        layoutGraph.addView(mCtx.graphView_snd);
+                        layoutGraph.addView(mContext.graphView_snd);
                 }
             }
         };
 
-        mCtx.mHandlerRecv = mHandler;
+        mContext.mHandlerRecv = mHandler;
 
         return v;
     }
 
     public void setDefaultText() {
         mTextViewRecv.setText("press start!");
-        mTextViewRecvM.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms\n" +
+        mTextViewRecvM.setText("morse interval is " + mContext.mMorse.get("SPEED_BASE") + "ms\n" +
                 "" +
                 "lower the sensibility if needed");
         mTextViewRecvMT.setText("");
     }
 
     private String analyzerInfoText() {
-        return "using " + mCtx.mLightA.getName() + " analyzer";
+        return "using " + mContext.mLightA.getName() + " analyzer";
     }
 
     public void setInitText() {

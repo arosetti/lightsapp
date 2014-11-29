@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.lightsapp.core.beep.BeepOutput;
 import com.lightsapp.utils.MyRunnable;
 import com.lightsapp.lightsapp.MainActivity;
 import com.lightsapp.core.morse.MorseConverter;
@@ -13,7 +14,7 @@ import static com.lightsapp.utils.HandlerUtils.*;
 public class OutputController extends MyRunnable {
     private final String TAG = OutputController.class.getSimpleName();
 
-    private MainActivity mCtx;
+    private MainActivity mContext;
 
     private volatile String data = "";
     private long[] pattern;
@@ -28,15 +29,15 @@ public class OutputController extends MyRunnable {
     public OutputController(Context context) {
         super(false);
 
-        mCtx = (MainActivity) context;
+        mContext = (MainActivity) context;
 
-        mMorse = mCtx.mMorse;
+        mMorse = mContext.mMorse;
         mBeepOutput = new BeepOutput();
-        mLightOutput = new LightOutput(mCtx.mCamera);
+        mLightOutput = new LightOutput(mContext.mCamera);
 
         // TODO better beep freq handling.
         try {
-            beepFreq = Integer.valueOf(mCtx.mPrefs.getString("beep_freq", "850"));
+            beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
         }
         catch (Exception e)
         {
@@ -44,7 +45,7 @@ public class OutputController extends MyRunnable {
         }
 
         if(beepFreq > 12000 || beepFreq < 100) {
-            Toast t = Toast.makeText(mCtx,
+            Toast t = Toast.makeText(mContext,
                     "Invalid beep sampleRate, defaulting to 850Hz, valid range [100,12KHz]",
                     Toast.LENGTH_SHORT);
             t.show();
@@ -52,10 +53,9 @@ public class OutputController extends MyRunnable {
         }
     }
 
-    private long sound(int t) { // TODO optimize this
+    private long sound(int t) {
         final long timestamp = System.currentTimeMillis();
-        mBeepOutput.genTone(t / 1000f, beepFreq);
-        mBeepOutput.playSound();
+        mBeepOutput.play(t, beepFreq);
         return (System.currentTimeMillis() - timestamp);
     }
 
@@ -86,8 +86,8 @@ public class OutputController extends MyRunnable {
     @Override
     public void ondie() {
         mLightOutput.setLight(false);
-        signalStr(mCtx.mHandlerSend, "light", "off");
-        signalInt(mCtx.mHandlerSend, "progress", -1);
+        signalStr(mContext.mHandlerSend, "light", "off");
+        signalInt(mContext.mHandlerSend, "progress", -1);
     }
 
     @Override
@@ -99,8 +99,8 @@ public class OutputController extends MyRunnable {
         progress = 0;
 
         for (int i = 0; i < pattern.length; i++) {
-            enable_sound = mCtx.mPrefs.getBoolean("enable_sound", false);
-            enable_light = mCtx.mPrefs.getBoolean("enable_light", false);
+            enable_sound = mContext.mPrefs.getBoolean("enable_sound", false);
+            enable_light = mContext.mPrefs.getBoolean("enable_light", false);
 
             if (!getStatus()) {
                 Log.v(TAG, "STOPPING LED OUTPUT");
@@ -108,29 +108,29 @@ public class OutputController extends MyRunnable {
             }
 
             if (i % 2 != 0) {
-                signalStr(mCtx.mHandlerSend, "light", "on");
+                signalStr(mContext.mHandlerSend, "light", "on");
                 if (Math.abs(pattern[i]) > DOT)
-                    signalStr(mCtx.mHandlerSend, "message", "DASH\n" + pattern[i] + "ms");
+                    signalStr(mContext.mHandlerSend, "message", "DASH\n" + pattern[i] + "ms");
                 else
-                    signalStr(mCtx.mHandlerSend, "message", "DOT\n" + pattern[i] + "ms");
+                    signalStr(mContext.mHandlerSend, "message", "DOT\n" + pattern[i] + "ms");
                 progress++;
-                signalInt(mCtx.mHandlerSend, "progress", progress);
+                signalInt(mContext.mHandlerSend, "progress", progress);
                 flash((int) Math.abs(pattern[i]));
-                signalStr(mCtx.mHandlerSend, "light", "off");
+                signalStr(mContext.mHandlerSend, "light", "off");
             }
             else {
-                signalStr(mCtx.mHandlerSend, "message", "...\n" + pattern[i] + "ms");
+                signalStr(mContext.mHandlerSend, "message", "...\n" + pattern[i] + "ms");
                 if (Math.abs(pattern[i]) == LETTER_GAP)
                     progress++;
                 else if (Math.abs(pattern[i]) == WORD_GAP)
                     progress += 3;
-                signalInt(mCtx.mHandlerSend, "progress", progress);
+                signalInt(mContext.mHandlerSend, "progress", progress);
                 ForcedSleep((int) Math.abs(pattern[i]));
             }
         }
 
         ForcedSleep((int) Math.abs(WORD_GAP));
-        if (mCtx.mPrefs.getBoolean("repeat_send", false))
+        if (mContext.mPrefs.getBoolean("repeat_send", false))
             setLoop(true);
         else
             setLoop(false);

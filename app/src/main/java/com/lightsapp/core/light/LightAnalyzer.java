@@ -19,7 +19,7 @@ public class LightAnalyzer extends MyRunnable {
     protected final String TAG = LightAnalyzer.class.getSimpleName();
     protected String NAME = "???";
 
-    protected MainActivity mCtx;
+    protected MainActivity mContext;
 
     protected List<Frame> lframes;
     protected List<Frame> lframes_tmp;
@@ -38,12 +38,10 @@ public class LightAnalyzer extends MyRunnable {
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
     protected String statusInfo;
 
-    protected MorseAnalyzer mMorseAnalyzer;
-
     protected LightAnalyzer(Context context) {
         super(true);
 
-        mCtx = (MainActivity) context;
+        mContext = (MainActivity) context;
 
         lock_frames_tmp = new ReentrantLock(true);
         lock_frames = new ReentrantLock(true);
@@ -53,7 +51,7 @@ public class LightAnalyzer extends MyRunnable {
 
         enable_analyze = new AtomicReference<Boolean>(false);
 
-        mMorseAnalyzer = new MorseAnalyzer(context);
+        mContext.mMorseA = new MorseAnalyzer(context);
     }
 
     public final String getName() {
@@ -140,10 +138,10 @@ public class LightAnalyzer extends MyRunnable {
             for (int i = 0; i < lframes_swap.size(); i++) {
                 lframes.add(lframes_swap.get(i).analyze());
 
-                //error analyzing data, maybe error allocating memory for the frame.
+                //error analyzing data, maybe error allocating memory.
                 // we use the previous frame's luminance.
                 if (lframes_swap.get(i).luminance < 0) {
-                    Log.v(TAG, "couldn't allocate memory for image frame, using prev value if available");
+                    Log.e(TAG, "error analyzing image frame, using prev value if available");
                     if (i > 0)
                         lframes_swap.get(i).setLuminance(lframes_swap.get(i - 1).luminance);
                     else
@@ -196,11 +194,6 @@ public class LightAnalyzer extends MyRunnable {
 
     }
 
-    private void signalReset() {
-        signalStr(mCtx.mHandlerRecv, "data_message_text", "");
-        signalStr(mCtx.mHandlerRecv, "data_message_morse", "");
-    }
-
     private void signalGraph() {
         lock_frames.lock();
         try {
@@ -211,7 +204,7 @@ public class LightAnalyzer extends MyRunnable {
                               d_min + ", " + d_max + ", " + d_avg + ") ms " +
                               "\nlum: (" + lframes.get(last_frame_analyzed).luminance +
                               ", " + l_min + ", " + l_max + ", " + l_avg + ")");
-                signalStr(mCtx.mHandlerInfo, "update", "");
+                signalStr(mContext.mHandlerInfo, "update", "");
             }
         }
         finally {
@@ -234,23 +227,21 @@ public class LightAnalyzer extends MyRunnable {
 
     public final void addFrame(byte[] data, int width, int height) {
         Frame frame = null;
-        long timestamp_now = System.currentTimeMillis() ;
-        long delta = (timestamp_last == 0)? 0 : (timestamp_now - timestamp_last);
+        long timestamp_now;
+        long delta;
 
         lock_frames_tmp.lock();
         try {
+            timestamp_now = System.currentTimeMillis();
+            delta = (timestamp_last == 0)? 0 : (timestamp_now - timestamp_last);
             frame = new Frame(data, width, height, timestamp_now, delta);
-            if (frame != null) {
-                lframes_tmp.add(frame);
-                timestamp_last = System.currentTimeMillis();
-                //Log.i(TAG, "FRAME SIZE: " + data.length / 1000 + " KByte");
-            }
-            else {
-                Log.w(TAG, "can't allocate frame!!");
-            }
+            lframes_tmp.add(frame);
+            timestamp_last = System.currentTimeMillis();
+            //Log.v(TAG, "FRAME SIZE: " + data.length / 1000 + " KByte");
         }
-        finally {
-            lock_frames_tmp.unlock();
+        catch (Exception e) {
+             Log.e(TAG, "error inserting image frame: " + e.getMessage());
         }
+        lock_frames_tmp.unlock();
     }
 }

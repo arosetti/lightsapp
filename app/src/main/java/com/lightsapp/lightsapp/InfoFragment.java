@@ -31,9 +31,9 @@ public class InfoFragment extends Fragment {
     private static final int GRAPH_SIZE = 500;
     private static final int MAX_LUM = 250;
     private static float CAMERA_RATIO = 7/5;
-    private static float scale = 1.5f;
+    private static float scale = 1.7f;
 
-    private MainActivity mCtx;
+    private MainActivity mContext;
 
     public Handler mHandler;
 
@@ -48,16 +48,16 @@ public class InfoFragment extends Fragment {
     }
 
     public InfoFragment() {
-        mCtx = (MainActivity) getActivity();
+        mContext = (MainActivity) getActivity();
     }
 
     /*
     public void onResume() {
         super.onResume();
         Log.v(TAG, "RESUME_INFO");
-        if (mCtx.mCameraController != null) {
+        if (mContext.mCameraController != null) {
             mPreview.removeAllViews();
-            mPreview.addView(mCtx.mCameraController);
+            mPreview.addView(mContext.mCameraController);
         }
     }
 
@@ -70,7 +70,7 @@ public class InfoFragment extends Fragment {
     */
 
     private GraphView newGraphView(String name, int size) {
-        GraphView gv = new LineGraphView(mCtx, name);
+        GraphView gv = new LineGraphView(mContext, name);
 
         gv.setViewPort(2, size);
         gv.setScrollable(true);
@@ -92,29 +92,29 @@ public class InfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_info, container, false);
 
-        mCtx = (MainActivity) getActivity();
+        mContext = (MainActivity) getActivity();
 
         mPreview = (FrameLayout) v.findViewById(R.id.camera_preview);
         mPreview.addView(new SurfaceView(getActivity()), 0);   // BLACK MAGIC avoids black flashing.
 
-        mCtx.graphView_delay = newGraphView("Delay", GRAPH_SIZE);
+        mContext.graphView_delay = newGraphView("Delay", GRAPH_SIZE);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.graph3);
-        layout.addView(mCtx.graphView_delay);
+        layout.addView(mContext.graphView_delay);
 
-        mCtx.graphView_lum = newGraphView("Luminance", GRAPH_SIZE);
-        mCtx.graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
+        mContext.graphView_lum = newGraphView("Luminance", GRAPH_SIZE);
+        mContext.graphView_lum.setManualYAxisBounds(MAX_LUM, 0);
         layout = (LinearLayout) v.findViewById(R.id.graph1);
-        layout.addView(mCtx.graphView_lum);
+        layout.addView(mContext.graphView_lum);
 
-        mCtx.graphView_lum2 = newGraphView("Luminance", GRAPH_SIZE);
-        mCtx.graphView_lum2.setManualYAxisBounds(MAX_LUM, 0);
+        mContext.graphView_lum2 = newGraphView("Luminance", GRAPH_SIZE);
+        mContext.graphView_lum2.setManualYAxisBounds(MAX_LUM, 0);
 
-        mCtx.graphView_dlum = newGraphView("Luminance first derivative", GRAPH_SIZE);
-        mCtx.graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
+        mContext.graphView_dlum = newGraphView("Luminance first derivative", GRAPH_SIZE);
+        mContext.graphView_dlum.setManualYAxisBounds(MAX_LUM, -MAX_LUM);
         layout = (LinearLayout) v.findViewById(R.id.graph2);
-        layout.addView(mCtx.graphView_dlum);
+        layout.addView(mContext.graphView_dlum);
 
-        mCtx.graphView_snd = newGraphView("Sound", 255);
+        mContext.graphView_snd = newGraphView("Sound", 255);
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -122,7 +122,7 @@ public class InfoFragment extends Fragment {
 
                 if (msg.getData().containsKey("setup_done")) {
                     mPreview.removeAllViews();
-                    mPreview.addView(mCtx.mCameraController);
+                    mPreview.addView(mContext.mCameraController);
 
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
                     l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
@@ -133,13 +133,13 @@ public class InfoFragment extends Fragment {
 
                 if (msg.getData().containsKey("update")) {
                     /* Update camera preview */
-                    if (mCtx.mCameraController != null)
-                        mCtx.mCameraController.update();
+                    if (mContext.mCameraController != null)
+                        mContext.mCameraController.update();
 
                     /* Light graphs */
                     List<Frame> lframes;
                     try {
-                        lframes = mCtx.mLightA.getFrames();
+                        lframes = mContext.mLightA.getFrames();
                     } catch (Exception e) {
                         return;
                     }
@@ -212,8 +212,8 @@ public class InfoFragment extends Fragment {
                     /* Sound graphs */
                     double[] sframes = null;
                     GraphView.GraphViewData data_snd[] = null;
-                    if (mCtx.mSoundA != null)
-                        sframes = mCtx.mSoundA.getFrames();
+                    if (mContext.mSoundA != null)
+                        sframes = mContext.mSoundA.getFrames();
                     if (sframes != null && sframes.length > 0) {
                         data_snd = new GraphView.GraphViewData[sframes.length];
 
@@ -227,55 +227,55 @@ public class InfoFragment extends Fragment {
                         series = new GraphViewSeries("delay_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
                                 data_delay);
-                        mCtx.graphView_delay.removeAllSeries();
-                        mCtx.graphView_delay.addSeries(series);
+                        mContext.graphView_delay.removeAllSeries();
+                        mContext.graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("delay_f",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(20, 200, 0), 3),
                                 data_delay_f);
-                        mCtx.graphView_delay.addSeries(series);
+                        mContext.graphView_delay.addSeries(series);
 
                         series = new GraphViewSeries("luminance_raw",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(200, 50, 0), 3),
                                 data_lum);
-                        mCtx.graphView_lum.removeAllSeries();
-                        mCtx.graphView_lum.addSeries(series);
-                        mCtx.graphView_lum2.removeAllSeries();
-                        mCtx.graphView_lum2.addSeries(series);
+                        mContext.graphView_lum.removeAllSeries();
+                        mContext.graphView_lum.addSeries(series);
+                        mContext.graphView_lum2.removeAllSeries();
+                        mContext.graphView_lum2.addSeries(series);
 
                         series = new GraphViewSeries("luminance_d",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(170, 80, 255), 3),
                                 data_lum_d);
-                        mCtx.graphView_dlum.removeAllSeries();
-                        mCtx.graphView_dlum.addSeries(series);
+                        mContext.graphView_dlum.removeAllSeries();
+                        mContext.graphView_dlum.addSeries(series);
 
                         if (data_snd != null) {
                             series = new GraphViewSeries("sound",
                                     new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
                                     data_snd);
-                            mCtx.graphView_snd.removeAllSeries();
-                            mCtx.graphView_snd.addSeries(series);
+                            mContext.graphView_snd.removeAllSeries();
+                            mContext.graphView_snd.addSeries(series);
                         }
                     }
                     catch (Exception e) {
                         Log.d(TAG, "" + e.getMessage());
                     }
 
-                    mCtx.graphView_delay.scrollToEnd();
-                    mCtx.graphView_lum.scrollToEnd();
-                    mCtx.graphView_lum2.scrollToEnd();
-                    mCtx.graphView_dlum.scrollToEnd();
-                    mCtx.graphView_snd.scrollToEnd();
+                    mContext.graphView_delay.scrollToEnd();
+                    mContext.graphView_lum.scrollToEnd();
+                    mContext.graphView_lum2.scrollToEnd();
+                    mContext.graphView_dlum.scrollToEnd();
+                    mContext.graphView_snd.scrollToEnd();
                 }
             }
         };
 
-        mCtx.mHandlerInfo = mHandler;
+        mContext.mHandlerInfo = mHandler;
 
         boolean done = false;
         do {
-            if (mCtx.mHandlerRecv != null) {
-                signalStr(mCtx.mHandlerRecv, "graph_setup_done", "");
+            if (mContext.mHandlerRecv != null) {
+                signalStr(mContext.mHandlerRecv, "graph_setup_done", "");
                 done = true;
             }
         } while (!done);

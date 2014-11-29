@@ -19,8 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lightsapp.core.OutputController;
-
 import static com.lightsapp.utils.Utils.*;
 
 
@@ -28,7 +26,7 @@ public class SendFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "0";
     private static final String TAG = SendFragment.class.getSimpleName();
 
-    private MainActivity mCtx;
+    private MainActivity mContext;
 
     private ImageView mImageViewLightbulb;
     private Drawable lightbulb_on, lightbulb_off;
@@ -49,17 +47,13 @@ public class SendFragment extends Fragment {
     }
 
     public SendFragment() {
-        mCtx = (MainActivity) getActivity();
-    }
-
-    public void resetText() {
-        mTextViewMessage.setText("morse interval is " + mCtx.mMorse.get("SPEED_BASE") + "ms");
-        mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
+        mContext = (MainActivity) getActivity();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updateSettings();
         resetText();
     }
 
@@ -68,7 +62,7 @@ public class SendFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_send, container, false);
 
-        mCtx = (MainActivity) getActivity();
+        mContext = (MainActivity) getActivity();
 
         mImageViewLightbulb = (ImageView) v.findViewById(R.id.ImageViewLightbulb);
         lightbulb_off = getResources().getDrawable(R.drawable.lightbulb_off);
@@ -77,10 +71,10 @@ public class SendFragment extends Fragment {
         mTextViewMessage = (TextView) v.findViewById(R.id.TextViewStatus);
 
         mEdit = (EditText) v.findViewById(R.id.EditViewSend);
-        mEdit.setText(mCtx.mPrefs.getString("default_text", "sos"));
+        mEdit.setText(mContext.mPrefs.getString("default_text", "sos"));
 
         mTextViewMorse = (TextView) v.findViewById(R.id.TextViewSend);
-        mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
+        mTextViewMorse.setText(mContext.mMorse.getMorse(CleanString(mEdit.getText().toString())));
 
         mEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -91,61 +85,61 @@ public class SendFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mTextViewMorse.setText(mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString())));
+                mTextViewMorse.setText(mContext.mMorse.getMorse(CleanString(mEdit.getText().toString())));
             }
         });
 
         mCheckBoxRepeat = (CheckBox) v.findViewById(R.id.CheckBoxRepeat);
-        mCheckBoxRepeat.setChecked(mCtx.mPrefs.getBoolean("repeat_send", false));
+        mCheckBoxRepeat.setChecked(mContext.mPrefs.getBoolean("repeat_send", false));
         mCheckBoxRepeat.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mCtx.mPrefs.edit().putBoolean("repeat_send",
-                                !mCtx.mPrefs.getBoolean("repeat_send", false)).commit();
+                        mContext.mPrefs.edit().putBoolean("repeat_send",
+                                !mContext.mPrefs.getBoolean("repeat_send", false)).commit();
                     }
                 }
         );
 
         mCheckBoxSound = (CheckBox) v.findViewById(R.id.CheckBoxSound);
-        mCheckBoxSound.setChecked(mCtx.mPrefs.getBoolean("enable_sound", false));
+        mCheckBoxSound.setChecked(mContext.mPrefs.getBoolean("enable_sound", false));
         mCheckBoxSound.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (!mCtx.mPrefs.getBoolean("enable_light", false) &&
-                             mCtx.mPrefs.getBoolean("enable_sound", false)) {
-                            mCtx.mPrefs.edit().putBoolean("enable_light",
-                                    !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
+                        if (!mContext.mPrefs.getBoolean("enable_light", false) &&
+                             mContext.mPrefs.getBoolean("enable_sound", false)) {
+                            mContext.mPrefs.edit().putBoolean("enable_light",
+                                    !mContext.mPrefs.getBoolean("enable_light", true)).commit();
                             mCheckBoxLight.setChecked(true);
-                            Toast toast = Toast.makeText(mCtx,
+                            Toast toast = Toast.makeText(mContext,
                                     "You have to keep one option enabled. light enabled.",
                                     Toast.LENGTH_SHORT);
                             toast.show();
                         }
 
-                        mCtx.mPrefs.edit().putBoolean("enable_sound",
-                                           !mCtx.mPrefs.getBoolean("enable_sound", false)).commit();
+                        mContext.mPrefs.edit().putBoolean("enable_sound",
+                                           !mContext.mPrefs.getBoolean("enable_sound", false)).commit();
                     }
                 }
         );
 
         mCheckBoxLight = (CheckBox) v.findViewById(R.id.CheckBoxLight);
-        mCheckBoxLight.setChecked(mCtx.mPrefs.getBoolean("enable_light", true));
+        mCheckBoxLight.setChecked(mContext.mPrefs.getBoolean("enable_light", true));
         mCheckBoxLight.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (!mCtx.mPrefs.getBoolean("enable_sound", false) &&
-                                mCtx.mPrefs.getBoolean("enable_light", true)) {
-                            mCtx.mPrefs.edit().putBoolean("enable_sound",
-                                    !mCtx.mPrefs.getBoolean("enable_sound", true)).commit();
+                        if (!mContext.mPrefs.getBoolean("enable_sound", false) &&
+                                mContext.mPrefs.getBoolean("enable_light", true)) {
+                            mContext.mPrefs.edit().putBoolean("enable_sound",
+                                    !mContext.mPrefs.getBoolean("enable_sound", true)).commit();
                             mCheckBoxSound.setChecked(true);
-                            Toast toast = Toast.makeText(mCtx,
+                            Toast toast = Toast.makeText(mContext,
                                     "You have to keep one option enabled. enable sound.",
                                     Toast.LENGTH_SHORT);
                             toast.show();
                         }
 
-                        mCtx.mPrefs.edit().putBoolean("enable_light",
-                                !mCtx.mPrefs.getBoolean("enable_light", true)).commit();
+                        mContext.mPrefs.edit().putBoolean("enable_light",
+                                !mContext.mPrefs.getBoolean("enable_light", true)).commit();
                     }
                 }
         );
@@ -154,33 +148,33 @@ public class SendFragment extends Fragment {
         mButtonSend.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (!mCtx.hasFlash()) {
-                            Toast toast = Toast.makeText(mCtx,
+                        if (!mContext.hasFlash()) {
+                            Toast toast = Toast.makeText(mContext,
                                                          "You need a flash to send morse code.",
                                                          Toast.LENGTH_LONG);
                             toast.show();
                         }
 
                         if (mButtonSend.getText() == getResources().getString(R.string.btn_start) ) {
-                            if (mCtx.mMorse != null) {
-                                mCtx.mMorse.updateValues(Integer.valueOf(
-                                                         mCtx.mPrefs.getString("interval", "500")));
+                            if (mContext.mMorse != null) {
+                                mContext.mMorse.updateValues(Integer.valueOf(
+                                                         mContext.mPrefs.getString("interval", "500")));
                             }
-                            if (mCtx.mOutputController != null) {
-                                mCtx.mOutputController.setString(CleanString(mEdit.getText().toString()));
+                            if (mContext.mOutputController != null) {
+                                mContext.mOutputController.setString(CleanString(mEdit.getText().toString()));
 
                                 if (mCheckBoxRepeat.isChecked())
-                                    mCtx.mOutputController.repeat();
+                                    mContext.mOutputController.repeat();
                                 else
-                                    mCtx.mOutputController.start();
+                                    mContext.mOutputController.start();
 
-                                mCtx.mOutputController.activate();
+                                mContext.mOutputController.activate();
                                 mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
-                            if (mCtx.mOutputController != null) {
-                                mCtx.mOutputController.stop();
+                            if (mContext.mOutputController != null) {
+                                mContext.mOutputController.stop();
                             }
                             mImageViewLightbulb.setImageDrawable(lightbulb_off);
                             mButtonSend.setText(R.string.btn_start);
@@ -209,7 +203,7 @@ public class SendFragment extends Fragment {
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
                     String str, str1, str2,
-                           mstr = mCtx.mMorse.getMorse(CleanString(mEdit.getText().toString()));
+                           mstr = mContext.mMorse.getMorse(CleanString(mEdit.getText().toString()));
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     if (cut < 0) {
@@ -258,8 +252,30 @@ public class SendFragment extends Fragment {
             }
         };
 
-        mCtx.mHandlerSend = mHandler;
+        mContext.mHandlerSend = mHandler;
 
         return v;
+    }
+
+    public void resetText() {
+        mTextViewMessage.setText("morse interval is " + mContext.mMorse.get("SPEED_BASE") + "ms");
+        mTextViewMorse.setText(mContext.mMorse.getMorse(CleanString(mEdit.getText().toString())));
+    }
+
+    public void updateSettings() {
+        mCheckBoxRepeat.setChecked(mContext.mPrefs.getBoolean("repeat_send", false));
+
+        if (!mContext.mPrefs.getBoolean("enable_light", true) &&
+            !mContext.mPrefs.getBoolean("enable_sound", false)) {
+            mContext.mPrefs.edit().putBoolean("enable_light", true).commit();
+            Toast toast = Toast.makeText(mContext,
+                    "You have to keep one option enabled. defalut light output enabled.",
+                    Toast.LENGTH_LONG);
+            toast.show();
+        }
+
+        mCheckBoxLight.setChecked(mContext.mPrefs.getBoolean("enable_light", true));
+        mCheckBoxSound.setChecked(mContext.mPrefs.getBoolean("enable_sound", false));
+        //mTextViewMorse.setText(mContext.mPrefs.getString("default_text", ""));
     }
 }

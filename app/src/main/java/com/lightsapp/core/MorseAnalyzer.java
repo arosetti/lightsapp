@@ -15,19 +15,19 @@ import static com.lightsapp.utils.Utils.ListToPrimitiveArray;
 public class MorseAnalyzer {
     protected final String TAG = MorseAnalyzer.class.getSimpleName();
 
-    protected MainActivity mCtx;
+    protected MainActivity mContext;
 
     protected final MorseConverter mMorse;
     protected boolean auto_interval = false;
     protected long speed_base;
 
     public MorseAnalyzer(Context context) {
-        mCtx = (MainActivity) context;
+        mContext = (MainActivity) context;
 
-        mMorse = new MorseConverter(Integer.parseInt(mCtx.mPrefs.getString("interval", "500")));
+        mMorse = new MorseConverter(Integer.parseInt(mContext.mPrefs.getString("interval", "500")));
 
         speed_base = mMorse.get("SPEED_BASE");
-        auto_interval = mCtx.mPrefs.getBoolean("auto_interval", false);
+        auto_interval = mContext.mPrefs.getBoolean("auto_interval", false);
     }
 
     private long getClosestMorseInterval(long val) {
@@ -87,7 +87,7 @@ public class MorseAnalyzer {
         if (ldata.size() == 0)
             return;
 
-        auto_interval = mCtx.mPrefs.getBoolean("auto_interval", false);
+        auto_interval = mContext.mPrefs.getBoolean("auto_interval", false);
         if (auto_interval) {
             long avg_gap = getAvgGap(ldata);
             long s = getClosestMorseInterval(avg_gap);
@@ -120,9 +120,9 @@ public class MorseAnalyzer {
 
     protected final void signalData(List<Long> ldata) {
         String str = mMorse.getText(ListToPrimitiveArray(ldata));
-        signalStr(mCtx.mHandlerRecv, "data_message_text", str + "   ");
-        signalStr(mCtx.mHandlerRecv, "data_message_morse", mMorse.getMorse(str) + "   ");
-        signalStr(mCtx.mHandlerRecv, "data_message_morse_times", ldata.toString().substring(1, ldata.size() - 1) + "   ");
+        signalStr(mContext.mHandlerRecv, "data_message_text", str);
+        signalStr(mContext.mHandlerRecv, "data_message_morse", mMorse.getMorse(str));
+        signalStr(mContext.mHandlerRecv, "data_message_morse_times", ldata.toString().substring(1, ldata.size() - 1));
     }
 
 }

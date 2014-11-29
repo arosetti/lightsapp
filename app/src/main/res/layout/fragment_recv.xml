@@ -73,23 +73,27 @@
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentBottom="false"
-        android:paddingTop="5dp"
         android:layout_alignParentTop="false"
         android:layout_below="@+id/horizontalScrollViewRecvM"
         android:layout_alignWithParentIfMissing="false"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:textAlignment="textEnd"
+        android:fillViewport="true"
+        >
 
         <TextView
             android:id="@+id/TextViewRecvMT"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
-            android:gravity="top|left"
+            android:gravity="top|right"
             android:layout_gravity="center_horizontal"
             android:text=""
             android:maxLines="1"
             android:textSize="12sp"
-            android:textAlignment="textEnd"/>
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:singleLine="true"/>
     </HorizontalScrollView>
 
     <LinearLayout
@@ -114,8 +118,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:paddingBottom="12dp"
-            android:paddingTop="8dp">
+            android:paddingBottom="2dp"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
