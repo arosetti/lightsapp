@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -20,6 +20,8 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lightsapp.lightsapp.R;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

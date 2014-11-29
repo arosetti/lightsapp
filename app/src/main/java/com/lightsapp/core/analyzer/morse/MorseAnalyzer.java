@@ -3,7 +3,7 @@ package com.lightsapp.core.analyzer.morse;
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

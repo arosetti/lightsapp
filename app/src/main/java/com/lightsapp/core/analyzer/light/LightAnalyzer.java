@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.lightsapp.core.analyzer.morse.MorseAnalyzer;
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 import com.lightsapp.utils.MyRunnable;
 
 import java.util.ArrayList;
