@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.content.Context;
 import android.os.Handler;

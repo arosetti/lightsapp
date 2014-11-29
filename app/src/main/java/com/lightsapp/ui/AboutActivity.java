@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -9,6 +9,8 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.lightsapp.lightsapp.R;
 
 
 public class AboutActivity extends Activity {

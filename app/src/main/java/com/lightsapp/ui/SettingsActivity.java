@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -12,6 +12,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+
+import com.lightsapp.lightsapp.R;
 
 import java.util.List;
 

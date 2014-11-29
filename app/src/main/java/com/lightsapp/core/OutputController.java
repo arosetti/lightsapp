@@ -7,7 +7,7 @@ import android.widget.Toast;
 import com.lightsapp.core.output.BeepOutput;
 import com.lightsapp.core.output.LightOutput;
 import com.lightsapp.utils.MyRunnable;
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 import com.lightsapp.core.analyzer.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
 import static com.lightsapp.utils.HandlerUtils.*;

@@ -7,7 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 
 public class LightSensorController {
     public final String TAG = LightSensorController.class.getSimpleName();

@@ -12,7 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.lightsapp.core.analyzer.light.*;
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 
 import java.io.IOException;
 import java.util.List;

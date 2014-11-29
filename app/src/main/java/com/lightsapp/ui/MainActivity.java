@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,6 +29,7 @@ import com.lightsapp.core.analyzer.light.LightAnalyzer;
 import com.lightsapp.core.OutputController;
 import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 import com.lightsapp.core.analyzer.morse.MorseConverter;
+import com.lightsapp.lightsapp.R;
 
 import java.util.Locale;
 

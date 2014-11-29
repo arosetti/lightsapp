@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.app.Fragment;
 import android.graphics.Color;
@@ -18,6 +18,7 @@ import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 import com.lightsapp.core.analyzer.light.Frame;
+import com.lightsapp.lightsapp.R;
 import com.lightsapp.utils.math.LinearFilter;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.lightsapp.lightsapp;
+package com.lightsapp.ui;
 
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lightsapp.lightsapp.R;
 
 import static com.lightsapp.utils.Utils.*;
 

@@ -6,7 +6,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.lightsapp.lightsapp.MainActivity;
+import com.lightsapp.ui.MainActivity;
 
 public class SoundController {
     private final String TAG = SoundController.class.getSimpleName();
