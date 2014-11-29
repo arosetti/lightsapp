@@ -6,35 +6,43 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 import com.lightsapp.ui.MainActivity;
 
 public class SoundController {
     private final String TAG = SoundController.class.getSimpleName();
     private MainActivity mContext;
-    public AudioRecord mAudioRec;
+
+    public AudioRecord mAudioRec = null;
 
     int sampleRate = 8000;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+    int bufferSize;
 
     public SoundController(Context context) {
         mContext = (MainActivity) context;
+        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
     }
 
-    public AudioRecord setup() {
+    public void setup() {
         try {
-            int bufferSize = AudioRecord.getMinBufferSize(sampleRate,
-                    channelConfiguration, audioEncoding);
-            mAudioRec = new AudioRecord(
-                    MediaRecorder.AudioSource.DEFAULT, sampleRate,
-                    channelConfiguration, audioEncoding, bufferSize);
-            mAudioRec.startRecording();
-            Log.v(TAG, "Start Recording");
-        } catch (Throwable t) {
-            Log.e(TAG, "Recording Failed");
+            mAudioRec = new AudioRecord(MediaRecorder.AudioSource.MIC,
+                                        sampleRate, channelConfiguration, audioEncoding,
+                                        bufferSize);
+            mContext.mSoundController.mAudioRec.startRecording();
         }
-        finally {
-            return mAudioRec;
+        catch (Exception e) {
+            Log.e(TAG, "Audio recording setup failed: " + e.getMessage());
+        }
+
+        try {
+            mContext.mSoundA = new SoundAnalyzer(mContext);
+            mContext.mSoundA.start();
+            mContext.mSoundA.activate();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Error starting SoundAnalyzer: " + e.getMessage());
         }
     }
 }

@@ -27,7 +27,7 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 
 public class InfoFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
-    private static final String TAG = SendFragment.class.getSimpleName();
+    private static final String TAG = InfoFragment.class.getSimpleName();
 
     private static final int GRAPH_SIZE = 500;
     private static final int MAX_LUM = 250;
@@ -115,7 +115,8 @@ public class InfoFragment extends Fragment {
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(mContext.graphView_dlum);
 
-        mContext.graphView_snd = newGraphView("Sound", 255);
+        mContext.graphView_snd = newGraphView("Sound", 512);
+        mContext.graphView_snd.setManualYAxisBounds(100, 0);
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -129,7 +130,7 @@ public class InfoFragment extends Fragment {
                     l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
                     l.width = (int)(mPreview.getWidth() / scale);
                     scale = 1;
-                    Log.v(TAG, "init camera preview done");
+                    Log.d(TAG, "init camera preview done");
                 }
 
                 if (msg.getData().containsKey("update")) {
@@ -207,20 +208,21 @@ public class InfoFragment extends Fragment {
                         Log.e(TAG, "out of bounds: " + e.getMessage());
                     }
                     catch (Exception e) {
-                        Log.e(TAG, "error while generating graph data: " + e.getMessage());
+                        Log.e(TAG, "error while generating light graph of light data: " + e.getMessage());
                     }
 
                     /* Sound graphs */
-                    double[] sframes = null;
                     GraphView.GraphViewData data_snd[] = null;
-                    if (mContext.mSoundA != null)
-                        sframes = mContext.mSoundA.getFrames();
-                    if (sframes != null && sframes.length > 0) {
+                    try {
+                        double[] sframes = mContext.mSoundA.getFrames();
                         data_snd = new GraphView.GraphViewData[sframes.length];
 
                         for (int i = 0; i < sframes.length; i++) {
-                            data_snd[i] = new GraphView.GraphViewData(i, sframes[i]);
+                            data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.log10(sframes[i]));
                         }
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "error while generating graph of sound data: " + e.getMessage());
                     }
 
                     GraphViewSeries series;
@@ -266,7 +268,6 @@ public class InfoFragment extends Fragment {
                     mContext.graphView_lum.scrollToEnd();
                     mContext.graphView_lum2.scrollToEnd();
                     mContext.graphView_dlum.scrollToEnd();
-                    mContext.graphView_snd.scrollToEnd();
                 }
             }
         };

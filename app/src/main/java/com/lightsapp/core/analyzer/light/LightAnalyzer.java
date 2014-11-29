@@ -28,7 +28,7 @@ public class LightAnalyzer extends MyRunnable {
     protected final Lock lock_frames;
 
     protected AtomicReference<Boolean> enable_analyze;
-    protected final int SLEEP_TIME = 200;
+    protected final int SLEEP_TIME = 100;
 
     protected int last_frame_analyzed = 0,
                   sensitivity = -1;
@@ -212,7 +212,7 @@ public class LightAnalyzer extends MyRunnable {
         }
     }
 
-    public synchronized  void setStatusInfo(String str) {
+    public synchronized void setStatusInfo(String str) {
         statusInfo = str;
     }
 

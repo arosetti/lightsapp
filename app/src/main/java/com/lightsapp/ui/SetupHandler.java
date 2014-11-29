@@ -25,6 +25,7 @@ public class SetupHandler extends HandlerThread {
 
     void setupHandler(final Context context) {
         mContext = (MainActivity) context;
+
         mHandlerSetup.post(new Runnable() {
             @Override
             public void run() {
@@ -37,37 +38,33 @@ public class SetupHandler extends HandlerThread {
                             mContext.mCamera = mContext.mCameraController.setup();
                         }
 
-                        if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
-                            mContext.mCamera != null && mContext.mCameraController != null) {
-                            mContext.mOutputController = new OutputController(mContext);
-                            if (mContext.mOutputController != null)
-                                mContext.mOutputController.start();
-                            else
-                                continue;
+                        if (mContext.mOutputController == null && mContext.mCamera != null) {
+                            mContext.mOutputController = new OutputController(context);
+                            mContext.mOutputController.start();
+                        }
 
-                            mContext.mSoundController = new SoundController(mContext);
+                        if (mContext.mSoundController == null) {
+                            mContext.mSoundController = new SoundController(context);
                             mContext.mSoundController.setup();
-                            mContext.mSoundA = new SoundAnalyzer(context);
-                            if (mContext.mSoundA != null) {
-                                mContext.mSoundA.start();
-                                mContext.mSoundA.activate();
-                            }
-                            else
-                                continue;
+                        }
 
+                        if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
+                            mContext.mCameraController != null && mContext.mCamera != null &&
+                            mContext.mOutputController != null &&
+                            mContext.mSoundController != null) {
                             signalStr(mContext.mHandlerInfo, "setup_done", "");
                             signalStr(mContext.mHandlerRecv, "setup_done", "");
                             done = true;
                         }
                     }
-                    catch (RuntimeException e) {
+                    catch (Exception e) {
                         Log.e(TAG, "setup error: " + e.getMessage());
                     }
 
                     try {
                         if (!done) {
                             Log.e(TAG, "setup failed, retrying... ");
-                            Thread.sleep(50);
+                            Thread.sleep(100);
                         }
                     }
                     catch (InterruptedException e) {
