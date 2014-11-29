@@ -8,7 +8,7 @@ import android.util.Log;
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
 import com.lightsapp.core.SoundController;
-import com.lightsapp.core.sound.SoundAnalyzer;
+import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 

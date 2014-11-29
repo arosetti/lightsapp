@@ -1,9 +1,9 @@
-package com.lightsapp.core.light;
+package com.lightsapp.core.analyzer.light;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.core.MorseAnalyzer;
+import com.lightsapp.core.analyzer.morse.MorseAnalyzer;
 import com.lightsapp.lightsapp.MainActivity;
 import com.lightsapp.utils.MyRunnable;
 

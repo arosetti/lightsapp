@@ -17,7 +17,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.lightsapp.core.light.Frame;
+import com.lightsapp.core.analyzer.light.Frame;
 import com.lightsapp.utils.math.LinearFilter;
 
 import java.util.List;

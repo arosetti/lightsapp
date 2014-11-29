@@ -1,7 +1,9 @@
-package com.lightsapp.core;
+package com.lightsapp.core.output;
 
 import android.hardware.Camera;
 import android.util.Log;
+
+import com.lightsapp.core.OutputController;
 
 public class LightOutput {
     private final String TAG = OutputController.class.getSimpleName();

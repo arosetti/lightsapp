@@ -1,4 +1,4 @@
-package com.lightsapp.core.sound;
+package com.lightsapp.core.analyzer.sound;
 
 import android.content.Context;
 import android.util.Log;
