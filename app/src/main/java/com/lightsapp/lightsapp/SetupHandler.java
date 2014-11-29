@@ -39,7 +39,6 @@ public class SetupHandler extends HandlerThread {
 
                         if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
                             mContext.mCamera != null && mContext.mCameraController != null) {
-
                             mContext.mOutputController = new OutputController(mContext);
                             if (mContext.mOutputController != null)
                                 mContext.mOutputController.start();
@@ -62,22 +61,19 @@ public class SetupHandler extends HandlerThread {
                         }
                     }
                     catch (RuntimeException e) {
-                        Log.e(TAG, "error: " + e.getMessage());
-                    }
-                    finally {
-                        if (done)
-                            Log.v(TAG, "setup done");
+                        Log.e(TAG, "setup error: " + e.getMessage());
                     }
 
                     try {
                         if (!done) {
-                            Log.v(TAG, "setup failed, retrying... ");
+                            Log.e(TAG, "setup failed, retrying... ");
                             Thread.sleep(50);
                         }
                     }
                     catch (InterruptedException e) {
                     }
                 }
+                Log.v(TAG, "setup done");
             }
         });
     }

@@ -24,7 +24,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     private MainActivity mCtx;
     private SurfaceHolder mHolder;
-    private Camera mCamera;
+    private Camera mCamera = null;
 
     private int format, width, height, fps_min, fps_max;
 
@@ -49,32 +49,36 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             }
         }
         catch(Exception e) {
+            Log.e(TAG, "camera open failed: " + e.getMessage());
             err = true;
         }
 
-        if(err) {
+        if (err) {
             try {
                 mCamera = Camera.open(0);
             }
             catch(Exception e) {
+                Log.e(TAG, "camera open failed: " + e.getMessage());
             }
         }
 
-        mHolder = getHolder();
-        mHolder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        if (mCamera != null) {
+            mHolder = getHolder();
+            mHolder.addCallback(this);
+            // deprecated setting, but required on Android versions prior to 3.0
+            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
-        switch (algorithm) {
-            case 1:
-                mCtx.mLightA = new ThresholdLightAnalyzer(mCtx);
-                break;
-            case 2:
-                mCtx.mLightA = new DerivativeLightAnalyzer(mCtx);
-                break;
-            default:
-                mCtx.mLightA = new BasicLightAnalyzer(mCtx);
+            int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
+            switch (algorithm) {
+                case 1:
+                    mCtx.mLightA = new ThresholdLightAnalyzer(mCtx);
+                    break;
+                case 2:
+                    mCtx.mLightA = new DerivativeLightAnalyzer(mCtx);
+                    break;
+                default:
+                    mCtx.mLightA = new BasicLightAnalyzer(mCtx);
+            }
         }
 
         return mCamera;
@@ -218,7 +222,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             }
         }
         catch (Exception e) {
-            Log.e(TAG, "DRAW ERROR");
+            Log.e(TAG, "DRAW ERROR: " + e.getMessage());
         }
     }
 }

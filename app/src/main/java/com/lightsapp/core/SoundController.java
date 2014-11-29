@@ -10,7 +10,7 @@ import com.lightsapp.lightsapp.MainActivity;
 
 public class SoundController {
     private final String TAG = SoundController.class.getSimpleName();
-    private MainActivity mCtx;
+    private MainActivity mContext;
     public AudioRecord mAudioRec;
 
     int sampleRate = 8000;
@@ -18,7 +18,7 @@ public class SoundController {
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
     public SoundController(Context context) {
-        mCtx = (MainActivity) context;
+        mContext = (MainActivity) context;
     }
 
     public AudioRecord setup() {

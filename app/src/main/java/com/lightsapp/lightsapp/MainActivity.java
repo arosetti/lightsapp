@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.lightsapp.core.CameraController;
+import com.lightsapp.core.MorseAnalyzer;
 import com.lightsapp.core.SoundController;
 import com.lightsapp.core.light.LightAnalyzer;
 import com.lightsapp.core.OutputController;
@@ -51,14 +52,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public SoundController mSoundController;
     public LightAnalyzer mLightA;
     public SoundAnalyzer mSoundA;
+    public MorseAnalyzer mMorseA;
 
     public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum, graphView_snd;
 
     public Handler mHandlerSend = null;
     public Handler mHandlerRecv = null;
     public Handler mHandlerInfo = null;
-
-    public float light = 0;
 
     private SetupHandler mThreadSetup = null;
 
@@ -141,8 +141,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onPostResume() {
         super.onPostResume();
-        // TODO display only once
-        if (!(hasCamera() || hasFrontCamera()) && !hasFlash()) {
+
+        if (!(hasCamera() || hasFrontCamera()) && !hasFlash()) { // TODO display only once
             Toast toast = Toast.makeText(this,
                                          "You need a camera and flash to send-receive using light.",
                                          Toast.LENGTH_LONG);
@@ -161,7 +161,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 toast.show();
             }
         }
-        setupLightSensor();
     }
 
     @Override
@@ -259,31 +258,4 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public boolean hasFlash() {
         return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
-
-    // TODO make a class for the following statements.
-    public void setupLightSensor() {
-        SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-
-        if (lightSensor != null) {
-            sensorManager.registerListener(lightSensorEventListener,
-                    lightSensor,
-                    SensorManager.SENSOR_DELAY_NORMAL);
-        }
-    }
-
-    private SensorEventListener lightSensorEventListener = new SensorEventListener() {
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-                light = event.values[0]; // TODO atomic access
-                //Log.v(TAG, "Sensor LightOutput: " + light);
-            }
-        }
-    };
 }

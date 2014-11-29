@@ -34,7 +34,7 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
               lframes_d.add(dd);
         }
 
-        Log.w(TAG, "START!");
+        Log.w(TAG, "Start!");
 
         long tstart = 0, tstop = 0, diff;
         long fmax = Long.MIN_VALUE;
@@ -53,23 +53,19 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
                             fmax = lframes_d.get(i);
                             fmax_id = i;
                             found = true;
-                            Log.w(TAG, "new max");
                         }
                         continue;
                     }
 
                     if (found) {
-                        Log.w(TAG, "maxid: " + fmax_id);
                         found = false;
                         fmax = Long.MIN_VALUE;
                         tstart = lframes.get(fmax_id).timestamp;
                         if (tstop == 0) {
                             statcode = SEARCH_LOW;
-                            Log.w(TAG, "Searching low front");
                         }
                         else {
                             statcode = SET_GAP;
-                            Log.w(TAG, "Setting gap");
                         }
                     }
                     break;
@@ -81,56 +77,49 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
                             fmin = lframes_d.get(i);
                             fmin_id = i;
                             found = true;
-                            Log.w(TAG, "new min");
                         }
                         continue;
                     }
 
                     if (found) {
-                        Log.w(TAG, "minid: " + fmin_id);
                         found = false;
                         fmin = Long.MAX_VALUE;
                         tstop = lframes.get(fmin_id).timestamp;
                         statcode = SET_DATA;
-                        Log.w(TAG, "Setting data");
                     }
                     break;
 
                 case SET_DATA:
                     diff = tstop - tstart;
 
-                    Log.w(TAG, "data diff: " + diff);
-                    if (mMorseAnalyzer.getAutoInterval() ? (diff > (min_time)):
-                        (diff > (long) (min_fraction * (float) mMorseAnalyzer.getSpeedBase())) ) {
+                    Log.d(TAG, "data " + diff + "ms");
+                    if (mContext.mMorseA.getAutoInterval() ? (diff > (min_time)):
+                        (diff > (long) (min_fraction * (float) mContext.mMorseA.getSpeedBase())) ) {
                         ldata.add(new Long(diff));
                         statcode = SEARCH_HIGH;
-                        Log.w(TAG, "Searching high front for the gap end");
                     }
                     else {
                         statcode = SEARCH_LOW;
-                        Log.w(TAG, "Skip short data frame, go back to search the real low front");
                     }
                     break;
 
                 case SET_GAP:
                     diff = tstart - tstop;
 
-                    Log.w(TAG, "gap diff: " + diff);
-                    if (mMorseAnalyzer.getAutoInterval() ? (diff > (min_time)):
-                        (diff > (long) (min_fraction * (float) mMorseAnalyzer.getSpeedBase())) ) {
+                    Log.d(TAG, "gap  " + diff + "ms");
+                    if (mContext.mMorseA.getAutoInterval() ? (diff > (min_time)):
+                        (diff > (long) (min_fraction * (float) mContext.mMorseA.getSpeedBase())) ) {
                         ldata.add(new Long(-diff));
                         statcode = SEARCH_LOW;
-                        Log.w(TAG, "Searching low front for the data end");
                     }
                     else {
                         statcode = SEARCH_HIGH;
-                        Log.w(TAG, "Skip short gap frame, go back to search the real high front");
                     }
                     break;
             }
         }
 
         if (ldata.size() > 0)
-            mMorseAnalyzer.analyze(ldata);
+            mContext.mMorseA.analyze(ldata);
     }
 }
