@@ -13,53 +13,46 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class SoundAnalyzer extends MyRunnable {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
-    protected String NAME = "SoundAnalyzer";
 
-    protected MainActivity mCtx;
+    protected MainActivity mContext;
 
-    protected final int SLEEP_TIME = 100;
-
-    //private RealDoubleFFT transformer;
-    private int blockSize = 256;
+    protected final int SLEEP_TIME = 30;
+    private int blockSize = 1024;
     private short[] buffer;
-    //private double[] toTransform;
 
-    BlockingQueue<SoundDataBlock> blockingQueueSound;
-
+    BlockingQueue<SoundDataBlock> bQueueSound;
     protected List<double[]> lfreqblocks;
 
     public SoundAnalyzer(Context context) {
         super(true);
 
-        mCtx = (MainActivity) context;
-        //transformer = new RealDoubleFFT(blockSize);
+        mContext = (MainActivity) context;
 
-        blockingQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
-        //toTransform = new double[blockSize];
+        bQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
         lfreqblocks = new ArrayList<double[]>();
+        buffer = new short[blockSize];
     }
 
     public double[] getFrames()
     {
+        SoundDataBlock data = null;
+
         try {
-            // Questa parte va spostata nell'analisi e creato una copia del vettore per il grafico
-            SoundDataBlock dataBlock_2 = blockingQueueSound.take();
-            Spectrum spectrum = dataBlock_2.FFT();
+            if(!bQueueSound.isEmpty())
+                data = bQueueSound.peek();
+            bQueueSound.clear();
+        }
+        catch (Exception e){
+            Log.d(TAG, "queue error: " + e.getMessage());
+        }
 
+        if (data != null) {
+            Spectrum spectrum = data.FFT();
             //spectrum.normalize();
-
-            double[] toReturn = new double[spectrum.length()];
-
-            for (int i = 0; i < spectrum.length(); ++i)
-            {
-                toReturn[i] = spectrum.get(i);
-            }
-            return toReturn;
+            return spectrum.getData();
         }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return null;
-        }
+
+        return null;
     }
 
     @Override
@@ -67,64 +60,24 @@ public class SoundAnalyzer extends MyRunnable {
         try {
             Thread.sleep(SLEEP_TIME);
 
-            buffer = new short[blockSize];
+            int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
 
-            int bufferReadResult = mCtx.mSoundController.mAudioRec.read(buffer, 0, blockSize);
-
-            SoundDataBlock dataBlock = new SoundDataBlock(buffer, blockSize, bufferReadResult);
-
-            blockingQueueSound.clear();
-            blockingQueueSound.put(dataBlock);
-
-            /*toTransform = new double[blockSize];
-            for (int i = 0; i < blockSize && i < bufferReadResult; i++) {
-                toTransform[i] = (double) buffer[i] / 32768.0; // signed   16bit
+            if (ret > 0) {
+                SoundDataBlock data = new SoundDataBlock(buffer, blockSize, ret);
+                bQueueSound.put(data);
             }
-            transformer.ft(toTransform);*/
-
-            // Calculate the Real and imaginary and Magnitude
-            /*for(int i = 0; i < blockSize; i++){
-                // real is stored in first part of array
-                re[i] = toTransform[i*2];
-                // imaginary is stored in the sequential part
-                im[i] = toTransform[(i*2)+1];
-                // magnitude is calculated by the square root of (imaginary^2 + real^2)
-                magnitude[i] = Math.sqrt((re[i] * re[i]) + (im[i]*im[i]));
-            }*/
-
-            //lfreqblocks.add(toTransform);
-
-            Thread.sleep(SLEEP_TIME);
-            //if (enable_analyze.get())
-                //analyze();
+            else
+                Log.v(TAG, "audio recording ret is 0");
         }
         catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+
         }
         catch (Exception e) {
             Log.e(TAG, "error analyzing audio frames: " + e.getMessage());
         }
-        finally {
-            //signalGraph();
-        }
     }
 
     public void reset() {
-        /*lock_frames_tmp.lock();
-        try {
-            sframes_tmp.clear();
-        }
-        finally {
-            lock_frames_tmp.unlock();
-        }
 
-        lock_frames.lock();
-        try {
-            sframes.clear();
-        }
-        finally {
-            lock_frames.unlock();
-        }*/
     }
-
 }

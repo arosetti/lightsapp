@@ -24,6 +24,8 @@ public class Spectrum {
                 spectrum[i] /= maxValue;
     }
 
+    public double[] getData() { return spectrum; }
+
     public double get(int index)
     {
         return spectrum[index];

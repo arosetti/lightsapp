@@ -42,14 +42,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public SharedPreferences mPrefs;
 
-    public Camera mCamera;
-    public MorseConverter mMorse;
-    public OutputController mOutputController;
-    public CameraController mCameraController;
-    public SoundController mSoundController;
-    public LightAnalyzer mLightA;
-    public SoundAnalyzer mSoundA;
-    public MorseAnalyzer mMorseA;
+    public Camera mCamera = null;
+    public MorseConverter mMorse = null;
+    public OutputController mOutputController = null;
+    public CameraController mCameraController = null;
+    public SoundController mSoundController = null;
+    public LightAnalyzer mLightA = null;
+    public SoundAnalyzer mSoundA = null;
+    public MorseAnalyzer mMorseA = null;
 
     public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum, graphView_snd;
 
