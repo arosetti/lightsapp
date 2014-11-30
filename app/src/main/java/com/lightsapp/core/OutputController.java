@@ -34,7 +34,6 @@ public class OutputController extends MyRunnable {
         mBeepOutput = new BeepOutput();
         mLightOutput = new LightOutput(mContext.mCameraController.getCamera());
 
-        // TODO better beep freq handling.
         try {
             beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
         }
@@ -45,7 +44,7 @@ public class OutputController extends MyRunnable {
 
         if(beepFreq > 12000 || beepFreq < 100) {
             Toast t = Toast.makeText(mContext,
-                    "Invalid beep sampleRate, defaulting to 850Hz, valid range [100,12KHz]",
+                    "Invalid beep sampleRate, valid range [100,12KHz], defaulting to 850Hz.",
                     Toast.LENGTH_SHORT);
             t.show();
             beepFreq = 850;
@@ -58,7 +57,7 @@ public class OutputController extends MyRunnable {
         return (System.currentTimeMillis() - timestamp);
     }
 
-    private void flash(int t) {
+    private void signal(int t) {
         long ret = 0;
 
         if (enable_light)
@@ -83,7 +82,7 @@ public class OutputController extends MyRunnable {
     }
 
     @Override
-    public void ondie() {
+    public void onDie() {
         mLightOutput.setLight(false);
         signalStr(mContext.mHandlerSend, "light", "off");
         signalInt(mContext.mHandlerSend, "progress", -1);
@@ -102,7 +101,7 @@ public class OutputController extends MyRunnable {
             enable_light = mContext.mPrefs.getBoolean("enable_light", false);
 
             if (!getStatus()) {
-                Log.v(TAG, "STOPPING LED OUTPUT");
+                Log.v(TAG, "Transmission canceled");
                 break;
             }
 
@@ -114,7 +113,7 @@ public class OutputController extends MyRunnable {
                     signalStr(mContext.mHandlerSend, "message", "DOT\n" + pattern[i] + "ms");
                 progress++;
                 signalInt(mContext.mHandlerSend, "progress", progress);
-                flash((int) Math.abs(pattern[i]));
+                signal((int) Math.abs(pattern[i]));
                 signalStr(mContext.mHandlerSend, "light", "off");
             }
             else {
@@ -133,6 +132,6 @@ public class OutputController extends MyRunnable {
             setLoop(true);
         else
             setLoop(false);
-        Log.v(TAG, "END LED OUTPUT");
+        Log.v(TAG, "Transmission completed");
     }
 }
