@@ -20,7 +20,7 @@ import java.util.List;
 public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private final String TAG = CameraController.class.getSimpleName();
 
-    private MainActivity mCtx;
+    private MainActivity mContext;
     private SurfaceHolder mHolder;
     private Camera mCamera = null;
 
@@ -30,13 +30,13 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         super(context);
         width = 0;
         height = 0;
-        mCtx = (MainActivity) context;
+        mContext = (MainActivity) context;
     }
 
     public Camera setup() {
         boolean err = false;
-        boolean hasCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-        boolean hasFrontCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+        boolean hasCamera = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        boolean hasFrontCamera = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
 
         mCamera = null;
         try {
@@ -67,16 +67,16 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             // deprecated setting, but required on Android versions prior to 3.0
             mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-            int algorithm = Integer.parseInt(mCtx.mPrefs.getString("algorithm", "2"));
+            int algorithm = Integer.parseInt(mContext.mPrefs.getString("algorithm", "2"));
             switch (algorithm) {
                 case 1:
-                    mCtx.mLightA = new ThresholdLightAnalyzer(mCtx);
+                    mContext.mLightA = new ThresholdLightAnalyzer(mContext);
                     break;
                 case 2:
-                    mCtx.mLightA = new DerivativeLightAnalyzer(mCtx);
+                    mContext.mLightA = new DerivativeLightAnalyzer(mContext);
                     break;
                 default:
-                    mCtx.mLightA = new BasicLightAnalyzer(mCtx);
+                    mContext.mLightA = new BasicLightAnalyzer(mContext);
             }
         }
 
@@ -149,7 +149,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (format == ImageFormat.NV21) {
-            mCtx.mLightA.addFrame(data, width, height);
+            mContext.mLightA.addFrame(data, width, height);
         }
         else {
             Log.e(TAG, "wrong image format");
@@ -232,24 +232,31 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         try {
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(2f);
+            paint.setStrokeWidth(3f);
             paint.setAlpha(200);
             paint.setAntiAlias(true);
-            paint.setColor(Color.GREEN);
+            paint.setColor(Color.RED);
 
             canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 28, paint);
 
             paint = new Paint();
-            paint.setColor(Color.RED);
+            paint.setColor(Color.GREEN);
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setTextSize(13);
 
-            String lines[] = mCtx.mLightA.getStatusInfo().split("\\r?\\n");
+            String lines[] = mContext.mLightA.getStatusInfo().split("\\r?\\n");
             int i = 0;
             for ( String line: lines ) {
                 canvas.drawText(line, canvas.getWidth()/2, 12 + i * 12, paint);
                 i++;
             }
+
+            paint.setColor(Color.RED);
+            canvas.drawText(mContext.mMorseA.getCurrentMorse(),    // TODO get last 30chars.
+                    canvas.getWidth()/2,  canvas.getHeight() - 16, paint);
+            paint.setTextSize(18);
+            canvas.drawText(mContext.mMorseA.getCurrentText(),
+                            canvas.getWidth()/2,  canvas.getHeight() - 32, paint);
         }
         catch (Exception e) {
             Log.e(TAG, "Draw Error: " + e.getMessage());

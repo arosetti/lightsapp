@@ -20,6 +20,8 @@ public class MorseAnalyzer {
     protected boolean auto_interval = false;
     protected long speed_base;
 
+    protected String str = "";
+
     public MorseAnalyzer(Context context) {
         mContext = (MainActivity) context;
 
@@ -118,10 +120,19 @@ public class MorseAnalyzer {
     }
 
     protected final void signalData(List<Long> ldata) {
-        String str = mMorse.getText(ListToPrimitiveArray(ldata));
+        synchronized (str) {
+            str = mMorse.getText(ListToPrimitiveArray(ldata));
+        }
         signalStr(mContext.mHandlerRecv, "data_message_text", str);
         signalStr(mContext.mHandlerRecv, "data_message_morse", mMorse.getMorse(str));
         signalStr(mContext.mHandlerRecv, "data_message_morse_times", ldata.toString().substring(1, ldata.size() - 1));
     }
 
+    public synchronized String getCurrentText() {
+        return str;
+    }
+
+    public synchronized String getCurrentMorse() {
+        return mMorse.getMorse(str);
+    }
 }

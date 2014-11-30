@@ -90,8 +90,7 @@ public abstract class MyRunnable implements Runnable {
     public void afterloop() {
     }
 
-    public void ondie() {
-
+    public void onDie() {
     }
 
     public final void run() {
@@ -118,7 +117,7 @@ public abstract class MyRunnable implements Runnable {
                 Log.d(TAG, "Thread Interrupted");
                 Thread.currentThread().interrupt();
                 run = false;
-                ondie();
+                onDie();
             }
             catch (Exception e) {
                 Log.e(TAG, "loop exception -> " + e.toString() + " " + e.getMessage());
