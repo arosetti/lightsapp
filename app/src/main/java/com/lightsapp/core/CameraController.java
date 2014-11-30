@@ -205,7 +205,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             paint.setAntiAlias(true);
             paint.setColor(Color.GREEN);
 
-            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 20, paint);
+            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 28, paint);
 
             paint = new Paint();
             paint.setColor(Color.RED);
