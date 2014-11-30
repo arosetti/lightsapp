@@ -7,18 +7,21 @@ import android.util.Log;
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();
 
-    public long delta, timestamp;
-    public long luminance = -1;
+    private byte[] data_raw = null;
     private final int width, height, size;
-    public byte[] data_raw = null;
 
-    public Frame(byte [] data, int width, int height, long timestamp, long delta) {
+    public long delta, timestamp, luminance = -1;
+
+    private boolean enable_crop;
+
+    public Frame(byte [] data, int width, int height, long timestamp, long delta, boolean crop) {
         this.data_raw = data;
         this.width = width;
         this.height = height;
         size = width * height;
         this.timestamp = timestamp;
         this.delta = delta;
+        this.enable_crop = crop;
     }
 
     public Frame analyze() {
@@ -40,8 +43,14 @@ public class Frame {
         luminance = (l >= -1) ? l : -1;
     }
 
+    private int dist(int x, int y) {
+        return (int) Math.sqrt((width/2 - x) * (width/2 - x) + (height/2 - y) * (height/2 - y));
+    }
+
     private long getLuminance(byte[] data, int width, int height) {
         long ysum = 0;
+
+        int max_dist = dist(0, 0);
 
         try {
             for (int j = 0, yp = 0; j < height; j++) {
@@ -55,7 +64,9 @@ public class Frame {
                         //u = (0xff & data[uvp++]) - 128;
                         uvp += 2;
                     }
-                    ysum += (long) y;
+
+                    if (!enable_crop || (enable_crop && (dist(i, j) < (max_dist / 4))))
+                        ysum += (long) y;
                 }
             }
         }
@@ -64,7 +75,10 @@ public class Frame {
             return -1;
         }
 
-        return (int) ((float)ysum / (float)size);
+        if (enable_crop)
+            return (int) ((float)ysum / (Math.PI * max_dist * max_dist / 16));
+        else
+            return (int) ((float)ysum / (float)size);
     }
 
     @Override

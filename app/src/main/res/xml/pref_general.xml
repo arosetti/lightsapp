@@ -64,6 +64,12 @@
             android:summary="@string/pref_description_enable_light"
             android:defaultValue="true"/>
 
+        <CheckBoxPreference
+            android:key="enable_crop"
+            android:title="@string/pref_title_crop_center"
+            android:summary="@string/pref_description_crop_center"
+            android:defaultValue="true"/>
+
         <ListPreference
             android:key="algorithm"
             android:title="@string/pref_title_light_algorithm"

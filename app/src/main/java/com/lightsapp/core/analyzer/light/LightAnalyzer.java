@@ -28,6 +28,7 @@ public class LightAnalyzer extends MyRunnable {
     protected final Lock lock_frames;
 
     protected AtomicReference<Boolean> enable_analyze;
+    protected boolean enable_crop;
     protected final int SLEEP_TIME = 100;
 
     protected int last_frame_analyzed = 0,
@@ -50,6 +51,7 @@ public class LightAnalyzer extends MyRunnable {
         lframes_tmp = new ArrayList<Frame>();
 
         enable_analyze = new AtomicReference<Boolean>(false);
+        enable_crop = mContext.mPrefs.getBoolean("enable_crop", true);
 
         mContext.mMorseA = new MorseAnalyzer(context);
     }
@@ -234,7 +236,7 @@ public class LightAnalyzer extends MyRunnable {
         try {
             timestamp_now = System.currentTimeMillis();
             delta = (timestamp_last == 0)? 0 : (timestamp_now - timestamp_last);
-            frame = new Frame(data, width, height, timestamp_now, delta);
+            frame = new Frame(data, width, height, timestamp_now, delta, enable_crop);
             lframes_tmp.add(frame);
             timestamp_last = System.currentTimeMillis();
             //Log.v(TAG, "FRAME SIZE: " + data.length / 1000 + " KByte");
