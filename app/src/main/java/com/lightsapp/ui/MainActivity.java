@@ -42,14 +42,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public SharedPreferences mPrefs;
 
-    public Camera mCamera = null;
-    public MorseConverter mMorse = null;
     public OutputController mOutputController = null;
     public CameraController mCameraController = null;
     public SoundController mSoundController = null;
     public LightAnalyzer mLightA = null;
     public SoundAnalyzer mSoundA = null;
     public MorseAnalyzer mMorseA = null;
+    public MorseConverter mMorse = null;
 
     public GraphView graphView_delay, graphView_lum, graphView_lum2, graphView_dlum, graphView_snd;
 
@@ -72,23 +71,21 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v(TAG, "RESUME");
-        if (mCamera == null) {
-            setup(this);
-        }
-        mMorse = new MorseConverter(Integer.valueOf(mPrefs.getString("interval", "500")));
+        Log.d(TAG, "onResume");
+        setup(this);
+        mMorse = new MorseConverter(
+                    Integer.valueOf(mPrefs.getString("interval", "500")));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v(TAG, "PAUSE");
+        Log.d(TAG, "onPause");
         if (mOutputController != null)
             mOutputController.stop();
         mOutputController = null;
         if (mCameraController != null)
             mCameraController.stopPreviewAndFreeCamera();
-        mCamera = null;
         mThreadSetup = null;
         mCameraController = null;
     }
@@ -96,14 +93,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.v(TAG, "STOP");
+        Log.d(TAG, "onStop");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.v(TAG, "CREATE");
+        Log.d(TAG, "onCreate");
 
         // prevent screen switching off
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

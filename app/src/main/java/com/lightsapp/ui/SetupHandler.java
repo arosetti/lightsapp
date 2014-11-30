@@ -1,6 +1,7 @@
 package com.lightsapp.ui;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.util.Log;
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
 import com.lightsapp.core.SoundController;
+import com.lightsapp.core.analyzer.morse.MorseConverter;
 import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
@@ -31,14 +33,15 @@ public class SetupHandler extends HandlerThread {
             public void run() {
                 boolean done = false;
 
+                Camera camera = null;
                 while (!done) {
                     try {
-                        if (mContext.mCamera == null) {
+                        if (mContext.mCameraController == null) {
                             mContext.mCameraController = new CameraController(mContext);
-                            mContext.mCamera = mContext.mCameraController.setup();
+                            camera = mContext.mCameraController.setup();
                         }
 
-                        if (mContext.mOutputController == null && mContext.mCamera != null) {
+                        if (mContext.mOutputController == null && camera != null) {
                             mContext.mOutputController = new OutputController(context);
                             mContext.mOutputController.start();
                         }
@@ -49,7 +52,7 @@ public class SetupHandler extends HandlerThread {
                         }
 
                         if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
-                            mContext.mCameraController != null && mContext.mCamera != null &&
+                            mContext.mCameraController != null && camera != null &&
                             mContext.mOutputController != null &&
                             mContext.mSoundController != null) {
                             signalStr(mContext.mHandlerInfo, "setup_done", "");
