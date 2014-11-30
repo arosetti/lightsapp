@@ -28,8 +28,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public CameraController(Context context) {
         super(context);
-        width = 320;
-        height = 240;
+        width = 0;
+        height = 0;
         mCtx = (MainActivity) context;
     }
 
@@ -38,6 +38,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         boolean hasCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         boolean hasFrontCamera = mCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
 
+        mCamera = null;
         try {
             if (hasCamera) {
                 mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
@@ -82,8 +83,67 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         return mCamera;
     }
 
+    public Camera getCamera() { return mCamera; }
+
+    public boolean isCameraNull() { return mCamera == null; }
+
     public String getInfo() {
         return width + "x" + height + "@[" + fps_min /1000 + "-" + fps_max/1000 + "]fps";
+    }
+
+    private void setCameraParameters() {
+        try {
+            mCamera.setDisplayOrientation(90);
+            Camera.Parameters params = mCamera.getParameters();
+
+            /* size */
+            List<Camera.Size> sizes = params.getSupportedPictureSizes();
+            Camera.Size current_size = null;
+
+            for(int i=0; i<sizes.size(); i++) {
+                Camera.Size size = sizes.get(i);
+                Log.d(TAG, "Supported size: " + size.width + ", " + size.height);
+                if( current_size == null || size.width < current_size.width || (size.width == current_size.width && size.height < current_size.height) ) {
+                    current_size = size;
+                }
+            }
+            if( current_size != null ) {
+                Log.d(TAG, "Current size: " + current_size.width + ", " + current_size.height);
+                params.setPictureSize(current_size.width, current_size.height);
+                mCamera.setParameters(params);
+            }
+            width = params.getPreviewSize().width;
+            height = params.getPreviewSize().height;
+
+            List<String> focusModes = params.getSupportedFocusModes();
+            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
+            params.setRecordingHint(true);
+            params.setAutoExposureLock(true);
+            params.setAutoWhiteBalanceLock(true);
+
+            params.setPreviewFormat(ImageFormat.NV21);
+            this.format = params.getPreviewFormat();
+
+            /* fps */
+            List<int[]>  fpsRange = params.getSupportedPreviewFpsRange();
+            if (fpsRange != null && !fpsRange.isEmpty()) {
+                fps_min = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MIN_INDEX];
+                fps_max = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MAX_INDEX];
+                Log.d(TAG, "Supported fps: " + fps_min/1000 + "-" + fps_max/1000 + "fps");
+            }
+            else {
+                fps_min = 29000;
+                fps_max = 29000;
+            }
+            params.setPreviewFpsRange(fps_min, fps_max);
+
+            mCamera.setParameters(params);
+        }
+        catch (Exception e) {
+            Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
+        }
     }
 
     @Override
@@ -106,26 +166,34 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceCreated()");
         try {
-            setWillNotDraw(false);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
-        } catch (IOException e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-        } catch (Exception e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
+        catch (IOException e) {
+            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        setCameraParameters();
+        setWillNotDraw(false);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed()");
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
             mCamera.setPreviewCallback(null);
         }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        if (mHolder.getSurface() == null) {
+        Log.d(TAG, "surfaceChanged() " + w + ", " + h);
+
+        if (mHolder.getSurface() == null || mCamera == null) {
             return;
         }
 
@@ -135,43 +203,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         catch (Exception e) {
         }
 
-        try {
-            mCamera.setDisplayOrientation(90);
-            Camera.Parameters params = mCamera.getParameters();
-
-            this.format = params.getPreviewFormat();
-
-            List<String> focusModes = params.getSupportedFocusModes();
-            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-            }
-
-            width = params.getPreviewSize().width;
-            height = params.getPreviewSize().height;
-
-            params.setPictureSize(width, height);
-            params.setPreviewFormat(ImageFormat.NV21);
-            params.setRecordingHint(true);
-            params.setAutoExposureLock(true);
-            params.setAutoWhiteBalanceLock(true);
-
-            List<int[]>  fpsRange = params.getSupportedPreviewFpsRange();
-            if (fpsRange != null && !fpsRange.isEmpty()) {
-                fps_min = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MIN_INDEX];
-                fps_max = fpsRange.get(fpsRange.size() - 1)[params.PREVIEW_FPS_MAX_INDEX];
-
-            }
-            else {
-                fps_min = 29000;
-                fps_max = 29000;
-            }
-            params.setPreviewFpsRange(fps_min, fps_max);
-            params.setPreviewSize(width, height);
-            mCamera.setParameters(params);
-        }
-        catch (Exception e) {
-            Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
-        }
+        setCameraParameters();
 
         try {
             mCamera.setPreviewCallback(this);
@@ -220,7 +252,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             }
         }
         catch (Exception e) {
-            Log.e(TAG, "DRAW ERROR: " + e.getMessage());
+            Log.e(TAG, "Draw Error: " + e.getMessage());
         }
     }
 }

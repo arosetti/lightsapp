@@ -22,7 +22,6 @@ public class OutputController extends MyRunnable {
     private int progress;
     private boolean enable_sound, enable_light;
 
-    private MorseConverter mMorse;
     private BeepOutput mBeepOutput;
     private LightOutput mLightOutput;
     private int beepFreq;
@@ -32,9 +31,8 @@ public class OutputController extends MyRunnable {
 
         mContext = (MainActivity) context;
 
-        mMorse = mContext.mMorse;
         mBeepOutput = new BeepOutput();
-        mLightOutput = new LightOutput(mContext.mCamera);
+        mLightOutput = new LightOutput(mContext.mCameraController.getCamera());
 
         // TODO better beep freq handling.
         try {
@@ -80,8 +78,8 @@ public class OutputController extends MyRunnable {
 
     public void setString(String str) {
         data = new String(str);
-        if (mMorse != null)
-            pattern = mMorse.pattern(data);
+        if (mContext.mMorse != null)
+            pattern = mContext.mMorse.pattern(data);
     }
 
     @Override
@@ -93,10 +91,10 @@ public class OutputController extends MyRunnable {
 
     @Override
     public void loop() {
-        final long DOT = mMorse.get("DOT");
-        final long LETTER_GAP = mMorse.get("LETTER_GAP");
-        final long WORD_GAP = mMorse.get("WORD_GAP");
-        pattern = mMorse.pattern(data);
+        final long DOT = mContext.mMorse.get("DOT");
+        final long LETTER_GAP = mContext.mMorse.get("LETTER_GAP");
+        final long WORD_GAP = mContext.mMorse.get("WORD_GAP");
+        pattern = mContext.mMorse.pattern(data);
         progress = 0;
 
         for (int i = 0; i < pattern.length; i++) {
