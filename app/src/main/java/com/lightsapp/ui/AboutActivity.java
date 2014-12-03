@@ -24,14 +24,20 @@ public class AboutActivity extends Activity {
         setContentView(R.layout.activity_about);
 
         String appname = "Lightsapp";
-        String version;
+        String version = "?";
 
         try {
             PackageInfo manager = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = manager.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            version = "?";
         }
+        catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (version == null)
+            version = "?";
 
         TextView mTextViewInfo = (TextView) findViewById(R.id.TextViewInfo);
 
