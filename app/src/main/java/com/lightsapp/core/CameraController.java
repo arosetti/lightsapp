@@ -158,7 +158,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void stopPreviewAndFreeCamera() {
         if (mCamera != null) {
-            mCamera.setPreviewCallback(this);
+            mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -171,8 +171,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         }
-        catch (IOException e) {
-            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+        catch (Exception e) {
+            Log.d(TAG, "Error creating surface: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -182,11 +182,15 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.d(TAG, "surfaceDestroyed()");
-        if (mCamera != null) {
+        try {
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
             mCamera.setPreviewCallback(null);
+        }
+        catch (Exception e) {
+            Log.d(TAG, "Error destroying surface: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -211,7 +215,8 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             mCamera.startPreview();
         }
         catch (Exception e) {
-            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+            Log.d(TAG, "Error surface changed: " + e.getMessage());
+            e.printStackTrace();
         }
 
         Log.i(TAG, getInfo());
@@ -260,6 +265,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
         catch (Exception e) {
             Log.e(TAG, "Draw Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
