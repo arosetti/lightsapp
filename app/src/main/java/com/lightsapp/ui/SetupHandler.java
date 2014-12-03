@@ -10,10 +10,9 @@ import android.widget.Toast;
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
 import com.lightsapp.core.SoundController;
-import com.lightsapp.core.analyzer.morse.MorseConverter;
-import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
+
 
 public class SetupHandler extends HandlerThread {
     private final String TAG = SetupHandler.class.getSimpleName();

@@ -26,6 +26,7 @@ import com.lightsapp.lightsapp.R;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
     private static final String TAG = SendFragment.class.getSimpleName();

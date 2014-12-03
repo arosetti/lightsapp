@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 
+
 public class LightAnalyzer extends MyRunnable {
     protected final String TAG = LightAnalyzer.class.getSimpleName();
     protected String NAME = "???";
@@ -75,7 +76,6 @@ public class LightAnalyzer extends MyRunnable {
             Thread.sleep(SLEEP_TIME);
             update();
 
-            Thread.sleep(SLEEP_TIME);
             if (enable_analyze.get())
                 analyze();
         }
@@ -214,8 +214,8 @@ public class LightAnalyzer extends MyRunnable {
             if(lframes.size() > 0) {
                 try {
                     setStatusInfo("frames: " + lframes.size() +
-                            "\nfps:" + 1000 / d_avg +
-                            "\nlum: " + lframes.get(last_frame_analyzed).luminance);
+                                  "\nfps: " + 1000 / d_avg +
+                                  "\nlum: " + lframes.get(last_frame_analyzed).luminance);
                 }
                 catch (Exception e) {
                     Log.d(TAG, "error logging statistics: " + e.getMessage());

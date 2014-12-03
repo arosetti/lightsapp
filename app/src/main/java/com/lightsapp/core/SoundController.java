@@ -9,6 +9,7 @@ import android.util.Log;
 import com.lightsapp.core.analyzer.sound.SoundAnalyzer;
 import com.lightsapp.ui.MainActivity;
 
+
 public class SoundController {
     private final String TAG = SoundController.class.getSimpleName();
     private MainActivity mContext;

@@ -8,6 +8,7 @@ import java.util.List;
 
 import static com.lightsapp.core.analyzer.light.DerivativeLightAnalyzer.StatusCode.*;
 
+
 public class DerivativeLightAnalyzer extends LightAnalyzer {
     enum StatusCode{SEARCH_HIGH, SET_DATA, SEARCH_LOW, SET_GAP}
     boolean smooth = false;
@@ -36,6 +37,7 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
 
         Log.w(TAG, "Start!");
 
+        long fSensitivity = sensitivity / 2;
         long tstart = 0, tstop = 0, diff;
         long fmax = Long.MIN_VALUE;
         long fmin = Long.MAX_VALUE;
@@ -47,7 +49,7 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
         for (int i = 0; i < (lframes_d.size() - 1); i++) {
             switch (statcode) {
                 case SEARCH_HIGH:
-                    if ((lframes_d.get(i) > sensitivity)) {
+                    if ((lframes_d.get(i) > fSensitivity)) {
                         if (lframes_d.get(i) > fmax)
                         {
                             fmax = lframes_d.get(i);
@@ -71,7 +73,7 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
                     break;
 
                 case SEARCH_LOW:
-                    if ((lframes_d.get(i) < -sensitivity)) {
+                    if ((lframes_d.get(i) < -fSensitivity)) {
                         if (lframes_d.get(i) < fmin)
                         {
                             fmin = lframes_d.get(i);

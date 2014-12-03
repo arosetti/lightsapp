@@ -3,6 +3,7 @@ package com.lightsapp.core.output;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class BeepOutput {
     private final String TAG = BeepOutput.class.getSimpleName();
 

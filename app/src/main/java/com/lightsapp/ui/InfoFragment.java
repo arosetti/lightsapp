@@ -27,13 +27,14 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 import static com.lightsapp.utils.math.DFT.*;
 import static com.lightsapp.utils.math.DFT.RECTANGULAR;
 
+
 public class InfoFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
     private static final String TAG = InfoFragment.class.getSimpleName();
 
     private static final int GRAPH_SIZE = 500;
     private static final int MAX_LUM = 250;
-    private static float CAMERA_RATIO = 3f/4f;
+    private static float CAMERA_RATIO = 9f/11f;
     private static float scale = 1.3f;
 
     private MainActivity mContext;
