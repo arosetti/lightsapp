@@ -55,7 +55,7 @@ public class SendFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateSettings();
+        updateSettings(); // TODO bugfix ?! on new install
         resetText();
     }
 

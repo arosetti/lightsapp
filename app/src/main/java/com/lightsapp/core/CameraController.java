@@ -43,7 +43,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             if (hasCamera) {
                 mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
             }
-            else if (hasFrontCamera) {
+            else if (hasFrontCamera && !hasCamera) {
                 mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
             }
         }
@@ -88,7 +88,11 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public boolean isCameraNull() { return mCamera == null; }
 
     public String getInfo() {
-        return width + "x" + height + "@[" + fps_min /1000 + "-" + fps_max/1000 + "]fps";
+        return width + "x" + height + "@[" + fps_min / 1000 + "-" + fps_max / 1000 + "]fps";
+    }
+
+    public float getRatio() {
+        return (float) width / (float) height;
     }
 
     private void setCameraParameters() {
@@ -97,23 +101,24 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             Camera.Parameters params = mCamera.getParameters();
 
             /* size */
-            List<Camera.Size> sizes = params.getSupportedPictureSizes();
+            List<Camera.Size> sizes = params.getSupportedPreviewSizes();
             Camera.Size current_size = null;
 
             for(int i=0; i<sizes.size(); i++) {
                 Camera.Size size = sizes.get(i);
                 Log.d(TAG, "Supported size: " + size.width + ", " + size.height);
-                if( current_size == null || size.width < current_size.width || (size.width == current_size.width && size.height < current_size.height) ) {
+                if( current_size == null || size.width < current_size.width ||
+                   (size.width == current_size.width && size.height < current_size.height) ) {
                     current_size = size;
                 }
             }
             if( current_size != null ) {
                 Log.d(TAG, "Current size: " + current_size.width + ", " + current_size.height);
-                params.setPictureSize(current_size.width, current_size.height);
-                mCamera.setParameters(params);
+                params.setPreviewSize(current_size.width, current_size.height);
             }
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
+            Log.d(TAG, "width: " + width + " height: " + height);
 
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
@@ -156,15 +161,6 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    public void stopPreviewAndFreeCamera() {
-        if (mCamera != null) {
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
-        }
-    }
-
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated()");
         try {
@@ -183,10 +179,12 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.d(TAG, "surfaceDestroyed()");
         try {
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
-            mCamera.setPreviewCallback(null);
+            if(mCamera != null) {
+                mCamera.stopPreview();
+                mCamera.release();
+                //mCamera.setPreviewCallback(null);
+                mCamera = null;
+            }
         }
         catch (Exception e) {
             Log.d(TAG, "Error destroying surface: " + e.getMessage());
