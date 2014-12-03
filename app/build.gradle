@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+def version_code() {
+	return 5
+}
+
+def version_name() {
+	return "0.5.1-r" + "hg id -n".execute().text.trim()
+}
+
 android {
 	compileSdkVersion 21
 	buildToolsVersion "21.0.1"
@@ -8,8 +16,9 @@ android {
 		applicationId "com.lightsapp.lightsapp"
 		minSdkVersion 14
 		targetSdkVersion 21
-		versionCode 5
-		versionName "0.5.0"
+
+		versionCode version_code()
+		versionName version_name()
 	}
 	buildTypes {
 		release {
