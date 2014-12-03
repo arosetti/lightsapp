@@ -12,6 +12,7 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 import static com.lightsapp.utils.Utils.ListToPrimitiveArray;
 import static com.lightsapp.utils.Utils.StripString;
 
+
 public class MorseAnalyzer {
     protected final String TAG = MorseAnalyzer.class.getSimpleName();
 

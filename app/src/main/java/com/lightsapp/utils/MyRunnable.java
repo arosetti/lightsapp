@@ -7,6 +7,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 public abstract class MyRunnable implements Runnable {
     private final String TAG = HandlerUtils.class.getSimpleName();
     private final Lock lock;

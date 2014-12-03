@@ -17,6 +17,7 @@ import com.lightsapp.ui.MainActivity;
 import java.io.IOException;
 import java.util.List;
 
+
 public class CameraController extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private final String TAG = CameraController.class.getSimpleName();
 

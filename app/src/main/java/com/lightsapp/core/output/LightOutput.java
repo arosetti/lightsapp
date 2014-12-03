@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.lightsapp.core.OutputController;
 
+
 public class LightOutput {
     private final String TAG = OutputController.class.getSimpleName();
 

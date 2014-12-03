@@ -23,6 +23,7 @@ import static com.lightsapp.utils.Utils.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MorseConverter {
     private final String TAG = MorseConverter.class.getSimpleName();
     private long SPEED_BASE;

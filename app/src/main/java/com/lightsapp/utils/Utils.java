@@ -3,6 +3,7 @@ package com.lightsapp.utils;
 import java.text.Normalizer;
 import java.util.List;
 
+
 public class Utils {
 
     public static long[] ListToPrimitiveArray(List<Long> input) {

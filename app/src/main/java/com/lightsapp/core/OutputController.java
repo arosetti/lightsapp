@@ -12,6 +12,7 @@ import com.lightsapp.core.analyzer.morse.MorseConverter;
 import static com.lightsapp.utils.Utils.*;
 import static com.lightsapp.utils.HandlerUtils.*;
 
+
 public class OutputController extends MyRunnable {
     private final String TAG = OutputController.class.getSimpleName();
 

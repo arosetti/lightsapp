@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -134,7 +133,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onPostResume() {
         super.onPostResume();
 
-        if (!(hasCamera() || hasFrontCamera()) && !hasFlash()) { // TODO display only once
+        if ((!hasCamera() || !hasFrontCamera()) && !hasFlash()) { // TODO display only once
             Toast toast = Toast.makeText(this,
                                          "You need a camera and flash to send-receive using light.",
                                          Toast.LENGTH_LONG);

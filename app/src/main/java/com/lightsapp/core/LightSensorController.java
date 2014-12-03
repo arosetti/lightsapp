@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.lightsapp.ui.MainActivity;
 
+
 public class LightSensorController {
     public final String TAG = LightSensorController.class.getSimpleName();
     private MainActivity mContext;

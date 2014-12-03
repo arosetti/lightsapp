@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static com.lightsapp.utils.HandlerUtils.*;
 
+
 public class BasicLightAnalyzer extends LightAnalyzer {
     private int start_frame = 0;
 
