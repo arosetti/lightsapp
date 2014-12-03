@@ -84,6 +84,7 @@ public class LightAnalyzer extends MyRunnable {
         }
         catch (Exception e) {
             Log.e(TAG, "error analyzing image frames: " + e.getMessage());
+            e.printStackTrace();
         }
         finally {
             signalGraph();
@@ -152,6 +153,10 @@ public class LightAnalyzer extends MyRunnable {
             }
             lframes_swap = null;
         }
+        catch (Exception e) {
+            Log.d(TAG, "error updating image frames: " + e.getMessage());
+            e.printStackTrace();
+        }
         finally {
             lock_frames.unlock();
         }
@@ -177,7 +182,7 @@ public class LightAnalyzer extends MyRunnable {
 
                 if (lframes.get(i).delta > d_max)
                     d_max = lframes.get(i).delta;
-                if ((lframes.get(i).delta > 0) && (lframes.get(i).delta < d_min))
+                if ((lframes.get(i).delta > 5) && (lframes.get(i).delta < d_min))
                     d_min = lframes.get(i).delta;
             }
 
@@ -200,12 +205,18 @@ public class LightAnalyzer extends MyRunnable {
         lock_frames.lock();
         try {
             if(lframes.size() > 0) {
-                setStatusInfo("frames: " + lframes.size() +
-                              "\n[current, min, max, average]" +
-                              "\nframe delay: (" + lframes.get(last_frame_analyzed).delta + ", " +
-                              d_min + ", " + d_max + ", " + d_avg + ") ms " +
-                              "\nluminance: (" + lframes.get(last_frame_analyzed).luminance + ", " +
-                              l_min + ", " + l_max + ", " + l_avg + ")");
+                try {
+                    setStatusInfo("frames: " + lframes.size() +
+                            "\n[current, avg, min, max]" +
+                            "\nfps: (" + 1000 / lframes.get(last_frame_analyzed).delta + ", " +
+                            1000 / d_avg + ", " + 1000 / d_max + ", " + 1000 / d_min + ") ms " +
+                            "\nlum: (" + lframes.get(last_frame_analyzed).luminance + ", " +
+                            l_avg + ", " + l_min + ", " + l_max + ")");
+                }
+                catch (Exception e) {
+                    Log.d(TAG, "error logging statistics: " + e.getMessage());
+                    e.printStackTrace();
+                }
                 signalStr(mContext.mHandlerInfo, "update", "");
             }
         }
@@ -239,10 +250,10 @@ public class LightAnalyzer extends MyRunnable {
             frame = new Frame(data, width, height, timestamp_now, delta, enable_crop);
             lframes_tmp.add(frame);
             timestamp_last = System.currentTimeMillis();
-            //Log.v(TAG, "FRAME SIZE: " + data.length / 1000 + " KByte");
         }
         catch (Exception e) {
              Log.e(TAG, "error inserting image frame: " + e.getMessage());
+             e.printStackTrace();
         }
         lock_frames_tmp.unlock();
     }

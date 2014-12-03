@@ -19,6 +19,11 @@ public class Utils {
         return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "");
     }
 
+    public static String StripString(String str, int n) {
+        int r = str.length() - n;
+        return (r > 0) ? str.substring(r) : str;
+    }
+
     public static void ForcedSleep(int msec) {
         final long endingTime = System.currentTimeMillis() + msec;
         long remainingTime = msec;
