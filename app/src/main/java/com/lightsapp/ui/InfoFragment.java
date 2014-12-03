@@ -189,7 +189,7 @@ public class InfoFragment extends Fragment {
                     try {
                         LinearFilter dataFilter = LinearFilter.get(LinearFilter.Filter.KERNEL_GAUSSIAN_11);
                         for (int i = first, j = 0; i < last; i++ , j++) {
-                            fdata_delay[j] = (float) lframes.get(i).delta;
+                            fdata_delay[j] = 1000 / (float) lframes.get(i).delta;
                         }
                         dataFilter.apply(fdata_delay);
 
@@ -227,13 +227,13 @@ public class InfoFragment extends Fragment {
 
                     GraphViewSeries series;
                     try {
-                        series = new GraphViewSeries("delay_raw",
+                        series = new GraphViewSeries("fps",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(70, 70, 70), 3),
                                 data_delay);
                         mContext.graphView_delay.removeAllSeries();
                         mContext.graphView_delay.addSeries(series);
 
-                        series = new GraphViewSeries("delay_f",
+                        series = new GraphViewSeries("fps_avg",
                                 new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(20, 200, 0), 3),
                                 data_delay_f);
                         mContext.graphView_delay.addSeries(series);

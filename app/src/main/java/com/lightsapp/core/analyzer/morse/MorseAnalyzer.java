@@ -10,6 +10,7 @@ import java.util.List;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 import static com.lightsapp.utils.Utils.ListToPrimitiveArray;
+import static com.lightsapp.utils.Utils.StripString;
 
 public class MorseAnalyzer {
     protected final String TAG = MorseAnalyzer.class.getSimpleName();
@@ -123,16 +124,16 @@ public class MorseAnalyzer {
         synchronized (str) {
             str = mMorse.getText(ListToPrimitiveArray(ldata));
         }
-        signalStr(mContext.mHandlerRecv, "data_message_text", str);
-        signalStr(mContext.mHandlerRecv, "data_message_morse", mMorse.getMorse(str));
-        signalStr(mContext.mHandlerRecv, "data_message_morse_times", ldata.toString().substring(1, ldata.size() - 1));
+        signalStr(mContext.mHandlerRecv, "data_message_text", StripString(str, 30));
+        signalStr(mContext.mHandlerRecv, "data_message_morse", StripString(mMorse.getMorse(str), 30));
+        signalStr(mContext.mHandlerRecv, "data_message_morse_times", StripString(ldata.toString().substring(1, ldata.size() - 1), 30));
     }
 
     public synchronized String getCurrentText() {
-        return str;
+        return StripString(str, 30);
     }
 
     public synchronized String getCurrentMorse() {
-        return mMorse.getMorse(str);
+        return StripString(mMorse.getMorse(str), 30);
     }
 }
