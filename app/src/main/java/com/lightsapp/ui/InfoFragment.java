@@ -24,6 +24,8 @@ import com.lightsapp.utils.math.LinearFilter;
 import java.util.List;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
+import static com.lightsapp.utils.math.DFT.*;
+import static com.lightsapp.utils.math.DFT.RECTANGULAR;
 
 public class InfoFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "2";
@@ -31,8 +33,8 @@ public class InfoFragment extends Fragment {
 
     private static final int GRAPH_SIZE = 500;
     private static final int MAX_LUM = 250;
-    private static float CAMERA_RATIO = 7/5;
-    private static float scale = 1.7f;
+    private static float CAMERA_RATIO = 3f/4f;
+    private static float scale = 1.3f;
 
     private MainActivity mContext;
 
@@ -125,7 +127,6 @@ public class InfoFragment extends Fragment {
                 if (msg.getData().containsKey("setup_done")) {
                     mPreview.removeAllViews();
                     mPreview.addView(mContext.mCameraController);
-
                     ViewGroup.LayoutParams l = mPreview.getLayoutParams();
                     l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
                     l.width = (int)(mPreview.getWidth() / scale);
@@ -215,6 +216,7 @@ public class InfoFragment extends Fragment {
                     GraphView.GraphViewData data_snd[] = null;
                     try {
                         double[] sframes = mContext.mSoundA.getFrames();
+                        sframes = window(sframes, RECTANGULAR);
                         data_snd = new GraphView.GraphViewData[sframes.length];
 
                         for (int i = 0; i < sframes.length; i++) {

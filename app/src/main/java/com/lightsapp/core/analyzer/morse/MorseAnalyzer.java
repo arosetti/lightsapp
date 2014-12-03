@@ -122,6 +122,7 @@ public class MorseAnalyzer {
 
     protected final void signalData(List<Long> ldata) {
         synchronized (str) {
+            mMorse.updateValues(speed_base);
             str = mMorse.getText(ListToPrimitiveArray(ldata));
         }
         signalStr(mContext.mHandlerRecv, "data_message_text", StripString(str, 30));
@@ -135,5 +136,9 @@ public class MorseAnalyzer {
 
     public synchronized String getCurrentMorse() {
         return StripString(mMorse.getMorse(str), 30);
+    }
+
+    public synchronized void reset() {
+        str = "";
     }
 }

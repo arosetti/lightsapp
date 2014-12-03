@@ -109,10 +109,17 @@ public class LightAnalyzer extends MyRunnable {
             lframes.clear();
         }
         finally {
+            last_frame_analyzed = 0;
+            d_max = Long.MIN_VALUE;
+            d_min = Long.MAX_VALUE;
+            d_avg = d_sum = 0;
+            l_max = Long.MIN_VALUE;
+            l_min = Long.MAX_VALUE;
+            l_avg = l_sum = 0;
             lock_frames.unlock();
         }
 
-        last_frame_analyzed = 0;
+        mContext.mMorseA.reset();
     }
 
     protected void update() {
@@ -207,11 +214,8 @@ public class LightAnalyzer extends MyRunnable {
             if(lframes.size() > 0) {
                 try {
                     setStatusInfo("frames: " + lframes.size() +
-                            "\n[current, avg, min, max]" +
-                            "\nfps: (" + 1000 / lframes.get(last_frame_analyzed).delta + ", " +
-                            1000 / d_avg + ", " + 1000 / d_max + ", " + 1000 / d_min + ") ms " +
-                            "\nlum: (" + lframes.get(last_frame_analyzed).luminance + ", " +
-                            l_avg + ", " + l_min + ", " + l_max + ")");
+                            "\nfps:" + 1000 / d_avg +
+                            "\nlum: " + lframes.get(last_frame_analyzed).luminance);
                 }
                 catch (Exception e) {
                     Log.d(TAG, "error logging statistics: " + e.getMessage());
