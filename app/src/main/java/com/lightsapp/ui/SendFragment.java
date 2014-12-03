@@ -158,20 +158,24 @@ public class SendFragment extends Fragment {
                         }
 
                         if (mButtonSend.getText() == getResources().getString(R.string.btn_start) ) {
+                            String str = CleanString(mEdit.getText().toString());
+                            if (str.length() <= 0)
+                                return;
+
                             if (mContext.mMorse != null) {
                                 mContext.mMorse.updateValues(Integer.valueOf(
                                                          mContext.mPrefs.getString("interval", "500")));
                             }
-                            if (mContext.mOutputController != null) {
-                                mContext.mOutputController.setString(CleanString(mEdit.getText().toString()));
 
+                            if (mContext.mOutputController != null) {
+                                mContext.mOutputController.setString(str);
+                                mButtonSend.setText(R.string.btn_stop);
                                 if (mCheckBoxRepeat.isChecked())
                                     mContext.mOutputController.repeat();
                                 else
                                     mContext.mOutputController.start();
 
                                 mContext.mOutputController.activate();
-                                mButtonSend.setText(R.string.btn_stop);
                             }
                         }
                         else if (mButtonSend.getText() == getResources().getString(R.string.btn_stop) ) {
@@ -179,8 +183,8 @@ public class SendFragment extends Fragment {
                                 mContext.mOutputController.stop();
                             }
                             mImageViewLightbulb.setImageDrawable(lightbulb_off);
-                            mButtonSend.setText(R.string.btn_start);
                             resetText();
+                            mButtonSend.setText(R.string.btn_start);
                         }
                     }
                 });
