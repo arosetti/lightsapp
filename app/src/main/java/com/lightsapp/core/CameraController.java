@@ -22,16 +22,21 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     private final String TAG = CameraController.class.getSimpleName();
 
     private MainActivity mContext;
-    private SurfaceHolder mHolder;
+    private SurfaceHolder mHolder = null;
     private Camera mCamera = null;
 
-    private int format, width, height, fps_min, fps_max;
+    private int format, width = 0, height = 0, fps_min, fps_max;
+    private boolean done = false;
 
     public CameraController(Context context) {
         super(context);
-        width = 0;
-        height = 0;
+
         mContext = (MainActivity) context;
+
+        setup();
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public Camera setup() {
@@ -39,6 +44,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         boolean hasCamera = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         boolean hasFrontCamera = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
 
+        Log.d(TAG, "setup camera ...");
         mCamera = null;
         try {
             if (hasCamera) {
@@ -63,11 +69,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
 
         if (mCamera != null) {
-            mHolder = getHolder();
-            mHolder.addCallback(this);
-            // deprecated setting, but required on Android versions prior to 3.0
-            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
+            Log.d(TAG, "camera is ok");
             int algorithm = Integer.parseInt(mContext.mPrefs.getString("algorithm", "2"));
             switch (algorithm) {
                 case 1:
@@ -88,8 +90,10 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public boolean isCameraNull() { return mCamera == null; }
 
+    public boolean isDone() { return done; }
+
     public String getInfo() {
-        return width + "x" + height + "@[" + fps_min / 1000 + "-" + fps_max / 1000 + "]fps";
+        return width + "x" + height + "@" + fps_min / 1000 + "/" + fps_max / 1000 + "fps";
     }
 
     public float getRatio() {
@@ -97,6 +101,9 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
     }
 
     private void setCameraParameters() {
+        if (mCamera == null)
+            return;
+
         try {
             mCamera.setDisplayOrientation(90);
             Camera.Parameters params = mCamera.getParameters();
@@ -119,7 +126,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             }
             width = params.getPreviewSize().width;
             height = params.getPreviewSize().height;
-            Log.d(TAG, "width: " + width + " height: " + height);
+            Log.d(TAG, "Preview size is -> width: " + width + " height: " + height);
 
             List<String> focusModes = params.getSupportedFocusModes();
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
@@ -149,6 +156,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
         catch (Exception e) {
             Log.d(TAG, "Error starting camera parameters: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -164,6 +172,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated()");
+
         try {
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
@@ -172,18 +181,20 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             Log.d(TAG, "Error creating surface: " + e.getMessage());
             e.printStackTrace();
         }
-
-        setCameraParameters();
-        setWillNotDraw(false);
+        finally {
+            setCameraParameters();
+            setWillNotDraw(false);
+            done = true;
+        }
     }
 
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.d(TAG, "surfaceDestroyed()");
+    public void stopPreviewAndFreeCamera() {
         try {
             if(mCamera != null) {
                 mCamera.stopPreview();
-                mCamera.release();
                 //mCamera.setPreviewCallback(null);
+                //mCamera.lock();
+                mCamera.release();
                 mCamera = null;
             }
         }
@@ -193,10 +204,15 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed()");
+        stopPreviewAndFreeCamera();
+    }
+
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         Log.d(TAG, "surfaceChanged() " + w + ", " + h);
 
-        if (mHolder.getSurface() == null || mCamera == null) {
+        if (mHolder == null || mHolder.getSurface() == null || mCamera == null) {
             return;
         }
 
@@ -248,19 +264,23 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setTextSize(13);
 
-            String lines[] = mContext.mLightA.getStatusInfo().split("\\r?\\n");
-            int i = 0;
-            for ( String line: lines ) {
-                canvas.drawText(line, canvas.getWidth()/2, 12 + i * 12, paint);
-                i++;
+            if (mContext.mLightA != null) {
+                String lines[] = mContext.mLightA.getStatusInfo().split("\\r?\\n");
+                int i = 0;
+                for (String line : lines) {
+                    canvas.drawText(line, canvas.getWidth() / 2, 12 + i * 12, paint);
+                    i++;
+                }
             }
 
-            paint.setColor(Color.RED);
-            canvas.drawText(mContext.mMorseA.getCurrentMorse(),    // TODO get last 30chars.
-                    canvas.getWidth()/2,  canvas.getHeight() - 16, paint);
-            paint.setTextSize(18);
-            canvas.drawText(mContext.mMorseA.getCurrentText(),
-                            canvas.getWidth()/2,  canvas.getHeight() - 32, paint);
+            if (mContext.mMorseA != null) {
+                paint.setColor(Color.RED);
+                canvas.drawText(mContext.mMorseA.getCurrentMorse(),
+                        canvas.getWidth() / 2, canvas.getHeight() - 16, paint);
+                paint.setTextSize(18);
+                canvas.drawText(mContext.mMorseA.getCurrentText(),
+                        canvas.getWidth() / 2, canvas.getHeight() - 32, paint);
+            }
         }
         catch (Exception e) {
             Log.e(TAG, "Draw Error: " + e.getMessage());

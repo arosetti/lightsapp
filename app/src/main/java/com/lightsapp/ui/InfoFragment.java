@@ -55,24 +55,6 @@ public class InfoFragment extends Fragment {
         mContext = (MainActivity) getActivity();
     }
 
-    /*
-    public void onResume() {
-        super.onResume();
-        Log.v(TAG, "RESUME_INFO");
-        if (mContext.mCameraController != null) {
-            mPreview.removeAllViews();
-            mPreview.addView(mContext.mCameraController);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.v(TAG, "PAUSE_INFO");
-        mPreview.removeAllViews();
-    }
-    */
-
     private GraphView newGraphView(String name, int size) {
         GraphView gv = new LineGraphView(mContext, name);
 
@@ -121,18 +103,33 @@ public class InfoFragment extends Fragment {
         mContext.graphView_snd = newGraphView("Sound", 512);
         mContext.graphView_snd.setManualYAxisBounds(100, 0);
 
+        return v;
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.v(TAG, "onResume info fragment");
+
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
                 if (msg.getData().containsKey("setup_done")) {
-                    mPreview.removeAllViews();
-                    mPreview.addView(mContext.mCameraController);
-                    ViewGroup.LayoutParams l = mPreview.getLayoutParams();
-                    l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
-                    l.width = (int)(mPreview.getWidth() / scale);
-                    scale = 1;
-                    Log.d(TAG, "init camera preview done");
+                    Log.d(TAG, "setup_done received!");
+                    try {
+                        mPreview.removeAllViews();
+                        if (mContext.mCameraController != null)
+                            mPreview.addView(mContext.mCameraController);
+                        ViewGroup.LayoutParams l = mPreview.getLayoutParams();
+                        l.height = (int) (CAMERA_RATIO * mPreview.getWidth() / scale);
+                        l.width = (int) (mPreview.getWidth() / scale);
+                        scale = 1;
+                        Log.d(TAG, "preview should be running...");
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "error setting camera preview");
+                        e.printStackTrace();
+                    }
                 }
 
                 if (msg.getData().containsKey("update")) {
@@ -211,21 +208,25 @@ public class InfoFragment extends Fragment {
                     }
                     catch (Exception e) {
                         Log.e(TAG, "error while generating light graph of light data: " + e.getMessage());
+                        e.printStackTrace();
                     }
 
                     /* Sound graphs */
                     GraphView.GraphViewData data_snd[] = null;
                     try {
                         double[] sframes = mContext.mSoundA.getFrames();
-                        sframes = window(sframes, RECTANGULAR);
-                        data_snd = new GraphView.GraphViewData[sframes.length];
+                        if (sframes != null) {
+                            sframes = window(sframes, RECTANGULAR);
+                            data_snd = new GraphView.GraphViewData[sframes.length];
 
-                        for (int i = 0; i < sframes.length; i++) {
-                            data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.log10(sframes[i]));
+                            for (int i = 0; i < sframes.length; i++) {
+                                data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.log10(sframes[i]));
+                            }
                         }
                     }
                     catch (Exception e) {
                         Log.e(TAG, "error while generating graph of sound data: " + e.getMessage());
+                        e.printStackTrace();
                     }
 
                     GraphViewSeries series;
@@ -264,7 +265,8 @@ public class InfoFragment extends Fragment {
                         }
                     }
                     catch (Exception e) {
-                        Log.d(TAG, "" + e.getMessage());
+                        Log.d(TAG, "error in graphview: " + e.getMessage());
+                        e.printStackTrace();
                     }
 
                     mContext.graphView_delay.scrollToEnd();
@@ -280,11 +282,25 @@ public class InfoFragment extends Fragment {
         boolean done = false;
         do {
             if (mContext.mHandlerRecv != null) {
+                Log.d(TAG, "sending graph_setup_done");
                 signalStr(mContext.mHandlerRecv, "graph_setup_done", "");
                 done = true;
             }
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+            }
         } while (!done);
-
-        return v;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(TAG, "onPause info fragment");
+        mPreview.removeAllViews();
+        mPreview.addView(new SurfaceView(getActivity()), 0);
+        mContext.mHandlerInfo = null;
+    }
+
 }

@@ -35,6 +35,7 @@ public class SoundController {
         }
         catch (Exception e) {
             Log.e(TAG, "Audio recording setup failed: " + e.getMessage());
+            e.printStackTrace();
         }
 
         try {
@@ -44,6 +45,15 @@ public class SoundController {
         }
         catch (Exception e) {
             Log.e(TAG, "Error starting SoundAnalyzer: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void release() {
+        Log.d(TAG, "Release audio recorder");
+        if (mAudioRec != null) {
+            mAudioRec.stop();
+            mAudioRec.release();
         }
     }
 }

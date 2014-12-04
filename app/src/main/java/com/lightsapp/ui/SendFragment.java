@@ -53,13 +53,6 @@ public class SendFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        updateSettings(); // TODO bugfix ?! on new install
-        resetText();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_send, container, false);
@@ -189,6 +182,14 @@ public class SendFragment extends Fragment {
                     }
                 });
 
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        Log.v(TAG, "onResume send fragment");
+        super.onResume();
+
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -209,7 +210,7 @@ public class SendFragment extends Fragment {
 
                 if (mTextViewMorse != null && msg.getData().containsKey("progress")) {
                     String str, str1, str2,
-                           mstr = mContext.mMorse.getMorse(CleanString(mEdit.getText().toString()));
+                            mstr = mContext.mMorse.getMorse(CleanString(mEdit.getText().toString()));
                     int len, cut = (Integer) msg.getData().get("progress");
 
                     if (cut < 0) {
@@ -239,9 +240,9 @@ public class SendFragment extends Fragment {
                     }
 
                     String text = "<font color='green'>" + str + "</font>" +
-                                  "<font color='grey'> | </font>" +
-                                  "<font color='red'>" + str1 + "</font>" +
-                                  "<font color='black'>" + str2 + "</font>";
+                            "<font color='grey'> | </font>" +
+                            "<font color='red'>" + str1 + "</font>" +
+                            "<font color='black'>" + str2 + "</font>";
                     mTextViewMorse.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
 
                     if (((float)cut / (float)len) == 1) {
@@ -260,7 +261,15 @@ public class SendFragment extends Fragment {
 
         mContext.mHandlerSend = mHandler;
 
-        return v;
+        updateSettings(); // TODO bugfix ?! on new install
+        resetText();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(TAG, "onPause send fragment");
+        mContext.mHandlerSend = null;
     }
 
     public void resetText() {

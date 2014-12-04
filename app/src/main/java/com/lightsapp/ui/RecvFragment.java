@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class RecvFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
-    private static final String TAG = SendFragment.class.getSimpleName();
+    private static final String TAG = RecvFragment.class.getSimpleName();
 
     private MainActivity mContext;
     private Lock lock;
@@ -56,11 +56,6 @@ public class RecvFragment extends Fragment {
     public RecvFragment() {
         mContext = (MainActivity) getActivity();
         lock = new ReentrantLock(true);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -225,6 +220,14 @@ public class RecvFragment extends Fragment {
 
         setDefaultText();
 
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        Log.v(TAG, "onResume recv fragment");
+        super.onResume();
+
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -244,15 +247,18 @@ public class RecvFragment extends Fragment {
                 }
 
                 if (msg.getData().containsKey("setup_done")) {
+                    Log.d(TAG, "setup_done received!");
                     int progress = mSeekBarSensitivity.getProgress();
                     mContext.mLightA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
-                                                 ": " + progress);
+                            ": " + progress);
                     mContext.mLightA.start();
                     mContext.mLightA.activate();
                 }
 
                 if (msg.getData().containsKey("graph_setup_done")) {
+                    Log.d(TAG, "graph_setup_done received!");
+                    layoutGraph.removeAllViews();
                     if (mRadioButtonLight.isChecked())
                         layoutGraph.addView(mContext.graphView_lum2);
                     else
@@ -262,8 +268,15 @@ public class RecvFragment extends Fragment {
         };
 
         mContext.mHandlerRecv = mHandler;
+    }
 
-        return v;
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(TAG, "onPause recv fragment");
+        if(mContext.mLightA != null)
+            mContext.mLightA.stop();
+        mContext.mHandlerRecv = null;
     }
 
     public void setDefaultText() {

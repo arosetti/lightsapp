@@ -60,20 +60,22 @@ public class SoundAnalyzer extends MyRunnable {
         try {
             Thread.sleep(SLEEP_TIME);
 
-            int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
+            if (mContext.mSoundController != null) {
+                int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
 
-            if (ret > 0) {
-                SoundDataBlock data = new SoundDataBlock(buffer, blockSize, ret);
-                bQueueSound.put(data);
+                if (ret > 0) {
+                    SoundDataBlock data = new SoundDataBlock(buffer, blockSize, ret);
+                    bQueueSound.put(data);
+                }
+                else
+                    Log.v(TAG, "audio recording ret is 0");
             }
-            else
-                Log.v(TAG, "audio recording ret is 0");
         }
         catch (InterruptedException e) {
-
         }
         catch (Exception e) {
             Log.e(TAG, "error analyzing audio frames: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

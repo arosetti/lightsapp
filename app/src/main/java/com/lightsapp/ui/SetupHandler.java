@@ -28,44 +28,82 @@ public class SetupHandler extends HandlerThread {
     void setupHandler(final Context context) {
         mContext = (MainActivity) context;
 
+        Log.d(TAG, "Setup Handler activated");
         mHandlerSetup.post(new Runnable() {
             @Override
             public void run() {
-                boolean done = false;
+                int step = 0;
                 int tentatives = 0;
 
-                Camera camera = null;
-                while (!done) {
-                    try {
-                        if (mContext.mCameraController == null) {
-                            mContext.mCameraController = new CameraController(mContext);
-                            camera = mContext.mCameraController.setup();
-                        }
+                while (step < 2) {
+                    if (step == 0) {
+                        try {
+                            if (mContext.mCameraController == null) {
+                                Log.d(TAG, "new CameraController");
+                                mContext.mCameraController = new CameraController(context);
+                                if (mContext.mCameraController.isCameraNull())
+                                    Log.d(TAG, "camera is null");
+                            }
 
-                        if (mContext.mOutputController == null && camera != null) {
-                            mContext.mOutputController = new OutputController(context);
-                            mContext.mOutputController.start();
-                        }
+                            if (mContext.mOutputController == null &&
+                                !mContext.mCameraController.isCameraNull()) {
+                                Log.d(TAG, "new OutputController");
+                                mContext.mOutputController = new OutputController(context);
+                                mContext.mOutputController.start();
+                            }
 
-                        if (mContext.mSoundController == null) {
-                            mContext.mSoundController = new SoundController(context);
-                            mContext.mSoundController.setup();
-                        }
+                            if (mContext.mSoundController == null) {
+                                Log.d(TAG, "new SoundController");
+                                mContext.mSoundController = new SoundController(context);
+                                mContext.mSoundController.setup();
+                            }
 
-                        if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
-                            mContext.mCameraController != null && camera != null &&
-                            mContext.mOutputController != null &&
-                            mContext.mSoundController != null) {
-                            signalStr(mContext.mHandlerInfo, "setup_done", "");
-                            signalStr(mContext.mHandlerRecv, "setup_done", "");
-                            done = true;
+                            if (mContext.mHandlerInfo != null && mContext.mHandlerRecv != null &&
+                                    mContext.mCameraController != null &&
+                                    !mContext.mCameraController.isCameraNull() &&
+                                    mContext.mOutputController != null &&
+                                    mContext.mSoundController != null) {
+                                Log.d(TAG, "Sending setup_done to handlers");
+                                signalStr(mContext.mHandlerInfo, "setup_done", "");
+                                signalStr(mContext.mHandlerRecv, "setup_done", "");
+                                step = 1;
+                            }
+
+                            if (step == 0)
+                            {
+                                Log.e(TAG, "setup first step failed... ");
+                                Thread.sleep(300);
+                            }
                         }
-                        tentatives++;
+                        catch (InterruptedException e) { }
+                        catch (Exception e) {
+                            Log.e(TAG, "setup first step error: " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
-                    catch (Exception e) {
-                        Log.e(TAG, "setup error: " + e.getMessage());
+                    else if (step == 1)
+                    {
+                        try {
+                            if (mContext.mCameraController != null && mContext.mCameraController.isDone()) {
+                                step = 2;
+                            }
+                            else {
+                                Log.d(TAG, "waiting for surface creation... ");
+                                tentatives++;
+                                Thread.sleep(100);
+                            }
+
+                            if (tentatives > 10) {
+                                step = 0;
+                                tentatives = 0;
+                                Thread.sleep(3000);
+                            }
+                        }
+                        catch (InterruptedException e) {
+                        }
                     }
 
+                    /*
                     try {
                         if (!done && tentatives > 10) {
                             Toast toast = Toast.makeText(context,
@@ -81,9 +119,10 @@ public class SetupHandler extends HandlerThread {
                     }
                     catch (InterruptedException e) {
                     }
+                    */
                 }
-                if (done)
-                    Log.v(TAG, "setup done");
+
+                Log.v(TAG, "setup done");
             }
         });
     }
