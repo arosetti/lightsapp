@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public abstract class MyRunnable implements Runnable {
-    private final String TAG = HandlerUtils.class.getSimpleName();
+    protected String TAG = MyRunnable.class.getSimpleName();
     private final Lock lock;
     private final Condition started;
     private final Condition stopped;
@@ -58,7 +58,8 @@ public abstract class MyRunnable implements Runnable {
 
     public final void stop() {
         setLoop(false);
-        tid.interrupt();
+        if (tid != null)
+            tid.interrupt();
         status.getAndSet(false);
     }
 
@@ -122,6 +123,7 @@ public abstract class MyRunnable implements Runnable {
             }
             catch (Exception e) {
                 Log.e(TAG, "loop exception -> " + e.toString() + " " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

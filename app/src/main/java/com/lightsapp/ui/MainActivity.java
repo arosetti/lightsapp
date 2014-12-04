@@ -8,6 +8,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,20 +72,34 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        setup(this);
         mMorse = new MorseConverter(
                     Integer.valueOf(mPrefs.getString("interval", "500")));
+        setup(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
+
+        mThreadSetup = null;
+
         if (mOutputController != null)
             mOutputController.stop();
         mOutputController = null;
-        mThreadSetup = null;
+
+        //if (mCameraController != null)
+        //    mCameraController.stopPreviewAndFreeCamera();
         mCameraController = null;
+        if (mLightA != null)
+            mLightA.stop();
+        mLightA = null;
+
+        if (mSoundController != null)
+            mSoundController.release();
+        mSoundController = null;
+        mSoundA.stop();
+        mSoundA = null;
     }
 
     @Override
@@ -132,26 +147,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onPostResume() {
         super.onPostResume();
-
-        if ((!hasCamera() || !hasFrontCamera()) && !hasFlash()) { // TODO display only once
-            Toast toast = Toast.makeText(this,
-                                         "You need a camera and flash to send-receive using light.",
-                                         Toast.LENGTH_LONG);
-            toast.show();
-        } else {
-            if (!hasFlash()) {
-                Toast toast = Toast.makeText(this,
-                                             "You need a camera flash to send morse code with light.",
-                                             Toast.LENGTH_LONG);
-                toast.show();
-            }
-            if (!(hasCamera() || hasFrontCamera())) {
-                Toast toast = Toast.makeText(this,
-                                             "You need a camera to receive light emitted morse code.",
-                                             Toast.LENGTH_LONG);
-                toast.show();
-            }
-        }
     }
 
     @Override
@@ -179,8 +174,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             return true;
         }
         else if (id == R.id.action_exit) {
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(0);
+            //android.os.Process.killProcess(android.os.Process.myPid());
+            //System.exit(0);
+           finish();
         }
 
         return super.onOptionsItemSelected(item);

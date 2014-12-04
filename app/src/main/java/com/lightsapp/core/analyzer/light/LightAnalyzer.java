@@ -38,7 +38,7 @@ public class LightAnalyzer extends MyRunnable {
     private long timestamp_last;
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
-    protected String statusInfo;
+    protected String statusInfo = "";
 
     protected LightAnalyzer(Context context) {
         super(true);
@@ -213,8 +213,9 @@ public class LightAnalyzer extends MyRunnable {
         try {
             if(lframes.size() > 0) {
                 try {
+                    long fps = (d_avg == 0) ? 0 : (1000 / d_avg);
                     setStatusInfo("frames: " + lframes.size() +
-                                  "\nfps: " + 1000 / d_avg +
+                                  "\nfps: " + fps +
                                   "\nlum: " + lframes.get(last_frame_analyzed).luminance);
                 }
                 catch (Exception e) {
