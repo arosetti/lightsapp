@@ -19,8 +19,11 @@ public class SoundAnalyzer extends MyRunnable {
     protected final int SLEEP_TIME = 30;
     private int blockSize = 1024;
     private short[] buffer;
+    private long timestamp_last;
 
     BlockingQueue<SoundDataBlock> bQueueSound;
+    BlockingQueue<Frame> bQueueFrame;
+
     protected List<double[]> lfreqblocks;
 
     public SoundAnalyzer(Context context) {
@@ -59,13 +62,17 @@ public class SoundAnalyzer extends MyRunnable {
     public final void loop() {
         try {
             Thread.sleep(SLEEP_TIME);
-
+            SoundDataBlock data = null;
             if (mContext.mSoundController != null) {
                 int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
 
                 if (ret > 0) {
-                    SoundDataBlock data = new SoundDataBlock(buffer, blockSize, ret);
+                    data = new SoundDataBlock(buffer, blockSize, ret);
                     bQueueSound.put(data);
+
+                    long timestamp_now = System.currentTimeMillis();
+                    bQueueFrame.add(new Frame(data, timestamp_now, timestamp_now - timestamp_last));
+                    timestamp_last = timestamp_now;
                 }
                 else
                     Log.v(TAG, "audio recording ret is 0");
