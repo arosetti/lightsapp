@@ -5,11 +5,13 @@ import android.util.Log;
 
 import com.lightsapp.ui.MainActivity;
 import com.lightsapp.utils.MyRunnable;
+import com.lightsapp.utils.math.LinearFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Filter;
 
 public class SoundAnalyzer extends MyRunnable {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
@@ -17,7 +19,7 @@ public class SoundAnalyzer extends MyRunnable {
     protected MainActivity mContext;
 
     protected final int SLEEP_TIME = 30;
-    protected final int SOGLIA = 100000;
+    protected final int SOGLIA = 500000;
 
     private int blockSize = 1024;
     private short[] buffer;
@@ -25,6 +27,7 @@ public class SoundAnalyzer extends MyRunnable {
 
     private Frame last_frame;
     private long time;
+    private boolean isUp;
 
     private BlockingQueue<SoundDataBlock> bQueueSound;
     private BlockingQueue<Spectrum> bQueueSpectrum;
@@ -48,6 +51,7 @@ public class SoundAnalyzer extends MyRunnable {
 
         ldata = new ArrayList<Long>();
 
+        isUp = false;
         last_frame = null;
         time = 0;
     }
@@ -72,17 +76,20 @@ public class SoundAnalyzer extends MyRunnable {
             Frame new_frame = bQueueFrame.take();
 
             // Spettro di differenza
-            double[] double_diff = last_frame.diffSpectrum(new_frame);
+            double[] double_diff = new_frame.diffSpectrum(last_frame);
             Spectrum spec_diff = new Spectrum(double_diff);
-            SpectrumFragment sf = new SpectrumFragment(0, 400, spec_diff); // Valori a caso
+            SpectrumFragment sf = new SpectrumFragment(100, 400, new_frame.getSpectrum()); // Valori a caso
 
             Spectrum spectrum = new Spectrum(new_frame.getSpectrum().getCopy());
-
             bQueueSpectrum.put(spectrum);
             bQueueSpectrumDiff.put(spec_diff);
 
-            if (time >= 0){ // valuta condizione di discesa
-                if (sf.getAverage() < -SOGLIA){
+            if (isUp){ // valuta condizione di discesa
+                int min = sf.getMaxX();
+                sf.setMargins(min-2,min+2);
+                Log.v(TAG, "Is Up, average: "+sf.getAverage());
+                if (sf.getAverage() < SOGLIA){
+                    isUp = false;
                     ldata.add(time);
                     time = 0;
                 }
@@ -91,7 +98,12 @@ public class SoundAnalyzer extends MyRunnable {
                 }
             }
             else { // valuta condizione di salita
-                if (sf.getAverage() > SOGLIA){
+                int max = sf.getMaxX();
+                sf.setMargins(max-2,max+2);
+                Log.v(TAG, "Is Down, average: "+sf.getAverage());
+                if (sf.getAverage() > SOGLIA)
+                {
+                    isUp = true;
                     ldata.add(time);
                     time = 0;
                 }
@@ -102,8 +114,8 @@ public class SoundAnalyzer extends MyRunnable {
 
             last_frame = new_frame;
 
-            //if (ldata.size() > 0)
-            //    mContext.mMorseA.analyze(ldata);
+            if (ldata.size() > 0)
+                mContext.mMorseA.analyze(ldata);
         }
         catch (InterruptedException e) {
         }

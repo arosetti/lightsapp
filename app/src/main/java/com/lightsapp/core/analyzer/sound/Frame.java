@@ -7,7 +7,7 @@ public class Frame {
     private Spectrum spec;
 
     public long delta, timestamp;
-    public int max;
+    public double max;
     public double avg;
 
     public Frame(SoundDataBlock data, long timestamp, long delta) {
@@ -20,6 +20,7 @@ public class Frame {
     public Spectrum getSpectrum() {
         if (spec == null) {
             spec = data.FFT();
+            //spec.spectrumSmoothing();
         }
         return spec;
     }
@@ -31,7 +32,7 @@ public class Frame {
     public Frame analyze() {
         if (data != null) {
             SpectrumFragment sf = new SpectrumFragment(80, 200, this.getSpectrum());
-            max = sf.getMax();
+            max = sf.getMaxY();
             avg = sf.getAverage();
         }
         return this;
