@@ -101,7 +101,7 @@ public class InfoFragment extends Fragment {
         layout.addView(mContext.graphView_dlum);
 
         mContext.graphView_snd = newGraphView("Sound", 512);
-        mContext.graphView_snd.setManualYAxisBounds(100, 0);
+        //mContext.graphView_snd.setManualYAxisBounds(100, 0);
 
         return v;
     }
@@ -220,7 +220,7 @@ public class InfoFragment extends Fragment {
                             data_snd = new GraphView.GraphViewData[sframes.length];
 
                             for (int i = 0; i < sframes.length; i++) {
-                                data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.log10(sframes[i]));
+                                data_snd[i] = new GraphView.GraphViewData(i, sframes[i]);//10 * Math.log10(sframes[i]));
                             }
                         }
                     }

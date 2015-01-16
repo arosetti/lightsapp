@@ -25,6 +25,11 @@ public class SpectrumFragment
         return sum/((double)(end - start));
     }
 
+    public Spectrum getSpectrum()
+    {
+        return spectrum;
+    }
+
     public boolean[] getDistincts()
     {
         double average = getAverage();
