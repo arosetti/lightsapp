@@ -15,6 +15,12 @@ public class SpectrumFragment
         this.spectrum = spectrum;
     }
 
+    public void setMargins(int start, int end)
+    {
+        this.start = start;
+        this.end = end;
+    }
+
     public double getAverage()
     {
         double sum = 0;
@@ -50,7 +56,20 @@ public class SpectrumFragment
         return ret;
     }
 
-    public int getMax()
+    public double getMaxY()
+    {
+        double maxValue = 0;
+
+        for(int i = start; i <= end; ++i)
+            if(maxValue < spectrum.get(i))
+            {
+                maxValue = spectrum.get(i);
+            }
+
+        return maxValue;
+    }
+
+    public int getMaxX()
     {
         int max = 0;
         double maxValue = 0;
@@ -63,5 +82,33 @@ public class SpectrumFragment
             }
 
         return max;
+    }
+
+    public double getMinY()
+    {
+        double minValue = 0;
+
+        for(int i = start; i <= end; ++i)
+            if(minValue > spectrum.get(i))
+            {
+                minValue = spectrum.get(i);
+            }
+
+        return minValue;
+    }
+
+    public int getMinX()
+    {
+        int min = 0;
+        double minValue = 0;
+
+        for(int i = start; i <= end; ++i)
+            if(minValue > spectrum.get(i))
+            {
+                minValue = spectrum.get(i);
+                min = i;
+            }
+
+        return min;
     }
 }

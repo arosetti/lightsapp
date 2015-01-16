@@ -101,7 +101,7 @@ public class InfoFragment extends Fragment {
         layout.addView(mContext.graphView_dlum);
 
         mContext.graphView_snd = newGraphView("Sound", 512);
-        //mContext.graphView_snd.setManualYAxisBounds(100, 0);
+        mContext.graphView_snd.setManualYAxisBounds(1000000, -1000000);
 
         return v;
     }
@@ -226,10 +226,10 @@ public class InfoFragment extends Fragment {
 
                         double[] sframes_diff = mContext.mSoundA.getDiffFrames();
                         if (sframes_diff != null) {
-                            sframes_diff = window(sframes, RECTANGULAR);
+                            sframes_diff = window(sframes_diff, RECTANGULAR);
                             data_snd_diff = new GraphView.GraphViewData[sframes_diff.length];
 
-                            for (int i = 0; i < sframes.length; i++) {
+                            for (int i = 0; i < sframes_diff.length; i++) {
                                 data_snd_diff[i] = new GraphView.GraphViewData(i, sframes_diff[i]); //10 * Math.log10(sframes[i]));
                             }
                         }
