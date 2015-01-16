@@ -1,6 +1,9 @@
 package com.lightsapp.core.analyzer.sound;
 
+import android.util.Log;
+
 public class Spectrum {
+    protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
     private double[] spectrum;
     private int length;
@@ -9,6 +12,29 @@ public class Spectrum {
     {
         this.spectrum = spectrum;
         this.length = spectrum.length;
+    }
+
+    public double[] diff(Spectrum spec)
+    {
+        if (this.length() != spec.length())
+            return null;
+
+        double[] block = new double[this.length()];
+        for (int i=0; i<length; ++i) {
+            block[i] = spectrum[i] - spec.get(i);
+        }
+
+        return block;
+    }
+
+    public double[] getCopy()
+    {
+        double[] block = new double[this.length()];
+        for (int i=0; i<length; ++i) {
+            block[i] = spectrum[i];
+        }
+
+        return block;
     }
 
     public void normalize()

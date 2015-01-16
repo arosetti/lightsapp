@@ -3,23 +3,34 @@ package com.lightsapp.core.analyzer.sound;
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();
 
-    SoundDataBlock data;
+    private SoundDataBlock data;
+    private Spectrum spec;
 
     public long delta, timestamp;
     public int max;
     public double avg;
 
-
     public Frame(SoundDataBlock data, long timestamp, long delta) {
         this.data = data;
         this.timestamp = timestamp;
         this.delta = delta;
+        spec = null;
+    }
+
+    public Spectrum getSpectrum() {
+        if (spec == null) {
+            spec = data.FFT();
+        }
+        return spec;
+    }
+
+    public double[] diffSpectrum(Frame mFrame) {
+        return this.getSpectrum().diff(mFrame.getSpectrum());
     }
 
     public Frame analyze() {
         if (data != null) {
-            Spectrum s = data.FFT();
-            SpectrumFragment sf = new SpectrumFragment(80, 200, s);
+            SpectrumFragment sf = new SpectrumFragment(80, 200, this.getSpectrum());
             max = sf.getMax();
             avg = sf.getAverage();
         }
