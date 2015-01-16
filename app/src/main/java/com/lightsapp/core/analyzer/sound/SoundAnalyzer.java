@@ -28,6 +28,7 @@ public class SoundAnalyzer extends MyRunnable {
 
     private BlockingQueue<SoundDataBlock> bQueueSound;
     private BlockingQueue<Spectrum> bQueueSpectrum;
+    private BlockingQueue<Spectrum> bQueueSpectrumDiff;
     private BlockingQueue<Frame> bQueueFrame;
     private List<Long> ldata;
 
@@ -40,6 +41,7 @@ public class SoundAnalyzer extends MyRunnable {
 
         bQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
         bQueueSpectrum = new LinkedBlockingQueue<Spectrum>();
+        bQueueSpectrumDiff = new LinkedBlockingQueue<Spectrum>();
         bQueueFrame = new LinkedBlockingQueue<Frame>();
         lfreqblocks = new ArrayList<double[]>();
         buffer = new short[blockSize];
@@ -75,8 +77,9 @@ public class SoundAnalyzer extends MyRunnable {
             SpectrumFragment sf = new SpectrumFragment(0, 400, spec_diff); // Valori a caso
 
             Spectrum spectrum = new Spectrum(new_frame.getSpectrum().getCopy());
-            //spectrum.normalize();
-            bQueueSpectrum.put(spec_diff);
+
+            bQueueSpectrum.put(spectrum);
+            bQueueSpectrumDiff.put(spec_diff);
 
             if (time >= 0){ // valuta condizione di discesa
                 if (sf.getAverage() < -SOGLIA){
@@ -116,6 +119,22 @@ public class SoundAnalyzer extends MyRunnable {
             if (!bQueueSpectrum.isEmpty()) {
                 Spectrum spectrum = bQueueSpectrum.peek();
                 bQueueSpectrum.clear();
+                return spectrum.getData();
+            }
+        }
+        catch (Exception e){
+            Log.d(TAG, "queue error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public double[] getDiffFrames()
+    {
+        try {
+            if (!bQueueSpectrumDiff.isEmpty()) {
+                Spectrum spectrum = bQueueSpectrumDiff.peek();
+                bQueueSpectrumDiff.clear();
                 return spectrum.getData();
             }
         }
