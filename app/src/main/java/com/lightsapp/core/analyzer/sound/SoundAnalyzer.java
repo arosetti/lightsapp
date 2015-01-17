@@ -25,7 +25,6 @@ public class SoundAnalyzer extends MyRunnable {
     private short[] buffer;
     private long timestamp_last;
 
-    private Frame last_frame;
     private long time;
     private boolean isUp;
 
@@ -50,7 +49,6 @@ public class SoundAnalyzer extends MyRunnable {
         ldata = new ArrayList<Long>();
 
         isUp = false;
-        last_frame = null;
         time = 0;
     }
 
@@ -59,16 +57,6 @@ public class SoundAnalyzer extends MyRunnable {
         // Se la coda è vuota (non dovrebbe capitare)
         if (bQueueFrameIn.isEmpty())
             return;
-
-        // Se si analizza il primo frame
-        if (last_frame == null) {
-            try {
-                last_frame = bQueueFrameIn.take();
-            }
-            catch (InterruptedException e) {
-            }
-            return;
-        }
 
         try {
             Frame new_frame = bQueueFrameIn.take();
@@ -105,7 +93,8 @@ public class SoundAnalyzer extends MyRunnable {
                 Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
-            last_frame = new_frame;
+            new_frame.clean();
+            bQueueFrameElaborated.put(new_frame);
 
             if (ldata.size() > 0)
                 mContext.mMorseA.analyze(ldata);
