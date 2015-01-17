@@ -17,6 +17,7 @@ public class Frame {
         this.timestamp = timestamp;
         this.delta = delta;
         spec = null;
+        sf = null;
     }
 
     public Spectrum getSpectrum() {
@@ -33,27 +34,27 @@ public class Frame {
 
     public Frame cutSpectrum(int min, int max) {
         if (data != null) {
-            sf = new SpectrumFragment(min, max, this.getSpectrum());
+            sf = new SpectrumFragment(min, max, spec);
         }
         return this;
     }
 
     public double getAverageMax(int deltaX) {
-        if (sf != null) {
-            maxX = sf.getMaxX();
+        if (sf == null)
+            sf = new SpectrumFragment(0, spec.length(), spec);
 
-            int minMargin = maxX - deltaX;
-            int maxMargin = maxX + deltaX;
-            if (maxX - deltaX < sf.getMarginMin())
-                minMargin = sf.getMarginMin();
-            if (maxX + deltaX > sf.getMarginMax())
-                maxMargin = sf.getMarginMax();
+        maxX = sf.getMaxX();
 
-            sf.setMargins(minMargin, maxMargin);
-            avg = sf.getAverage();
-            return avg;
-        }
-        return 0.0;
+        int minMargin = maxX - deltaX;
+        int maxMargin = maxX + deltaX;
+        if (maxX - deltaX < sf.getMarginMin())
+            minMargin = sf.getMarginMin();
+        if (maxX + deltaX > sf.getMarginMax())
+            maxMargin = sf.getMarginMax();
+
+        sf.setMargins(minMargin, maxMargin);
+        avg = sf.getAverage();
+        return avg;
     }
 
     public void clean() {

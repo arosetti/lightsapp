@@ -1,7 +1,5 @@
 package com.lightsapp.core.analyzer.sound;
 
-import android.util.Log;
-
 import com.lightsapp.utils.math.LinearFilterD;
 
 public class Spectrum {
