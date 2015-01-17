@@ -212,7 +212,7 @@ public class InfoFragment extends Fragment {
                     }
 
                     /* Sound graphs */
-                    GraphView.GraphViewData data_snd[] = null, data_snd_diff[] = null;
+                    GraphView.GraphViewData data_snd[] = null;
                     try {
                         double[] sframes = mContext.mSoundA.getFrames();
                         if (sframes != null) {
@@ -221,16 +221,6 @@ public class InfoFragment extends Fragment {
 
                             for (int i = 0; i < sframes.length; i++) {
                                 data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
-                            }
-                        }
-
-                        double[] sframes_diff = mContext.mSoundA.getDiffFrames();
-                        if (sframes_diff != null) {
-                            sframes_diff = window(sframes_diff, RECTANGULAR);
-                            data_snd_diff = new GraphView.GraphViewData[sframes_diff.length];
-
-                            for (int i = 0; i < sframes_diff.length; i++) {
-                                data_snd_diff[i] = new GraphView.GraphViewData(i, sframes_diff[i]); //10 * Math.log10(sframes[i]));
                             }
                         }
                     }
@@ -266,17 +256,12 @@ public class InfoFragment extends Fragment {
                         mContext.graphView_dlum.removeAllSeries();
                         mContext.graphView_dlum.addSeries(series);
 
-                        if (data_snd != null && data_snd_diff != null) {
+                        if (data_snd != null) {
                             mContext.graphView_snd.removeAllSeries();
                             series = new GraphViewSeries("sound",
                                     new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
                                     data_snd);
                             mContext.graphView_snd.addSeries(series);
-                            series = new GraphViewSeries("sound_diff",
-                                    new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(0, 170, 255), 3),
-                                    data_snd_diff);
-                            mContext.graphView_snd.addSeries(series);
-
                         }
                     }
                     catch (Exception e) {
