@@ -16,7 +16,7 @@ public class SoundController {
 
     public AudioRecord mAudioRec = null;
 
-    int sampleRate = 8000;
+    int sampleRate = 16000;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     int bufferSize;

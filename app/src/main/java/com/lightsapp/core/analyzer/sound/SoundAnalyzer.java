@@ -61,13 +61,11 @@ public class SoundAnalyzer extends MyRunnable {
         try {
             Frame new_frame = bQueueFrameIn.take();
 
+            // Per il grafico
             Spectrum spectrum = new Spectrum(new_frame.getSpectrum().getCopy());
             bQueueSpectrum.put(spectrum);
 
-            //double[] double_diff = new_frame.diffSpectrum(last_frame);
-            //Spectrum spec_diff = new Spectrum(double_diff);
-            //SpectrumFragment sf = new SpectrumFragment(100, 400, new_frame.getSpectrum()); // Valori a caso
-            new_frame.cutSpectrum(100, 400);
+            new_frame.cutSpectrum(10, 400);
 
             if (isUp){ // valuta condizione di discesa
                 if (new_frame.getAverageMax(2) < SOGLIA){
@@ -133,7 +131,6 @@ public class SoundAnalyzer extends MyRunnable {
                 if (ret > 0)
                 {
                     data = new SoundDataBlock(buffer, blockSize, ret);
-                    //bQueueSound.put(data);
 
                     long timestamp_now = System.currentTimeMillis();
                     Frame fdata = new Frame(data, timestamp_now, timestamp_now - timestamp_last);
