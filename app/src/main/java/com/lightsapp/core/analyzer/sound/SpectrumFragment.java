@@ -21,6 +21,16 @@ public class SpectrumFragment
         this.end = end;
     }
 
+    public int getMarginMin()
+    {
+        return this.start;
+    }
+
+    public int getMarginMax()
+    {
+        return this.end;
+    }
+
     public double getAverage()
     {
         double sum = 0;

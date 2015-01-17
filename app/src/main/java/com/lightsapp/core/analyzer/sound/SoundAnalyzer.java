@@ -29,10 +29,9 @@ public class SoundAnalyzer extends MyRunnable {
     private long time;
     private boolean isUp;
 
-    private BlockingQueue<SoundDataBlock> bQueueSound;
     private BlockingQueue<Spectrum> bQueueSpectrum;
-    private BlockingQueue<Spectrum> bQueueSpectrumDiff;
-    private BlockingQueue<Frame> bQueueFrame;
+    private BlockingQueue<Frame> bQueueFrameIn;
+    private BlockingQueue<Frame> bQueueFrameElaborated;
     private List<Long> ldata;
 
     protected List<double[]> lfreqblocks;
@@ -42,10 +41,9 @@ public class SoundAnalyzer extends MyRunnable {
 
         mContext = (MainActivity) context;
 
-        bQueueSound = new LinkedBlockingQueue<SoundDataBlock>();
         bQueueSpectrum = new LinkedBlockingQueue<Spectrum>();
-        bQueueSpectrumDiff = new LinkedBlockingQueue<Spectrum>();
-        bQueueFrame = new LinkedBlockingQueue<Frame>();
+        bQueueFrameIn = new LinkedBlockingQueue<Frame>();
+        bQueueFrameElaborated = new LinkedBlockingQueue<Frame>();
         lfreqblocks = new ArrayList<double[]>();
         buffer = new short[blockSize];
 
@@ -59,13 +57,13 @@ public class SoundAnalyzer extends MyRunnable {
     protected void analyze()
     {
         // Se la coda è vuota (non dovrebbe capitare)
-        if (bQueueFrame.isEmpty())
+        if (bQueueFrameIn.isEmpty())
             return;
 
         // Se si analizza il primo frame
         if (last_frame == null) {
             try {
-                last_frame = bQueueFrame.take();
+                last_frame = bQueueFrameIn.take();
             }
             catch (InterruptedException e) {
             }
@@ -73,22 +71,18 @@ public class SoundAnalyzer extends MyRunnable {
         }
 
         try {
-            Frame new_frame = bQueueFrame.take();
-
-            // Spettro di differenza
-            double[] double_diff = new_frame.diffSpectrum(last_frame);
-            Spectrum spec_diff = new Spectrum(double_diff);
-            SpectrumFragment sf = new SpectrumFragment(100, 400, new_frame.getSpectrum()); // Valori a caso
+            Frame new_frame = bQueueFrameIn.take();
 
             Spectrum spectrum = new Spectrum(new_frame.getSpectrum().getCopy());
             bQueueSpectrum.put(spectrum);
-            bQueueSpectrumDiff.put(spec_diff);
+
+            //double[] double_diff = new_frame.diffSpectrum(last_frame);
+            //Spectrum spec_diff = new Spectrum(double_diff);
+            //SpectrumFragment sf = new SpectrumFragment(100, 400, new_frame.getSpectrum()); // Valori a caso
+            new_frame.cutSpectrum(100, 400);
 
             if (isUp){ // valuta condizione di discesa
-                int min = sf.getMaxX();
-                sf.setMargins(min-2,min+2);
-                Log.v(TAG, "Is Up, average: "+sf.getAverage());
-                if (sf.getAverage() < SOGLIA){
+                if (new_frame.getAverageMax(2) < SOGLIA){
                     isUp = false;
                     ldata.add(time);
                     time = 0;
@@ -96,12 +90,10 @@ public class SoundAnalyzer extends MyRunnable {
                 else{
                     time += new_frame.delta;
                 }
+                Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
-                int max = sf.getMaxX();
-                sf.setMargins(max-2,max+2);
-                Log.v(TAG, "Is Down, average: "+sf.getAverage());
-                if (sf.getAverage() > SOGLIA)
+                if (new_frame.getAverageMax(2) > SOGLIA)
                 {
                     isUp = true;
                     ldata.add(time);
@@ -110,6 +102,7 @@ public class SoundAnalyzer extends MyRunnable {
                 else{
                     time -= new_frame.delta;
                 }
+                Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
             last_frame = new_frame;
@@ -141,22 +134,6 @@ public class SoundAnalyzer extends MyRunnable {
         return null;
     }
 
-    public double[] getDiffFrames()
-    {
-        try {
-            if (!bQueueSpectrumDiff.isEmpty()) {
-                Spectrum spectrum = bQueueSpectrumDiff.peek();
-                bQueueSpectrumDiff.clear();
-                return spectrum.getData();
-            }
-        }
-        catch (Exception e){
-            Log.d(TAG, "queue error: " + e.getMessage());
-        }
-
-        return null;
-    }
-
     @Override
     public final void loop() {
         try {
@@ -171,7 +148,7 @@ public class SoundAnalyzer extends MyRunnable {
 
                     long timestamp_now = System.currentTimeMillis();
                     Frame fdata = new Frame(data, timestamp_now, timestamp_now - timestamp_last);
-                    bQueueFrame.add(fdata);
+                    bQueueFrameIn.add(fdata);
                     timestamp_last = timestamp_now;
 
                     analyze();

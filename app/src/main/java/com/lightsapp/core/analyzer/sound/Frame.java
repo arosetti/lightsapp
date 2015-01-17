@@ -5,9 +5,11 @@ public class Frame {
 
     private SoundDataBlock data;
     private Spectrum spec;
+    private SpectrumFragment sf;
 
     public long delta, timestamp;
-    public double max;
+    public int maxX;
+    public double maxY;
     public double avg;
 
     public Frame(SoundDataBlock data, long timestamp, long delta) {
@@ -29,13 +31,35 @@ public class Frame {
         return this.getSpectrum().diff(mFrame.getSpectrum());
     }
 
-    public Frame analyze() {
+    public Frame cutSpectrum(int min, int max) {
         if (data != null) {
-            SpectrumFragment sf = new SpectrumFragment(80, 200, this.getSpectrum());
-            max = sf.getMaxY();
-            avg = sf.getAverage();
+            sf = new SpectrumFragment(min, max, this.getSpectrum());
         }
         return this;
+    }
+
+    public double getAverageMax(int deltaX) {
+        if (sf != null) {
+            maxX = sf.getMaxX();
+
+            int minMargin = maxX - deltaX;
+            int maxMargin = maxX + deltaX;
+            if (maxX - deltaX < sf.getMarginMin())
+                minMargin = sf.getMarginMin();
+            if (maxX + deltaX > sf.getMarginMax())
+                maxMargin = sf.getMarginMax();
+
+            sf.setMargins(minMargin, maxMargin);
+            avg = sf.getAverage();
+            return avg;
+        }
+        return 0.0;
+    }
+
+    public void clean() {
+        sf = null;
+        spec = null;
+        data = null;
     }
 
     @Override
