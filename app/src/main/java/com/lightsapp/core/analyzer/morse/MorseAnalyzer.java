@@ -128,7 +128,13 @@ public class MorseAnalyzer {
         }
         signalStr(mContext.mHandlerRecv, "data_message_text", StripString(str, 30));
         signalStr(mContext.mHandlerRecv, "data_message_morse", StripString(mMorse.getMorse(str), 30));
-        signalStr(mContext.mHandlerRecv, "data_message_morse_times", StripString(ldata.toString().substring(1, ldata.size() - 1), 30));
+
+        String tmp = "";
+        int q = 20, start = (ldata.size() > q)?(ldata.size() - q):0;
+        for(int i=start; i<ldata.size(); i++){
+            tmp += String.valueOf(ldata.get(i)) + " ";
+        }
+        signalStr(mContext.mHandlerRecv, "data_message_morse_times", tmp);
     }
 
     public synchronized String getCurrentText() {

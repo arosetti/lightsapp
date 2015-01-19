@@ -3,6 +3,7 @@ package com.lightsapp.core.analyzer.light;
 import android.content.Context;
 import android.util.Log;
 
+import com.lightsapp.core.analyzer.BaseAnalyzer;
 import com.lightsapp.core.analyzer.morse.MorseAnalyzer;
 import com.lightsapp.ui.MainActivity;
 import com.lightsapp.utils.MyRunnable;
@@ -16,11 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import static com.lightsapp.utils.HandlerUtils.signalStr;
 
 
-public class LightAnalyzer extends MyRunnable {
+public class LightAnalyzer extends BaseAnalyzer {
     protected final String TAG = LightAnalyzer.class.getSimpleName();
-    protected String NAME = "???";
-
-    protected MainActivity mContext;
 
     protected List<Frame> lframes;
     protected List<Frame> lframes_tmp;
@@ -28,20 +26,15 @@ public class LightAnalyzer extends MyRunnable {
     protected final Lock lock_frames_tmp;
     protected final Lock lock_frames;
 
-    protected AtomicReference<Boolean> enable_analyze;
     protected boolean enable_crop;
-    protected final int SLEEP_TIME = 100;
+    protected int last_frame_analyzed = 0;
 
-    protected int last_frame_analyzed = 0,
-                  sensitivity = -1;
-
-    private long timestamp_last;
     protected long d_max = Long.MIN_VALUE, d_min = Long.MAX_VALUE, d_avg, d_sum = 0;
     protected long l_max = Long.MIN_VALUE, l_min = Long.MAX_VALUE, l_avg, l_sum = 0;
     protected String statusInfo = "";
 
     protected LightAnalyzer(Context context) {
-        super(true);
+        super(context);
 
         mContext = (MainActivity) context;
 
@@ -51,29 +44,15 @@ public class LightAnalyzer extends MyRunnable {
         lframes = new ArrayList<Frame>();
         lframes_tmp = new ArrayList<Frame>();
 
-        enable_analyze = new AtomicReference<Boolean>(false);
         enable_crop = mContext.mPrefs.getBoolean("enable_crop", true);
 
         mContext.mMorseA = new MorseAnalyzer(context);
     }
 
-    public final String getName() {
-        return NAME;
-    }
-
-    public void setAnalyzer(boolean val) {
-        enable_analyze.getAndSet(val);
-    }
-
-
-    public boolean getAnalyzer() {
-        return enable_analyze.get();
-    }
-
     @Override
     public final void loop() {
         try {
-            Thread.sleep(SLEEP_TIME);
+            Thread.sleep(sleep_time);
             update();
 
             if (enable_analyze.get())
@@ -144,19 +123,22 @@ public class LightAnalyzer extends MyRunnable {
         lock_frames.lock();
         try {
             Log.v(TAG, "Swapping " + lframes_swap.size() +
-                    " image frames to lframes which is big " + lframes.size() + " frames.");
+                    " image frames to lframes which is " + lframes.size() + " frames big.");
+            Frame frame;
             for (int i = 0; i < lframes_swap.size(); i++) {
-                lframes.add(lframes_swap.get(i).analyze());
+                frame = lframes_swap.get(i);
+                frame.analyze();
 
                 //error analyzing data, maybe error allocating memory.
                 // we use the previous frame's luminance.
-                if (lframes_swap.get(i).luminance < 0) {
+                if (frame.luminance < 0) {
                     Log.e(TAG, "error analyzing image frame, using prev value if available");
-                    if (i > 0)
-                        lframes_swap.get(i).setLuminance(lframes_swap.get(i - 1).luminance);
+                    if (!lframes.isEmpty())
+                        frame.setLuminance(lframes.get(lframes.size() - 1).luminance);
                     else
-                        lframes_swap.get(i).setLuminance(0);
+                        frame.setLuminance(0);
                 }
+                lframes.add(frame);
             }
             lframes_swap = null;
         }
@@ -203,11 +185,6 @@ public class LightAnalyzer extends MyRunnable {
         }
     }
 
-    // to be overridden
-    protected void analyze() {
-
-    }
-
     private void signalGraph() {
         lock_frames.lock();
         try {
@@ -236,11 +213,6 @@ public class LightAnalyzer extends MyRunnable {
 
     public synchronized String getStatusInfo() {
         return statusInfo;
-    }
-
-    public final void setSensitivity(int sensitivity) {
-        Log.v(TAG, "Sensitivity set to " + sensitivity);
-        this.sensitivity = sensitivity;
     }
 
     public final void addFrame(byte[] data, int width, int height) {

@@ -109,6 +109,7 @@ public class RecvFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
                 mContext.mLightA.setSensitivity(progress);
+                mContext.mSoundA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
                 if (mContext.mLightA.getAnalyzer()) {
@@ -168,55 +169,54 @@ public class RecvFragment extends Fragment {
                         mRadioButtonLight.setEnabled(true);
                         mRadioButtonSound.setEnabled(true);
 
-                        if (mRadioButtonLight.isChecked()) {
-                            if (!(mContext.hasCamera()  || mContext.hasFrontCamera())) {
-                                Toast toast = Toast.makeText(mContext,
-                                        "You need a camera to receive morse code.",
-                                        Toast.LENGTH_LONG);
-                                toast.show();
-                                return;
-                            }
+                        /*if (!(mContext.hasCamera()  || mContext.hasFrontCamera())) {
+                            Toast toast = Toast.makeText(mContext,
+                                    "You need a camera to receive morse code.",
+                                    Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }
 
-                            if (mContext.mCameraController == null) {
-                                Toast toast = Toast.makeText(mContext,
-                                        "Camera init failed! please report.",
-                                        Toast.LENGTH_LONG);
-                                toast.show();
-                                return;
-                            }
+                        if (mContext.mCameraController == null) {
+                            Toast toast = Toast.makeText(mContext,
+                                    "Camera init failed! please report.",
+                                    Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }*/
 
-                            if (mButtonRecv.getText() ==
-                                    getResources().getString(R.string.btn_start) ) {
-                                //mContext.mLightA.reset();
+                        if (mButtonRecv.getText() ==
+                                getResources().getString(R.string.btn_start)) {
+                            //mContext.mLightA.reset();
+                            if (mRadioButtonLight.isChecked())
                                 mContext.mLightA.setAnalyzer(true);
-                                mButtonRecv.setText(R.string.btn_stop);
-                                setInitText();
-                                mRadioGroupMode.setEnabled(false);
-                                mRadioButtonLight.setEnabled(false);
-                                mRadioButtonSound.setEnabled(false);
-                            }
-                            else if (mButtonRecv.getText() ==
-                                    getResources().getString(R.string.btn_stop) ) {
-                                //mContext.mLightA.reset();
+                            else if (mRadioButtonSound.isChecked())
+                                mContext.mSoundA.setAnalyzer(true);
+                            mButtonRecv.setText(R.string.btn_stop);
+                            setInitText();
+                            mRadioGroupMode.setEnabled(false);
+                            mRadioButtonLight.setEnabled(false);
+                            mRadioButtonSound.setEnabled(false);
+                        } else if (mButtonRecv.getText() ==
+                                getResources().getString(R.string.btn_stop)) {
+                            //mContext.mLightA.reset();
+                            if (mRadioButtonLight.isChecked())
                                 mContext.mLightA.setAnalyzer(false);
-                                mButtonRecv.setText(R.string.btn_start);
+                            else if (mRadioButtonSound.isChecked())
+                                mContext.mSoundA.setAnalyzer(false);
+                            mButtonRecv.setText(R.string.btn_start);
 
-                                lock.lock();
-                                SpannableString spstr = new SpannableString(mTextViewRecv.getText());
-                                String str = Html.toHtml(spstr).toString();
+                            lock.lock();
+                            SpannableString spstr = new SpannableString(mTextViewRecv.getText());
+                            String str = Html.toHtml(spstr).toString();
 
-                                if (str.equals(analyzerInfoText())) {
-                                    setDefaultText();
-                                }
-                                lock.unlock();
+                            if (str.equals(analyzerInfoText())) {
+                                setDefaultText();
                             }
+                            lock.unlock();
                         }
-                        else if (mRadioButtonSound.isChecked())
-                        {
-
-                        }
-                    }
-                });
+                }
+        });
 
         setDefaultText();
 
@@ -244,16 +244,19 @@ public class RecvFragment extends Fragment {
 
                 if (mTextViewRecvMT != null && msg.getData().containsKey("data_message_morse_times")) {
                     mTextViewRecvMT.setText((String) msg.getData().get("data_message_morse_times"));
-                }
+               }
 
                 if (msg.getData().containsKey("setup_done")) {
                     Log.d(TAG, "setup_done received!");
                     int progress = mSeekBarSensitivity.getProgress();
                     mContext.mLightA.setSensitivity(progress);
+                    mContext.mSoundA.setSensitivity(progress);
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                             ": " + progress);
                     mContext.mLightA.start();
                     mContext.mLightA.activate();
+                    mContext.mSoundA.start();
+                    mContext.mSoundA.activate();
                 }
 
                 if (msg.getData().containsKey("graph_setup_done")) {

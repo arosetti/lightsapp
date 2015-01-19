@@ -77,23 +77,22 @@
         android:layout_below="@+id/horizontalScrollViewRecvM"
         android:layout_alignWithParentIfMissing="false"
         android:scrollbars="none"
-        android:textAlignment="textEnd"
         android:fillViewport="true"
-        >
+        android:nestedScrollingEnabled="true">
 
         <TextView
             android:id="@+id/TextViewRecvMT"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="true"
-            android:gravity="top|center_vertical|center|center_horizontal"
-            android:layout_gravity="center_vertical|center|center_horizontal"
+            android:layout_gravity="center_vertical"
             android:text=""
             android:maxLines="1"
-            android:textSize="12sp"
-            android:textAlignment="textEnd"
+            android:textSize="10sp"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:nestedScrollingEnabled="true"
+            android:gravity="center"/>
     </HorizontalScrollView>
 
     <LinearLayout

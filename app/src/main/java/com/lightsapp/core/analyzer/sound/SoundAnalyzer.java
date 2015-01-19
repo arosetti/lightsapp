@@ -3,30 +3,23 @@ package com.lightsapp.core.analyzer.sound;
 import android.content.Context;
 import android.util.Log;
 
-import com.lightsapp.ui.MainActivity;
-import com.lightsapp.utils.MyRunnable;
-import com.lightsapp.utils.math.LinearFilter;
+import com.lightsapp.core.analyzer.BaseAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Filter;
 
-public class SoundAnalyzer extends MyRunnable {
+public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
-    protected MainActivity mContext;
-
-    protected final int SLEEP_TIME = 30;
-    protected final int SOGLIA = 500000;
+    protected int THRESHOLD = 10000;
 
     private int blockSize = 1024;
     private short[] buffer;
-    private long timestamp_last;
 
     private long time;
-    private boolean isUp;
+    private boolean signal_up;
 
     private BlockingQueue<Spectrum> bQueueSpectrum;
     private BlockingQueue<Frame> bQueueFrameIn;
@@ -36,9 +29,7 @@ public class SoundAnalyzer extends MyRunnable {
     protected List<double[]> lfreqblocks;
 
     public SoundAnalyzer(Context context) {
-        super(true);
-
-        mContext = (MainActivity) context;
+        super(context);
 
         bQueueSpectrum = new LinkedBlockingQueue<Spectrum>();
         bQueueFrameIn = new LinkedBlockingQueue<Frame>();
@@ -48,7 +39,8 @@ public class SoundAnalyzer extends MyRunnable {
 
         ldata = new ArrayList<Long>();
 
-        isUp = false;
+        signal_up = false;
+        sleep_time = 30;
         time = 0;
     }
 
@@ -67,9 +59,9 @@ public class SoundAnalyzer extends MyRunnable {
 
             new_frame.cutSpectrum(10, 400);
 
-            if (isUp){ // valuta condizione di discesa
-                if (new_frame.getAverageMax(2) < SOGLIA){
-                    isUp = false;
+            if (signal_up){ // valuta condizione di discesa
+                if (new_frame.getAverageMax(2) < (THRESHOLD * sensitivity)){
+                    signal_up = false;
                     ldata.add(time);
                     time = 0;
                 }
@@ -79,9 +71,9 @@ public class SoundAnalyzer extends MyRunnable {
                 Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
-                if (new_frame.getAverageMax(2) > SOGLIA)
+                if (new_frame.getAverageMax(2) > (THRESHOLD * sensitivity))
                 {
-                    isUp = true;
+                    signal_up = true;
                     ldata.add(time);
                     time = 0;
                 }
@@ -94,7 +86,7 @@ public class SoundAnalyzer extends MyRunnable {
             new_frame.clean();
             bQueueFrameElaborated.put(new_frame);
 
-            if (ldata.size() > 0)
+            if (enable_analyze.get() && ldata.size() > 0)
                 mContext.mMorseA.analyze(ldata);
         }
         catch (InterruptedException e) {
@@ -124,7 +116,7 @@ public class SoundAnalyzer extends MyRunnable {
     @Override
     public final void loop() {
         try {
-            Thread.sleep(SLEEP_TIME);
+            Thread.sleep(sleep_time);
             SoundDataBlock data = null;
             if (mContext.mSoundController != null) {
                 int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
@@ -149,9 +141,5 @@ public class SoundAnalyzer extends MyRunnable {
             Log.e(TAG, "error analyzing audio frames: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    public void reset() {
-
     }
 }
