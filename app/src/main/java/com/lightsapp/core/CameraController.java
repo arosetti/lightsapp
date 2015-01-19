@@ -11,10 +11,11 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.lightsapp.core.analyzer.light.*;
+import com.lightsapp.core.analyzer.light.BasicLightAnalyzer;
+import com.lightsapp.core.analyzer.light.DerivativeLightAnalyzer;
+import com.lightsapp.core.analyzer.light.ThresholdLightAnalyzer;
 import com.lightsapp.ui.MainActivity;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -257,7 +258,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);
 
-            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 28, paint);
+            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 15, paint);
 
             paint = new Paint();
             paint.setColor(Color.GREEN);

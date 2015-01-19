@@ -53,6 +53,24 @@
             android:capitalize="none"
             android:singleLine="true"
             android:maxLines="1"/>
+
+        <ListPreference
+            android:key="sampling_freq"
+            android:title="@string/pref_title_sampling_freq"
+            android:entries="@array/pref_sampling_freq_titles"
+            android:entryValues="@array/pref_sampling_freq_values"
+            android:defaultValue="8000"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"/>
+
+        <ListPreference
+            android:key="fft_size"
+            android:title="@string/pref_title_fft_size"
+            android:entries="@array/pref_fft_size_titles"
+            android:entryValues="@array/pref_fft_size_values"
+            android:defaultValue="512"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"/>
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -66,7 +66,7 @@ public class Frame {
                         uvp += 2;
                     }
 
-                    if (!enable_crop || (enable_crop && (dist(i, j) < (max_dist / 4))))
+                    if (!enable_crop || (enable_crop && (dist(i, j) < (max_dist / 8))))
                         ysum += (long) y;
                 }
             }
@@ -77,7 +77,7 @@ public class Frame {
         }
 
         if (enable_crop)
-            return (int) ((float)ysum / (Math.PI * max_dist * max_dist / 16));
+            return (int) ((float)ysum / (Math.PI * max_dist * max_dist / 64));
         else
             return (int) ((float)ysum / (float)size);
     }
