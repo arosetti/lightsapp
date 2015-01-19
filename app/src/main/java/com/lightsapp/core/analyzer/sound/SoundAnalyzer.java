@@ -6,6 +6,7 @@ import android.util.Log;
 import com.lightsapp.core.analyzer.BaseAnalyzer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,11 +16,19 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     protected int THRESHOLD = 10000;
 
-    private int blockSize = 1024;
+    private int sampleRate = 16000;
+    private int blockSize = 512;
     private short[] buffer;
+
+    private int beepFreq;
+    private int beepFreqval;
+    private int min_beepFreqval;
+    private int max_beepFreqval;
+    private int bandwith;
 
     private long time;
     private boolean signal_up;
+    private boolean threshold_changed;
 
     private BlockingQueue<Spectrum> bQueueSpectrum;
     private BlockingQueue<Frame> bQueueFrameIn;
@@ -42,22 +51,92 @@ public class SoundAnalyzer extends BaseAnalyzer {
         signal_up = false;
         sleep_time = 30;
         time = 0;
+        bandwith = 50;
+
+        threshold_changed = false;
+
+        beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
+        beepFreqval = beepFreq * blockSize / sampleRate;
+        min_beepFreqval = 0;
+        max_beepFreqval = 511;
+        if (beepFreqval > bandwith)
+            min_beepFreqval = beepFreqval-bandwith;
+        if (beepFreqval < 511-bandwith)
+            max_beepFreqval = beepFreqval+bandwith;
     }
 
-    protected void analyze()
+    public void reset(){
+        bQueueFrameElaborated.clear();
+        ldata.clear();
+        signal_up = false;
+        time = 0;
+    }
+
+    protected void reanalyze()
     {
+        ldata.clear();
+        signal_up = false;
+        time = 0;
+
+        for (Frame f: bQueueFrameElaborated) {
+            if (signal_up){ // valuta condizione di discesa
+                if (f.avg < (THRESHOLD * sensitivity)){
+                    signal_up = false;
+                    ldata.add(time);
+                    time = 0;
+                }
+                else{
+                    time += f.delta;
+                }
+            }
+            else { // valuta condizione di salita
+                if (f.avg > (THRESHOLD * sensitivity))
+                {
+                    signal_up = true;
+                    ldata.add(time);
+                    time = 0;
+                }
+                else{
+                    time -= f.delta;
+                }
+            }
+        }
+    }
+
+    protected void analyze() {
         // Se la coda è vuota (non dovrebbe capitare)
         if (bQueueFrameIn.isEmpty())
             return;
 
+        // controlla che non c'è un cambio di frequenza di ricezione
+        if (beepFreq != Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"))){
+            reset();
+            beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
+            beepFreqval = beepFreq * blockSize / sampleRate;
+            Log.v(TAG, "beepFreqval: "+beepFreqval);
+            min_beepFreqval = 0;
+            max_beepFreqval = 511;
+            if (beepFreqval > bandwith)
+                min_beepFreqval = beepFreqval-bandwith;
+            if (beepFreqval < 511-bandwith)
+                max_beepFreqval = beepFreqval+bandwith;
+        }
+
         try {
+
+            if (threshold_changed){
+                reanalyze();
+                threshold_changed = false;
+            }
+
+
             Frame new_frame = bQueueFrameIn.take();
 
             // Per il grafico
             Spectrum spectrum = new Spectrum(new_frame.getSpectrum().getCopy());
             bQueueSpectrum.put(spectrum);
 
-            new_frame.cutSpectrum(10, 400);
+            new_frame.cutSpectrum(min_beepFreqval, max_beepFreqval);
 
             if (signal_up){ // valuta condizione di discesa
                 if (new_frame.getAverageMax(2) < (THRESHOLD * sensitivity)){
@@ -83,6 +162,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
+            Log.v(TAG, "Delta: "+new_frame.delta);
             new_frame.clean();
             bQueueFrameElaborated.put(new_frame);
 
