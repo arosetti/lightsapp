@@ -17,7 +17,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     protected int THRESHOLD = 10000;
 
-    private int sampleRate = 16000;
+    private int sampleRate = 8000;
     private int blockSize = 512;
     private short[] buffer;
 
@@ -30,13 +30,12 @@ public class SoundAnalyzer extends BaseAnalyzer {
     private long time;
     private boolean signal_up;
     private boolean threshold_changed;
+    private boolean to_reset;
 
     private BlockingQueue<Spectrum> bQueueSpectrum;
     private BlockingQueue<Frame> bQueueFrameIn;
     private BlockingQueue<Frame> bQueueFrameElaborated;
     private List<Long> ldata;
-
-    protected List<double[]> lfreqblocks;
 
     public SoundAnalyzer(Context context) {
         super(context);
@@ -44,12 +43,12 @@ public class SoundAnalyzer extends BaseAnalyzer {
         bQueueSpectrum = new LinkedBlockingQueue<Spectrum>();
         bQueueFrameIn = new LinkedBlockingQueue<Frame>();
         bQueueFrameElaborated = new LinkedBlockingQueue<Frame>();
-        lfreqblocks = new ArrayList<double[]>();
         buffer = new short[blockSize];
 
         ldata = new ArrayList<Long>();
 
         signal_up = false;
+        to_reset = false;
         sleep_time = 30;
         time = 0;
         bandwith = 50;
@@ -69,7 +68,17 @@ public class SoundAnalyzer extends BaseAnalyzer {
             max_beepFreqval = beepFreqval+bandwith;
     }
 
-    public void reset_simple(){
+    public void reset_simple()
+    {
+        bQueueFrameElaborated.clear();
+        ldata.clear();
+        signal_up = false;
+        time = 0;
+    }
+
+    public void force_reset()
+    {
+        bQueueFrameIn.clear();
         bQueueFrameElaborated.clear();
         ldata.clear();
         signal_up = false;
@@ -78,7 +87,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     public void reset()
     {
-        reset_simple();
+        to_reset = true;
     }
 
     protected void reanalyze()
@@ -113,6 +122,12 @@ public class SoundAnalyzer extends BaseAnalyzer {
     }
 
     protected void analyze() {
+
+        if (to_reset){
+            force_reset();
+            to_reset = false;
+        }
+
         // Se la coda è vuota (non dovrebbe capitare)
         if (bQueueFrameIn.isEmpty())
             return;
@@ -170,7 +185,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 //Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
-            //Log.v(TAG, "Delta: "+new_frame.delta);
+            Log.v(TAG, "Delta: "+new_frame.delta);
             new_frame.clean();
             bQueueFrameElaborated.put(new_frame);
 
