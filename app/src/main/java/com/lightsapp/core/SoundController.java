@@ -40,8 +40,6 @@ public class SoundController {
 
         try {
             mContext.mSoundA = new SoundAnalyzer(mContext);
-            mContext.mSoundA.start();
-            mContext.mSoundA.activate();
         }
         catch (Exception e) {
             Log.e(TAG, "Error starting SoundAnalyzer: " + e.getMessage());
