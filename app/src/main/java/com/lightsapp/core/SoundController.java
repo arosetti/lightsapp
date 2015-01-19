@@ -16,7 +16,7 @@ public class SoundController {
 
     public AudioRecord mAudioRec = null;
 
-    int sampleRate = 16000;
+    int sampleRate = 8000;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     int bufferSize;
@@ -24,6 +24,7 @@ public class SoundController {
     public SoundController(Context context) {
         mContext = (MainActivity) context;
         bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
+        sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
     }
 
     public void setup() {
