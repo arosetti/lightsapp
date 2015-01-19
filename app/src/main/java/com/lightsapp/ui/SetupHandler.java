@@ -1,11 +1,9 @@
 package com.lightsapp.ui;
 
 import android.content.Context;
-import android.hardware.Camera;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.lightsapp.core.CameraController;
 import com.lightsapp.core.OutputController;
@@ -102,24 +100,6 @@ public class SetupHandler extends HandlerThread {
                         catch (InterruptedException e) {
                         }
                     }
-
-                    /*
-                    try {
-                        if (!done && tentatives > 10) {
-                            Toast toast = Toast.makeText(context,
-                                    "Setup failed!",
-                                    Toast.LENGTH_LONG);
-                            toast.show();
-                            break;
-                        }
-                        else if (!done) {
-                            Log.e(TAG, "setup failed, retrying... ");
-                            Thread.sleep(100);
-                        }
-                    }
-                    catch (InterruptedException e) {
-                    }
-                    */
                 }
 
                 Log.v(TAG, "setup done");
