@@ -131,6 +131,40 @@ public class InfoFragment extends Fragment {
                     }
                 }
 
+                if (msg.getData().containsKey("update_sound")) {
+                    GraphView.GraphViewData data_snd[] = null;
+                    try {
+                        double[] sframes = mContext.mSoundA.getFrames();
+                        if (sframes != null) {
+                            sframes = window(sframes, RECTANGULAR);
+                            data_snd = new GraphView.GraphViewData[sframes.length];
+
+                            for (int i = 0; i < sframes.length; i++) {
+                                data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
+                            }
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "error while generating graph of sound data: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    GraphViewSeries series;
+                    try {
+                        if (data_snd != null) {
+                            mContext.graphView_snd.removeAllSeries();
+                            series = new GraphViewSeries("sound",
+                                    new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
+                                    data_snd);
+                            mContext.graphView_snd.addSeries(series);
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.d(TAG, "error in graphview: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+
                 if (msg.getData().containsKey("update")) {
                     /* Update camera preview */
                     if (mContext.mCameraController != null)
@@ -140,7 +174,8 @@ public class InfoFragment extends Fragment {
                     List<Frame> lframes;
                     try {
                         lframes = mContext.mLightA.getFrames();
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         return;
                     }
 
@@ -210,24 +245,6 @@ public class InfoFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    /* Sound graphs */
-                    GraphView.GraphViewData data_snd[] = null;
-                    try {
-                        double[] sframes = mContext.mSoundA.getFrames();
-                        if (sframes != null) {
-                            sframes = window(sframes, RECTANGULAR);
-                            data_snd = new GraphView.GraphViewData[sframes.length];
-
-                            for (int i = 0; i < sframes.length; i++) {
-                                data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
-                            }
-                        }
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "error while generating graph of sound data: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-
                     GraphViewSeries series;
                     try {
                         series = new GraphViewSeries("fps",
@@ -254,14 +271,6 @@ public class InfoFragment extends Fragment {
                                 data_lum_d);
                         mContext.graphView_dlum.removeAllSeries();
                         mContext.graphView_dlum.addSeries(series);
-
-                        if (data_snd != null) {
-                            mContext.graphView_snd.removeAllSeries();
-                            series = new GraphViewSeries("sound",
-                                    new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
-                                    data_snd);
-                            mContext.graphView_snd.addSeries(series);
-                        }
                     }
                     catch (Exception e) {
                         Log.d(TAG, "error in graphview: " + e.getMessage());
