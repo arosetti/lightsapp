@@ -6,7 +6,6 @@ import android.util.Log;
 import com.lightsapp.core.analyzer.BaseAnalyzer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,6 +54,8 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         threshold_changed = false;
 
+        blockSize = Integer.valueOf(mContext.mPrefs.getString("fft_size", "512"));
+        sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
         beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
         beepFreqval = beepFreq * blockSize / sampleRate;
         Log.v(TAG, "beepFreqval: "+beepFreqval);
@@ -71,6 +72,11 @@ public class SoundAnalyzer extends BaseAnalyzer {
         ldata.clear();
         signal_up = false;
         time = 0;
+    }
+
+    public void reset()
+    {
+        reset_simple();
     }
 
     protected void reanalyze()

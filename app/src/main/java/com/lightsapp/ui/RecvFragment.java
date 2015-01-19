@@ -19,7 +19,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lightsapp.lightsapp.R;
 
@@ -156,7 +155,7 @@ public class RecvFragment extends Fragment {
                             }
                         }
                         else if (mRadioButtonSound.isChecked()) {
-
+                            mContext.mSoundA.reset();
                         }
                     }
                 });
