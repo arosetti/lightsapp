@@ -142,4 +142,11 @@ public class SoundAnalyzer extends BaseAnalyzer {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void setSensitivity(int sensitivity) {
+        super.setSensitivity(sensitivity);
+        mContext.graphView_snd.setManualYAxisBounds(sensitivity * THRESHOLD, 0);
+    }
+
 }

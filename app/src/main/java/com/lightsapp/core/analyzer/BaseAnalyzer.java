@@ -46,7 +46,7 @@ public class BaseAnalyzer extends MyRunnable {
 
     }
 
-    public final void setSensitivity(int sensitivity) {
+    public void setSensitivity(int sensitivity) {
         Log.v(TAG, "Sensitivity set to " + sensitivity);
         this.sensitivity = sensitivity;
     }
