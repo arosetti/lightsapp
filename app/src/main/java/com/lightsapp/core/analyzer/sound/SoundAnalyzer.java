@@ -57,6 +57,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
         beepFreqval = beepFreq * blockSize / sampleRate;
+        Log.v(TAG, "beepFreqval: "+beepFreqval);
         min_beepFreqval = 0;
         max_beepFreqval = 511;
         if (beepFreqval > bandwith)
@@ -65,7 +66,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
             max_beepFreqval = beepFreqval+bandwith;
     }
 
-    public void reset(){
+    public void reset_simple(){
         bQueueFrameElaborated.clear();
         ldata.clear();
         signal_up = false;
@@ -110,7 +111,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         // controlla che non c'è un cambio di frequenza di ricezione
         if (beepFreq != Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"))){
-            reset();
+            reset_simple();
             beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
             beepFreqval = beepFreq * blockSize / sampleRate;
             Log.v(TAG, "beepFreqval: "+beepFreqval);
@@ -129,7 +130,6 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 threshold_changed = false;
             }
 
-
             Frame new_frame = bQueueFrameIn.take();
 
             // Per il grafico
@@ -147,7 +147,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else{
                     time += new_frame.delta;
                 }
-                Log.v(TAG, "Is Up, average: "+new_frame.avg);
+                //Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
                 if (new_frame.getAverageMax(2) > (THRESHOLD * sensitivity))
@@ -159,10 +159,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else{
                     time -= new_frame.delta;
                 }
-                Log.v(TAG, "Is Down, average: "+new_frame.avg);
+                //Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
-            Log.v(TAG, "Delta: "+new_frame.delta);
+            //Log.v(TAG, "Delta: "+new_frame.delta);
             new_frame.clean();
             bQueueFrameElaborated.put(new_frame);
 
