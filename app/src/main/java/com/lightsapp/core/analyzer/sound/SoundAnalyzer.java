@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static com.lightsapp.utils.HandlerUtils.signalStr;
+
 public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
@@ -202,7 +204,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     @Override
     public final void loop() {
         try {
-            Thread.sleep(sleep_time);
+            //Thread.sleep(sleep_time);
             SoundDataBlock data = null;
             if (mContext.mSoundController != null) {
                 int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
@@ -220,9 +222,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else
                     Log.v(TAG, "audio recording ret is 0");
             }
+            signalStr(mContext.mHandlerInfo, "update_sound", "");
         }
-        catch (InterruptedException e) {
-        }
+        //catch (InterruptedException e) {
+        //}
         catch (Exception e) {
             Log.e(TAG, "error analyzing audio frames: " + e.getMessage());
             e.printStackTrace();
