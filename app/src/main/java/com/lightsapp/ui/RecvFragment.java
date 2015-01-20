@@ -189,8 +189,10 @@ public class RecvFragment extends Fragment {
                             //mContext.mLightA.reset();
                             if (mRadioButtonLight.isChecked())
                                 mContext.mLightA.setAnalyzer(true);
-                            else if (mRadioButtonSound.isChecked())
+                            else if (mRadioButtonSound.isChecked()) {
+                                mContext.mSoundA.force_reset();
                                 mContext.mSoundA.setAnalyzer(true);
+                            }
                             mButtonRecv.setText(R.string.btn_stop);
                             setInitText();
                             mRadioGroupMode.setEnabled(false);
