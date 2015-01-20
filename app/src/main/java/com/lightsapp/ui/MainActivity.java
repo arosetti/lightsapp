@@ -98,7 +98,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if (mSoundController != null)
             mSoundController.release();
         mSoundController = null;
-        mSoundA.stop();
+        if (mSoundA != null)
+            mSoundA.stop();
         mSoundA = null;
     }
 
