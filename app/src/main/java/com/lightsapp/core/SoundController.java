@@ -23,8 +23,8 @@ public class SoundController {
 
     public SoundController(Context context) {
         mContext = (MainActivity) context;
-        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
         sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
+        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
     }
 
     public void setup() {
