@@ -14,6 +14,7 @@ public class Frame {
     public long delta, timestamp, luminance = -1;
 
     private boolean enable_crop;
+    int radius = 10, radius_square;
 
     public Frame(byte [] data, int width, int height, long timestamp, long delta, boolean crop) {
         this.data_raw = data;
@@ -25,6 +26,7 @@ public class Frame {
         this.timestamp = timestamp;
         this.delta = delta;
         this.enable_crop = crop;
+        radius_square = radius * radius;
     }
 
     public Frame analyze() {
@@ -57,9 +59,6 @@ public class Frame {
     private long getLuminance(byte[] data, int width, int height) {
         long ysum = 0;
 
-        int max_dist = dist(0, 0);
-        int max_dist_quadratic = (max_dist / 8)*(max_dist / 8);
-
         try {
             for (int j = 0, yp = 0; j < height; j++) {
                 int uvp = size + (j >> 1) * width, u = 0, v = 0;
@@ -73,7 +72,7 @@ public class Frame {
                         uvp += 2;
                     }
 
-                    if (!enable_crop || (enable_crop && (dist_quadratic(i, j) < max_dist_quadratic)))
+                    if (!enable_crop || (enable_crop && (dist_quadratic(i, j) < radius_square)))
                         ysum += (long) y;
                 }
             }
@@ -84,7 +83,7 @@ public class Frame {
         }
 
         if (enable_crop)
-            return (int) ((float)ysum / (Math.PI * max_dist * max_dist / 64));
+            return (int) ((float)ysum / (Math.PI * radius_square));
         else
             return (int) ((float)ysum / (float)size);
     }
