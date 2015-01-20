@@ -15,7 +15,7 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
-    protected int THRESHOLD = 10000;
+    protected int THRESHOLD = 2500;
 
     private int sampleRate = 8000;
     private int blockSize = 512;
@@ -49,23 +49,24 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         signal_up = false;
         to_reset = false;
-        sleep_time = 30;
+        sleep_time = 10;
         time = 0;
 
         threshold_changed = false;
 
-        bandwidth = Integer.valueOf(mContext.mPrefs.getString("bandwidth", "2"));;
         blockSize = Integer.valueOf(mContext.mPrefs.getString("fft_size", "512"));
         sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
         beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
+        bandwidth = Integer.valueOf(mContext.mPrefs.getString("bandwidth", "5"));
         beepFreqval = beepFreq * blockSize / sampleRate;
-        Log.v(TAG, "beepFreqval: "+beepFreqval);
         min_beepFreqval = 0;
         max_beepFreqval = 511;
         if (beepFreqval > bandwidth)
-            min_beepFreqval = beepFreqval- bandwidth;
+            min_beepFreqval = beepFreqval - bandwidth;
         if (beepFreqval < 511- bandwidth)
-            max_beepFreqval = beepFreqval+ bandwidth;
+            max_beepFreqval = beepFreqval + bandwidth;
+        Log.v(TAG, "beepFreqval: "+beepFreqval+", min_beepFreqval: "+min_beepFreqval+", max_beepFreqval: "+max_beepFreqval);
+
     }
 
     public void reset_simple()
@@ -76,7 +77,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
         time = 0;
     }
 
-    public void force_reset()
+    protected void force_reset()
     {
         bQueueFrameIn.clear();
         bQueueFrameElaborated.clear();
@@ -210,7 +211,8 @@ public class SoundAnalyzer extends BaseAnalyzer {
             }
         }
         catch (Exception e){
-            Log.d(TAG, "queue error: " + e.getMessage());
+            Log.e(TAG, "getFrames(): " + e.getMessage());
+            e.printStackTrace();
         }
 
         return null;
@@ -219,7 +221,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     @Override
     public final void loop() {
         try {
-            //Thread.sleep(sleep_time);
+            Thread.sleep(sleep_time);
             SoundDataBlock data = null;
             if (mContext.mSoundController != null) {
                 int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
