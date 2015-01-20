@@ -100,7 +100,7 @@ public class InfoFragment extends Fragment {
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(mContext.graphView_dlum);
 
-        mContext.graphView_snd = newGraphView("Sound", 512);
+        mContext.graphView_snd = newGraphView("Sound", 256);
 
         return v;
     }

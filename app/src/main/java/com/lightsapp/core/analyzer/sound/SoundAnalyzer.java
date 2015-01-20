@@ -25,7 +25,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     private int beepFreqval;
     private int min_beepFreqval;
     private int max_beepFreqval;
-    private int bandwith;
+    private int bandwidth;
 
     private long time;
     private boolean signal_up;
@@ -51,10 +51,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
         to_reset = false;
         sleep_time = 30;
         time = 0;
-        bandwith = 50;
 
         threshold_changed = false;
 
+        bandwidth = Integer.valueOf(mContext.mPrefs.getString("bandwidth", "2"));;
         blockSize = Integer.valueOf(mContext.mPrefs.getString("fft_size", "512"));
         sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
         beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
@@ -62,10 +62,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
         Log.v(TAG, "beepFreqval: "+beepFreqval);
         min_beepFreqval = 0;
         max_beepFreqval = 511;
-        if (beepFreqval > bandwith)
-            min_beepFreqval = beepFreqval-bandwith;
-        if (beepFreqval < 511-bandwith)
-            max_beepFreqval = beepFreqval+bandwith;
+        if (beepFreqval > bandwidth)
+            min_beepFreqval = beepFreqval- bandwidth;
+        if (beepFreqval < 511- bandwidth)
+            max_beepFreqval = beepFreqval+ bandwidth;
     }
 
     public void reset_simple()
@@ -140,10 +140,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
             Log.v(TAG, "beepFreqval: "+beepFreqval);
             min_beepFreqval = 0;
             max_beepFreqval = 511;
-            if (beepFreqval > bandwith)
-                min_beepFreqval = beepFreqval-bandwith;
-            if (beepFreqval < 511-bandwith)
-                max_beepFreqval = beepFreqval+bandwith;
+            if (beepFreqval > bandwidth)
+                min_beepFreqval = beepFreqval- bandwidth;
+            if (beepFreqval < 511- bandwidth)
+                max_beepFreqval = beepFreqval+ bandwidth;
         }
 
         try {
