@@ -56,6 +56,9 @@
     <string name="pref_title_beep_freq">Beep Frequency (Hz)</string>
     <string name="pref_default_beep_freq">850</string>
 
+    <string name="pref_title_bandwidth">Number of FFT components analyzed around frequency</string>
+    <string name="pref_default_bandwidth">2</string>
+
     <string name="pref_title_sampling_freq">Recording sampling frequency</string>
     <string-array name="pref_sampling_freq_titles">
         <item>8000Hz</item>

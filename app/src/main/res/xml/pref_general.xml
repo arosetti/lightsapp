@@ -54,6 +54,16 @@
             android:singleLine="true"
             android:maxLines="1"/>
 
+        <EditTextPreference
+            android:key="bandwidth"
+            android:title="@string/pref_title_bandwidth"
+            android:defaultValue="@string/pref_default_bandwidth"
+            android:selectAllOnFocus="true"
+            android:inputType="numberDecimal"
+            android:capitalize="none"
+            android:singleLine="true"
+            android:maxLines="1"/>
+
         <ListPreference
             android:key="sampling_freq"
             android:title="@string/pref_title_sampling_freq"
