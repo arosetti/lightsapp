@@ -2,6 +2,9 @@ package com.lightsapp.core.analyzer.sound;
 
 import com.lightsapp.utils.math.LinearFilterD;
 
+import static com.lightsapp.utils.math.DFT.HANN;
+import static com.lightsapp.utils.math.DFT.window;
+
 public class Spectrum {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
@@ -40,6 +43,10 @@ public class Spectrum {
     public void spectrumSmoothing() {
         LinearFilterD lf = LinearFilterD.get(LinearFilterD.Filter.KERNEL_SAVITZKY_GOLAY_5);
         lf.apply(spectrum);
+    }
+
+    public void spectrumHann() {
+        spectrum = window(spectrum, HANN);
     }
 
     public void normalize()

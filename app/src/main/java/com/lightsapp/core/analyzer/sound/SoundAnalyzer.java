@@ -162,7 +162,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
             new_frame.cutSpectrum(min_beepFreqval, max_beepFreqval);
 
             if (signal_up){ // valuta condizione di discesa
-                if (new_frame.getAverageMax(2) < (THRESHOLD * sensitivity)){
+                if (new_frame.getAverageMax(1) < (THRESHOLD * sensitivity)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -173,7 +173,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 //Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
-                if (new_frame.getAverageMax(2) > (THRESHOLD * sensitivity))
+                if (new_frame.getAverageMax(1) > (THRESHOLD * sensitivity))
                 {
                     signal_up = true;
                     ldata.add(time);
@@ -251,6 +251,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     public void setSensitivity(int sensitivity) {
         super.setSensitivity(sensitivity);
         mContext.graphView_snd.setManualYAxisBounds(sensitivity * THRESHOLD, 0);
+        threshold_changed = true;
     }
 
 }
