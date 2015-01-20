@@ -9,7 +9,7 @@ public class Frame {
     private final String TAG = Frame.class.getSimpleName();
 
     private byte[] data_raw = null;
-    private final int width, height, size;
+    private final int width, height, size, width_half, height_half;
 
     public long delta, timestamp, luminance = -1;
 
@@ -18,7 +18,9 @@ public class Frame {
     public Frame(byte [] data, int width, int height, long timestamp, long delta, boolean crop) {
         this.data_raw = data;
         this.width = width;
+        this.width_half = width/2;
         this.height = height;
+        this.height_half = height/2;
         size = width * height;
         this.timestamp = timestamp;
         this.delta = delta;
@@ -45,13 +47,18 @@ public class Frame {
     }
 
     private int dist(int x, int y) {
-        return (int) Math.sqrt((width/2 - x) * (width/2 - x) + (height/2 - y) * (height/2 - y));
+        return (int) Math.sqrt((width_half - x) * (width_half - x) + (height_half - y) * (height_half - y));
+    }
+
+    private int dist_quadratic(int x, int y) {
+        return (int) ((width_half - x) * (width_half - x) + (height_half - y) * (height_half - y));
     }
 
     private long getLuminance(byte[] data, int width, int height) {
         long ysum = 0;
 
         int max_dist = dist(0, 0);
+        int max_dist_quadratic = (max_dist / 8)*(max_dist / 8);
 
         try {
             for (int j = 0, yp = 0; j < height; j++) {
@@ -66,7 +73,7 @@ public class Frame {
                         uvp += 2;
                     }
 
-                    if (!enable_crop || (enable_crop && (dist(i, j) < (max_dist / 8))))
+                    if (!enable_crop || (enable_crop && (dist_quadratic(i, j) < max_dist_quadratic)))
                         ysum += (long) y;
                 }
             }
