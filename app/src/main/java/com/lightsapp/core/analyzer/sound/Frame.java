@@ -21,9 +21,9 @@ public class Frame {
     }
 
     public Spectrum getSpectrum() {
-        if (spec == null) {
+        if (spec == null && data != null) {
             spec = data.FFT();
-            //spec.spectrumSmoothing();
+            spec.spectrumHann();
         }
         return spec;
     }
