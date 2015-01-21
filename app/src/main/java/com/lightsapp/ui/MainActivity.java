@@ -88,8 +88,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             mOutputController.stop();
         mOutputController = null;
 
-        //if (mCameraController != null)
-        //    mCameraController.stopPreviewAndFreeCamera();
+        if (mCameraController != null)
+           mCameraController.stopPreviewAndFreeCamera();
         mCameraController = null;
         if (mLightA != null)
             mLightA.stop();
