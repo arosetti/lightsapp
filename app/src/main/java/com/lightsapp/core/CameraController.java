@@ -175,8 +175,13 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         Log.d(TAG, "surfaceCreated()");
 
         try {
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
+            if (mCamera != null) {
+                mCamera.setPreviewDisplay(holder);
+                mCamera.startPreview();
+            }
+            else {
+                Log.d(TAG, "mCamera is null");
+            }
         }
         catch (Exception e) {
             Log.d(TAG, "Error creating surface: " + e.getMessage());
@@ -193,6 +198,7 @@ public class CameraController extends SurfaceView implements SurfaceHolder.Callb
         try {
             if(mCamera != null) {
                 mCamera.stopPreview();
+                mHolder.removeCallback(this);
                 //mCamera.setPreviewCallback(null);
                 //mCamera.lock();
                 mCamera.release();
