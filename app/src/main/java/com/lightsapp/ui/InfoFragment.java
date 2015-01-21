@@ -146,7 +146,7 @@ public class InfoFragment extends Fragment {
                     }
                     catch (Exception e) {
                         Log.e(TAG, "error while generating graph of sound data: " + e.getMessage());
-                        e.printStackTrace();
+                        return;
                     }
 
                     GraphViewSeries series;
@@ -161,7 +161,6 @@ public class InfoFragment extends Fragment {
                     }
                     catch (Exception e) {
                         Log.d(TAG, "error in graphview: " + e.getMessage());
-                        e.printStackTrace();
                     }
                 }
 

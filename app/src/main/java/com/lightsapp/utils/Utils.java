@@ -6,6 +6,15 @@ import java.util.List;
 
 public class Utils {
 
+    public static final boolean DEBUG = true;
+
+    public static void print_stack(Error e)
+    {
+        if (DEBUG) {
+            e.printStackTrace();
+        }
+    }
+
     public static long[] ListToPrimitiveArray(List<Long> input) {
         long output[] = new long[input.size()];
         int index = 0;
