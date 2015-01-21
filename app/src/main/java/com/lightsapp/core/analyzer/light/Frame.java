@@ -52,7 +52,7 @@ public class Frame {
         return (int) Math.sqrt((width_half - x) * (width_half - x) + (height_half - y) * (height_half - y));
     }
 
-    private int dist_quadratic(int x, int y) {
+    private final int dist_quadratic(int x, int y) {
         return (int) ((width_half - x) * (width_half - x) + (height_half - y) * (height_half - y));
     }
 
