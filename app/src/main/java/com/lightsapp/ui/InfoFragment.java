@@ -134,13 +134,15 @@ public class InfoFragment extends Fragment {
                 if (msg.getData().containsKey("update_sound")) {
                     GraphView.GraphViewData data_snd[] = null;
                     try {
-                        double[] sframes = mContext.mSoundA.getFrames();
-                        if (sframes != null) {
-                            sframes = window(sframes, RECTANGULAR);
-                            data_snd = new GraphView.GraphViewData[sframes.length];
+                        if (mContext.mSoundA != null) {
+                            double[] sframes = mContext.mSoundA.getFrames();
+                            if (sframes != null) {
+                                sframes = window(sframes, RECTANGULAR);
+                                data_snd = new GraphView.GraphViewData[sframes.length];
 
-                            for (int i = 0; i < sframes.length; i++) {
-                                data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
+                                for (int i = 0; i < sframes.length; i++) {
+                                    data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
+                                }
                             }
                         }
                     }
