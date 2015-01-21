@@ -187,9 +187,13 @@ public class RecvFragment extends Fragment {
                         if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_start)) {
                             //mContext.mLightA.reset();
-                            if (mRadioButtonLight.isChecked())
+                            if (mRadioButtonLight.isChecked()){
+                                mContext.mLightA.activate();
+                                mContext.mLightA.reset();
                                 mContext.mLightA.setAnalyzer(true);
+                            }
                             else if (mRadioButtonSound.isChecked()) {
+                                mContext.mSoundA.activate();
                                 mContext.mSoundA.reset();
                                 mContext.mSoundA.setAnalyzer(true);
                             }
@@ -200,11 +204,14 @@ public class RecvFragment extends Fragment {
                             mRadioButtonSound.setEnabled(false);
                         } else if (mButtonRecv.getText() ==
                                 getResources().getString(R.string.btn_stop)) {
-                            //mContext.mLightA.reset();
-                            if (mRadioButtonLight.isChecked())
+                            if (mRadioButtonLight.isChecked()) {
                                 mContext.mLightA.setAnalyzer(false);
-                            else if (mRadioButtonSound.isChecked())
+                                mContext.mLightA.deactivate();
+                                                            }
+                            else if (mRadioButtonSound.isChecked()) {
                                 mContext.mSoundA.setAnalyzer(false);
+                                mContext.mSoundA.deactivate();
+                            }
                             mButtonRecv.setText(R.string.btn_start);
 
                             lock.lock();
@@ -255,9 +262,7 @@ public class RecvFragment extends Fragment {
                     mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                             ": " + progress);
                     mContext.mLightA.start();
-                    mContext.mLightA.activate();
                     mContext.mSoundA.start();
-                    mContext.mSoundA.activate();
                 }
 
                 if (msg.getData().containsKey("graph_setup_done")) {
