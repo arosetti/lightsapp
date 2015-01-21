@@ -6,11 +6,9 @@ import android.util.Log;
 import com.lightsapp.core.analyzer.BaseAnalyzer;
 import com.lightsapp.core.analyzer.morse.MorseAnalyzer;
 import com.lightsapp.ui.MainActivity;
-import com.lightsapp.utils.MyRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -219,6 +217,9 @@ public class LightAnalyzer extends BaseAnalyzer {
         Frame frame = null;
         long timestamp_now;
         long delta;
+
+        if (!this.getStatus())
+            return;
 
         lock_frames_tmp.lock();
         try {

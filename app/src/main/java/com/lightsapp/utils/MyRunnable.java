@@ -80,6 +80,12 @@ public abstract class MyRunnable implements Runnable {
         }
     }
 
+    public final void deactivate() {
+        lock.lock();
+        status.getAndSet(false);
+        lock.unlock();
+    }
+
     public void setup() {
     }
 
