@@ -36,6 +36,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     private BlockingQueue<Frame> bQueueFrameIn;
     private BlockingQueue<Frame> bQueueFrameElaborated;
     private List<Long> ldata;
+    private List<Double> maxVector;
 
     public SoundAnalyzer(Context context) {
         super(context);
@@ -46,6 +47,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
         buffer = new short[blockSize];
 
         ldata = new ArrayList<Long>();
+        maxVector = new ArrayList<Double>();
 
         signal_up = false;
         to_reset = false;
@@ -82,6 +84,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
         bQueueFrameIn.clear();
         bQueueFrameElaborated.clear();
         ldata.clear();
+        maxVector.clear();
         signal_up = false;
         time = 0;
     }
@@ -99,7 +102,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         for (Frame f: bQueueFrameElaborated) {
             if (signal_up){ // valuta condizione di discesa
-                if (f.avg < (THRESHOLD * sensitivity)){
+                if (f.maxY < (THRESHOLD * sensitivity)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -109,7 +112,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 }
             }
             else { // valuta condizione di salita
-                if (f.avg > (THRESHOLD * sensitivity))
+                if (f.maxY > (THRESHOLD * sensitivity))
                 {
                     signal_up = true;
                     ldata.add(time);
@@ -163,7 +166,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
             new_frame.cutSpectrum(min_beepFreqval, max_beepFreqval);
 
             if (signal_up){ // valuta condizione di discesa
-                if (new_frame.getAverageMax(1) < (THRESHOLD * sensitivity)){
+                if (new_frame.getMax() < (THRESHOLD * sensitivity)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -174,7 +177,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 //Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
-                if (new_frame.getAverageMax(1) > (THRESHOLD * sensitivity))
+                if (new_frame.getMax() > (THRESHOLD * sensitivity))
                 {
                     signal_up = true;
                     ldata.add(time);
@@ -190,6 +193,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
             new_frame.clean();
             bQueueFrameElaborated.put(new_frame);
 
+            maxVector.add(new_frame.maxY);
             if (enable_analyze.get() && ldata.size() > 0)
                 mContext.mMorseA.analyze(ldata);
         }
