@@ -140,7 +140,7 @@ public class InfoFragment extends Fragment {
                         if (mContext.mSoundA != null) {
                             double[] sframes = mContext.mSoundA.getFrames();
                             if (sframes != null) {
-                                sframes = window(sframes, HANN);
+                                //sframes = window(sframes, HANN);
                                 data_fft = new GraphView.GraphViewData[sframes.length];
 
                                 for (int i = 0; i < sframes.length; i++) {

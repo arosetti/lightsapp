@@ -25,7 +25,7 @@ public class Frame {
     public Spectrum getSpectrum() {
         if (spec == null && data != null) {
             spec = data.FFT();
-            spec.spectrumHann();
+            //spec.spectrumHann();
         }
         return spec;
     }
