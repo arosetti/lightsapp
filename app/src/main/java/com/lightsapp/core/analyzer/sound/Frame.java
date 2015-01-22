@@ -1,5 +1,7 @@
 package com.lightsapp.core.analyzer.sound;
 
+import android.util.Log;
+
 public class Frame {
     private final String TAG = Frame.class.getSimpleName();
 
@@ -37,6 +39,16 @@ public class Frame {
             sf = new SpectrumFragment(min, max, spec);
         }
         return this;
+    }
+
+    public double getMax() {
+        if (sf == null)
+            sf = new SpectrumFragment(0, spec.length(), spec);
+
+        maxX = sf.getMaxX();
+        maxY = sf.getMaxY();
+        Log.v(TAG, "MaxY: " + maxY);
+        return maxY;
     }
 
     public double getAverageMax(int deltaX) {
