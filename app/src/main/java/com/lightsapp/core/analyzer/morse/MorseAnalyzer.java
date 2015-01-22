@@ -137,6 +137,12 @@ public class MorseAnalyzer {
         signalStr(mContext.mHandlerRecv, "data_message_morse_times", tmp);
     }
 
+    protected final void signalReset() {
+        signalStr(mContext.mHandlerRecv, "data_message_text", "");
+        signalStr(mContext.mHandlerRecv, "data_message_morse", "");
+        signalStr(mContext.mHandlerRecv, "data_message_morse_times", "");
+    }
+
     public synchronized String getCurrentText() {
         return StripString(str, 30);
     }
@@ -147,5 +153,6 @@ public class MorseAnalyzer {
 
     public synchronized void reset() {
         str = "";
+        signalReset();
     }
 }
