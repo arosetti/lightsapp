@@ -24,8 +24,8 @@ import com.lightsapp.utils.math.LinearFilter;
 import java.util.List;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
-import static com.lightsapp.utils.math.DFT.*;
-import static com.lightsapp.utils.math.DFT.RECTANGULAR;
+import static com.lightsapp.utils.math.DFT.HANN;
+import static com.lightsapp.utils.math.DFT.window;
 
 
 public class InfoFragment extends Fragment {
@@ -132,16 +132,28 @@ public class InfoFragment extends Fragment {
                 }
 
                 if (msg.getData().containsKey("update_sound")) {
-                    GraphView.GraphViewData data_snd[] = null;
+
+                    mContext.graphView_lum2.setManualYAxis(false);
+
+                    GraphView.GraphViewData data_snd[] = null, data_fft[] = null;
                     try {
                         if (mContext.mSoundA != null) {
                             double[] sframes = mContext.mSoundA.getFrames();
                             if (sframes != null) {
-                                sframes = window(sframes, RECTANGULAR);
+                                sframes = window(sframes, HANN);
+                                data_fft = new GraphView.GraphViewData[sframes.length];
+
+                                for (int i = 0; i < sframes.length; i++) {
+                                    data_fft[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
+                                }
+                            }
+
+                            sframes = mContext.mSoundA.getSignal();
+                            if (sframes != null) {
                                 data_snd = new GraphView.GraphViewData[sframes.length];
 
                                 for (int i = 0; i < sframes.length; i++) {
-                                    data_snd[i] = new GraphView.GraphViewData(i, sframes[i]); //10 * Math.log10(sframes[i]));
+                                    data_snd[i] = new GraphView.GraphViewData(i, 10 * Math.log10(sframes[i]));
                                 }
                             }
                         }
@@ -153,12 +165,21 @@ public class InfoFragment extends Fragment {
 
                     GraphViewSeries series;
                     try {
-                        if (data_snd != null) {
+                        if (data_fft != null) {
                             mContext.graphView_snd.removeAllSeries();
-                            series = new GraphViewSeries("sound",
+                            series = new GraphViewSeries("sound_fft",
                                     new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(255, 80, 0), 3),
-                                    data_snd);
+                                    data_fft);
                             mContext.graphView_snd.addSeries(series);
+                        }
+
+                        if ( data_snd != null) {
+                            series = new GraphViewSeries("sound",
+                                    new GraphViewSeries.GraphViewSeriesStyle(Color.rgb(170, 80, 255), 3),
+                                    data_snd);
+                            mContext.graphView_lum.removeAllSeries();
+                            mContext.graphView_lum.addSeries(series);
+                            mContext.graphView_lum.scrollToEnd();
                         }
                     }
                     catch (Exception e) {
@@ -170,6 +191,8 @@ public class InfoFragment extends Fragment {
                     /* Update camera preview */
                     if (mContext.mCameraController != null)
                         mContext.mCameraController.update();
+
+                    mContext.graphView_lum2.setManualYAxis(true);
 
                     /* Light graphs */
                     List<Frame> lframes;

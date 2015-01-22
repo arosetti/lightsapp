@@ -92,6 +92,8 @@ public class SoundAnalyzer extends BaseAnalyzer {
     public void reset()
     {
         to_reset = true;
+        mContext.mMorseA.reset();
+        signalStr(mContext.mHandlerInfo, "update_sound", "");
     }
 
     protected void reanalyze()
@@ -218,6 +220,21 @@ public class SoundAnalyzer extends BaseAnalyzer {
             Log.e(TAG, "getFrames(): " + e.getMessage());
             e.printStackTrace();
         }
+
+        return null;
+    }
+
+    public double[] getSignal() {
+        try {
+            double data[] = new double[maxVector.size()];
+            int index = 0;
+            for(Double val : maxVector) {
+                data[index] =  val;
+                index++;
+            }
+            return data;
+        }
+        catch (Exception e){ }
 
         return null;
     }

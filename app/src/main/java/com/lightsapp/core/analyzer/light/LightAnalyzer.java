@@ -97,6 +97,7 @@ public class LightAnalyzer extends BaseAnalyzer {
         }
 
         mContext.mMorseA.reset();
+        signalStr(mContext.mHandlerInfo, "update", "");
     }
 
     protected void update() {
@@ -183,7 +184,7 @@ public class LightAnalyzer extends BaseAnalyzer {
         }
     }
 
-    private void signalGraph() {
+    protected void signalGraph() {
         lock_frames.lock();
         try {
             if(lframes.size() > 0) {
