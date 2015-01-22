@@ -215,6 +215,7 @@ public class RecvFragment extends Fragment {
                             mButtonRecv.setText(R.string.btn_start);
 
                             lock.lock();
+
                             SpannableString spstr = new SpannableString(mTextViewRecv.getText());
                             String str = Html.toHtml(spstr).toString();
 

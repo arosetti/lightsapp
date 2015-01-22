@@ -15,11 +15,12 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
-    protected int THRESHOLD = 2500;
+    protected int THRESHOLD = 100;
 
     private int sampleRate = 8000;
-    private int blockSize = 512;
+    private int blockSize = 256;
     private short[] buffer;
+    private byte[] buffer_byte;
 
     private int beepFreq;
     private int beepFreqval;
@@ -44,7 +45,6 @@ public class SoundAnalyzer extends BaseAnalyzer {
         bQueueSpectrum = new LinkedBlockingQueue<Spectrum>();
         bQueueFrameIn = new LinkedBlockingQueue<Frame>();
         bQueueFrameElaborated = new LinkedBlockingQueue<Frame>();
-        buffer = new short[blockSize];
 
         ldata = new ArrayList<Long>();
         maxVector = new ArrayList<Double>();
@@ -60,12 +60,16 @@ public class SoundAnalyzer extends BaseAnalyzer {
         sampleRate = Integer.valueOf(mContext.mPrefs.getString("sample_freq", "8000"));
         beepFreq = Integer.valueOf(mContext.mPrefs.getString("beep_freq", "850"));
         bandwidth = Integer.valueOf(mContext.mPrefs.getString("bandwidth", "5"));
+
+        buffer = new short[blockSize];
+        buffer_byte = new byte[blockSize];
+
         beepFreqval = beepFreq * blockSize / sampleRate;
         min_beepFreqval = 0;
-        max_beepFreqval = 511;
+        max_beepFreqval = blockSize - 1;
         if (beepFreqval > bandwidth)
             min_beepFreqval = beepFreqval - bandwidth;
-        if (beepFreqval < 511- bandwidth)
+        if (beepFreqval < (blockSize - 1 - bandwidth))
             max_beepFreqval = beepFreqval + bandwidth;
         Log.v(TAG, "beepFreqval: "+beepFreqval+", min_beepFreqval: "+min_beepFreqval+", max_beepFreqval: "+max_beepFreqval);
 
@@ -145,10 +149,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
             beepFreqval = beepFreq * blockSize / sampleRate;
             Log.v(TAG, "beepFreqval: "+beepFreqval);
             min_beepFreqval = 0;
-            max_beepFreqval = 511;
+            max_beepFreqval = blockSize - 1;
             if (beepFreqval > bandwidth)
                 min_beepFreqval = beepFreqval- bandwidth;
-            if (beepFreqval < 511- bandwidth)
+            if (beepFreqval < (blockSize - 1 - bandwidth))
                 max_beepFreqval = beepFreqval+ bandwidth;
         }
 
@@ -245,10 +249,28 @@ public class SoundAnalyzer extends BaseAnalyzer {
             Thread.sleep(sleep_time);
             SoundDataBlock data = null;
             if (mContext.mSoundController != null) {
-                int ret = mContext.mSoundController.mAudioRec.read(buffer, 0, blockSize);
+                int ret = mContext.mSoundController.mAudioRec.read(buffer_byte, 0, blockSize);
                 if (ret > 0)
                 {
-                    data = new SoundDataBlock(buffer, blockSize, ret);
+                    // Conversione in double da byte
+                    double[] micBufferData = new double[blockSize];
+                    final int bytesPerSample = 2; // As it is 16bit PCM
+                    final double amplification = 100.0; // choose a number as you like
+                    for (int index = 0, floatIndex = 0; index < ret - bytesPerSample + 1; index += bytesPerSample, floatIndex++)
+                    {
+                        double sample = 0;
+                        for (int b = 0; b < bytesPerSample; b++) {
+                            int v = buffer_byte[index + b];
+                            if (b < bytesPerSample - 1 || bytesPerSample == 1) {
+                                v &= 0xFF;
+                            }
+                            sample += v << (b * 8);
+                        }
+                        double sample32 = amplification * (sample / 32768.0);
+                        micBufferData[floatIndex] = sample32;
+                    }
+
+                    data = new SoundDataBlock(micBufferData);
 
                     long timestamp_now = System.currentTimeMillis();
                     Frame fdata = new Frame(data, timestamp_now, timestamp_now - timestamp_last);

@@ -15,6 +15,12 @@ public class SoundDataBlock
         }
     }
 
+    public SoundDataBlock(double[] buffer)
+    {
+        block = buffer;
+    }
+
+
     public SoundDataBlock()
     {
 
