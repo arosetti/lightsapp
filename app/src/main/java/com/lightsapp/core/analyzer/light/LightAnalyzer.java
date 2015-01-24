@@ -98,7 +98,7 @@ public class LightAnalyzer extends BaseAnalyzer {
         }
 
         mContext.mMorseA.reset();
-        signalStr(mContext.mHandlerInfo, "update", "");
+        signalStr(mContext.mHandlerInfo, "reset_graphs", "");
     }
 
     protected void update() {
@@ -214,7 +214,7 @@ public class LightAnalyzer extends BaseAnalyzer {
                     Log.d(TAG, "error logging statistics: " + e.getMessage());
                     e.printStackTrace();
                 }
-                signalStr(mContext.mHandlerInfo, "update", "");
+                signalStr(mContext.mHandlerInfo, "update_graphs_light", "");
             }
         }
         finally {
