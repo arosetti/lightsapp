@@ -14,7 +14,7 @@ public class Frame {
     public long delta, timestamp, luminance = -1;
 
     private boolean enable_crop;
-    int radius = 10, radius_square;
+    int radius = 16, radius_square;
 
     public Frame(byte [] data, int width, int height, long timestamp, long delta, boolean crop) {
         this.data_raw = data;

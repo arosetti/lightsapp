@@ -15,7 +15,9 @@ public class BaseAnalyzer extends MyRunnable {
 
     protected MainActivity mContext;
 
-    protected int sleep_time = 100,
+    protected int MAX_FRAMES = 8000, TO_CLEAN = 1000;
+
+    protected int sleep_time = 200,
                   sensitivity = -1;
     protected long timestamp_last;
 
