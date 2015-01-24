@@ -230,6 +230,9 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     public double[] getSignal() {
         try {
+            while (maxVector.size() > 512)
+                maxVector.remove(0);
+
             double data[] = new double[maxVector.size()];
             int index = 0;
             for(Double val : maxVector) {

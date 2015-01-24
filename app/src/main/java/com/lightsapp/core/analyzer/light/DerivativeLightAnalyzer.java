@@ -35,8 +35,6 @@ public class DerivativeLightAnalyzer extends LightAnalyzer {
               lframes_d.add(dd);
         }
 
-        Log.w(TAG, "Start!");
-
         long fSensitivity = sensitivity / 2;
         long tstart = 0, tstop = 0, diff;
         long fmax = Long.MIN_VALUE;

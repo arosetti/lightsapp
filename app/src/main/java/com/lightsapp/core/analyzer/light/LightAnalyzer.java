@@ -51,6 +51,7 @@ public class LightAnalyzer extends BaseAnalyzer {
     public final void loop() {
         try {
             Thread.sleep(sleep_time);
+
             update();
 
             if (enable_analyze.get())
@@ -61,7 +62,7 @@ public class LightAnalyzer extends BaseAnalyzer {
         }
         catch (Exception e) {
             Log.e(TAG, "error analyzing image frames: " + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         finally {
             signalGraph();
@@ -157,6 +158,21 @@ public class LightAnalyzer extends BaseAnalyzer {
         try {
             if (lframes.isEmpty())
                 return;
+
+            if (lframes.size() > MAX_FRAMES) {
+                d_max = Long.MIN_VALUE;
+                d_min = Long.MAX_VALUE;
+                d_avg = d_sum = 0;
+                l_max = Long.MIN_VALUE;
+                l_min = Long.MAX_VALUE;
+                l_avg = l_sum = 0;
+                last_frame_analyzed = 0;
+
+                Log.v(TAG, "cleaning up " + TO_CLEAN + " frames!!");
+
+                while (lframes.size() > (MAX_FRAMES - TO_CLEAN))
+                    lframes.remove(0);
+            }
 
             for (int i = last_frame_analyzed; i < lframes.size(); i++) {
 
