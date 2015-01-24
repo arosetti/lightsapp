@@ -97,7 +97,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     {
         to_reset = true;
         mContext.mMorseA.reset();
-        signalStr(mContext.mHandlerInfo, "update_sound", "");
+        signalStr(mContext.mHandlerInfo, "reset_graphs", "");
     }
 
     protected void reanalyze()
@@ -285,7 +285,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else
                     Log.v(TAG, "audio recording ret is 0");
             }
-            signalStr(mContext.mHandlerInfo, "update_sound", "");
+            signalStr(mContext.mHandlerInfo, "update_graphs_sound", "");
         }
         //catch (InterruptedException e) {
         //}

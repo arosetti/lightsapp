@@ -24,8 +24,6 @@ import com.lightsapp.utils.math.LinearFilter;
 import java.util.List;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
-import static com.lightsapp.utils.math.DFT.HANN;
-import static com.lightsapp.utils.math.DFT.window;
 
 
 public class InfoFragment extends Fragment {
@@ -131,7 +129,15 @@ public class InfoFragment extends Fragment {
                     }
                 }
 
-                if (msg.getData().containsKey("update_sound")) {
+                if (msg.getData().containsKey("reset_graphs")) {
+                    mContext.graphView_snd.removeAllSeries();
+                    mContext.graphView_delay.removeAllSeries();
+                    mContext.graphView_lum.removeAllSeries();
+                    mContext.graphView_lum2.removeAllSeries();
+                    mContext.graphView_dlum.removeAllSeries();
+                }
+
+                if (msg.getData().containsKey("update_graphs_sound")) {
 
                     mContext.graphView_lum2.setManualYAxis(false);
 
@@ -187,7 +193,7 @@ public class InfoFragment extends Fragment {
                     }
                 }
 
-                if (msg.getData().containsKey("update")) {
+                if (msg.getData().containsKey("update_graphs_light")) {
                     /* Update camera preview */
                     if (mContext.mCameraController != null)
                         mContext.mCameraController.update();
