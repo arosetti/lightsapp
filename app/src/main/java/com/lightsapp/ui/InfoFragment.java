@@ -140,6 +140,7 @@ public class InfoFragment extends Fragment {
                 if (msg.getData().containsKey("update_graphs_sound")) {
 
                     mContext.graphView_lum2.setManualYAxis(false);
+                    mContext.graphView_lum.setManualYAxisBounds(100, 0);
 
                     GraphView.GraphViewData data_snd[] = null, data_fft[] = null;
                     try {
@@ -199,6 +200,7 @@ public class InfoFragment extends Fragment {
                         mContext.mCameraController.update();
 
                     mContext.graphView_lum2.setManualYAxis(true);
+                    mContext.graphView_lum.setManualYAxisBounds(250, 0);
 
                     /* Light graphs */
                     List<Frame> lframes;

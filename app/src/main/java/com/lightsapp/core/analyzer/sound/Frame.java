@@ -47,7 +47,7 @@ public class Frame {
 
         maxX = sf.getMaxX();
         maxY = sf.getMaxY();
-        Log.v(TAG, "MaxY: " + maxY);
+        //Log.v(TAG, "MaxY: " + maxY);
         return maxY;
     }
 
