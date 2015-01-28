@@ -98,7 +98,7 @@ public class InfoFragment extends Fragment {
         layout = (LinearLayout) v.findViewById(R.id.graph2);
         layout.addView(mContext.graphView_dlum);
 
-        mContext.graphView_snd = newGraphView("Sound", 256);
+        mContext.graphView_snd = newGraphView("Sound", Integer.valueOf(mContext.mPrefs.getString("fft_size", "512")) / 2);
 
         return v;
     }
