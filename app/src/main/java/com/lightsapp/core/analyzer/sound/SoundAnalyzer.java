@@ -15,7 +15,7 @@ import static com.lightsapp.utils.HandlerUtils.signalStr;
 public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
-    protected int THRESHOLD = 100;
+    protected int THRESHOLD = 2;
 
     private int sampleRate = 8000;
     private int blockSize = 256;
@@ -108,7 +108,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         for (Frame f: bQueueFrameElaborated) {
             if (signal_up){ // valuta condizione di discesa
-                if (f.maxY < (THRESHOLD * sensitivity)){
+                if (f.maxY < (sensitivity)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -118,7 +118,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 }
             }
             else { // valuta condizione di salita
-                if (f.maxY > (THRESHOLD * sensitivity))
+                if (f.maxY > (sensitivity))
                 {
                     signal_up = true;
                     ldata.add(time);
@@ -172,7 +172,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
             new_frame.cutSpectrum(min_beepFreqval, max_beepFreqval);
 
             if (signal_up){ // valuta condizione di discesa
-                if (new_frame.getMax() < (THRESHOLD * sensitivity)){
+                if (new_frame.getMax() < (sensitivity)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -182,7 +182,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 }
             }
             else { // valuta condizione di salita
-                if (new_frame.getMax() > (THRESHOLD * sensitivity))
+                if (new_frame.getMax() > (sensitivity))
                 {
                     signal_up = true;
                     ldata.add(time);
@@ -295,8 +295,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     @Override
     public void setSensitivity(int sensitivity) {
-        super.setSensitivity(sensitivity);
-        mContext.graphView_snd.setManualYAxisBounds(sensitivity * THRESHOLD, 0);
+        int m_sensitivity = 20 + THRESHOLD * sensitivity * sensitivity;
+        Log.v(TAG, "sensitility: " + m_sensitivity);
+        super.setSensitivity(m_sensitivity);
+        mContext.graphView_snd.setManualYAxisBounds(m_sensitivity, 0);
         threshold_changed = true;
     }
 
