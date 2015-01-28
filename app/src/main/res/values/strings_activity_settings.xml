@@ -29,6 +29,7 @@
         <item>300ms</item>
         <item>200ms</item>
         <item>100ms</item>
+        <item>50ms</item>
     </string-array>
     <string-array name="pref_interval_values">
         <item>3000</item>
@@ -47,6 +48,7 @@
         <item>300</item>
         <item>200</item>
         <item>100</item>
+        <item>50</item>
         <item>-1</item>
     </string-array>
 
@@ -74,10 +76,14 @@
 
     <string name="pref_title_fft_size">Fast Fourier Transform analysis</string>
     <string-array name="pref_fft_size_titles">
+        <item>128</item>
+        <item>256</item>
         <item>512</item>
         <item>1024</item>
     </string-array>
     <string-array name="pref_fft_size_values">
+        <item>128</item>
+        <item>256</item>
         <item>512</item>
         <item>1024</item>
         <item>-1</item>

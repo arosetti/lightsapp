@@ -180,7 +180,6 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else{
                     time += new_frame.delta;
                 }
-                //Log.v(TAG, "Is Up, average: "+new_frame.avg);
             }
             else { // valuta condizione di salita
                 if (new_frame.getMax() > (THRESHOLD * sensitivity))
@@ -192,7 +191,6 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 else{
                     time -= new_frame.delta;
                 }
-                //Log.v(TAG, "Is Down, average: "+new_frame.avg);
             }
 
             Log.v(TAG, "Delta: "+new_frame.delta);
@@ -230,6 +228,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     public double[] getSignal() {
         try {
+            // Rimozione dati inutili che non servono più
             while (maxVector.size() > 512)
                 maxVector.remove(0);
 
@@ -242,7 +241,6 @@ public class SoundAnalyzer extends BaseAnalyzer {
             return data;
         }
         catch (Exception e){ }
-
         return null;
     }
 

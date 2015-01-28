@@ -107,11 +107,13 @@ public class RecvFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                mContext.mLightA.setSensitivity(progress);
-                mContext.mSoundA.setSensitivity(progress);
+                if(mContext.mSoundA != null)
+                    mContext.mLightA.setSensitivity(progress);
+                if(mContext.mSoundA != null)
+                    mContext.mSoundA.setSensitivity(progress);
                 mTextViewSensitivity.setText(getResources().getString(R.string.sensitivity) +
                                              ": " + progress);
-                if (mContext.mLightA.getAnalyzer()) {
+                if (mContext.mSoundA != null && mContext.mLightA.getAnalyzer()) {
                     setEmptyText();
                 }
             }
