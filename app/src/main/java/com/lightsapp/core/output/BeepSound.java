@@ -49,14 +49,14 @@ public class BeepSound {
             data[idx++] = (byte) (val & 0x00ff);
             data[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
-
+/*
         for (i = i; i < samples; ++i) {
             double dVal = sample[i];
             final short val = (short) ((dVal * 32767 * (samples - i) / ramp));
             data[idx++] = (byte) (val & 0x00ff);
             data[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
-
+*/
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sample_rate,
                 AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 data.length, AudioTrack.MODE_STATIC);
