@@ -11,7 +11,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.lightsapp.utils.HandlerUtils.signalStr;
-
 public class SoundAnalyzer extends BaseAnalyzer {
     protected final String TAG = SoundAnalyzer.class.getSimpleName();
 
@@ -38,6 +37,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
     private BlockingQueue<Frame> bQueueFrameElaborated;
     private List<Long> ldata;
     private List<Double> maxVector;
+    private List<Double> derivateVector;
 
     public SoundAnalyzer(Context context) {
         super(context);
@@ -48,6 +48,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
         ldata = new ArrayList<Long>();
         maxVector = new ArrayList<Double>();
+        derivateVector = new ArrayList<Double>();
 
         signal_up = false;
         to_reset = false;
@@ -77,6 +78,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     public void reset_simple()
     {
+        Log.v(TAG, "Reset Simple");
         bQueueFrameElaborated.clear();
         ldata.clear();
         signal_up = false;
@@ -85,6 +87,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     protected void force_reset()
     {
+        Log.v(TAG, "Force Reset");
         bQueueFrameIn.clear();
         bQueueFrameElaborated.clear();
         ldata.clear();
@@ -102,13 +105,14 @@ public class SoundAnalyzer extends BaseAnalyzer {
 
     protected void reanalyze()
     {
+        Log.v(TAG, "Reanalyze");
         ldata.clear();
         signal_up = false;
         time = 0;
 
         for (Frame f: bQueueFrameElaborated) {
             if (signal_up){ // valuta condizione di discesa
-                if (f.maxY < (sensitivity)){
+                if (f.maxY < (sensitivity-sensitivity/5)){
                     signal_up = false;
                     ldata.add(time);
                     time = 0;
@@ -172,9 +176,10 @@ public class SoundAnalyzer extends BaseAnalyzer {
             new_frame.cutSpectrum(min_beepFreqval, max_beepFreqval);
 
             if (signal_up){ // valuta condizione di discesa
-                if (new_frame.getMax() < (sensitivity)){
+                if (new_frame.getMax() < (sensitivity-sensitivity/5)){
                     signal_up = false;
                     ldata.add(time);
+                    Log.v(TAG, "Add Delta discesa: " + time);
                     time = 0;
                 }
                 else{
@@ -186,6 +191,7 @@ public class SoundAnalyzer extends BaseAnalyzer {
                 {
                     signal_up = true;
                     ldata.add(time);
+                    Log.v(TAG, "Add Delta salita: " + time);
                     time = 0;
                 }
                 else{
